@@ -7,6 +7,8 @@
   const { owlSVG } = window.CQMascot;
   const Scen = window.CQScenarios;
   const ChartView = window.CQChart;
+  const { ic, coin, wordmark } = window.CQIcons;
+  const starRow = (n, cls) => `<span class="${cls || 'stars'}">${[0, 1, 2].map((k) => ic('star', k < n ? 'on' : '')).join('')}</span>`;
 
   const app = document.getElementById('app');
   let chart = null;
@@ -29,6 +31,7 @@
     if (window.CQLive) window.CQLive.stop();
     if (chart) { chart.destroy(); chart = null; }
     app.innerHTML = '';
+    app.classList.add('no-tabs');
     app.scrollTop = 0;
     window.scrollTo(0, 0);
     fn(arg);
@@ -54,7 +57,7 @@
   });
 
   function confetti(n) {
-    const colors = ['#f59e0b', '#16a34a', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899'];
+    const colors = ['#FFB23E', '#FF4F8B', '#2EE6A6', '#FFC94A', '#B18CFF', '#4FA8FF'];
     for (let i = 0; i < (n || 60); i++) {
       const c = el('<i class="confetti"></i>');
       c.style.left = Math.random() * 100 + 'vw';
@@ -76,16 +79,22 @@
   }
 
   function hud(backFn, title) {
-    const li = Store.levelInfo(S.xp);
     const bar = el(`<header class="hud">
-      ${backFn ? '<button class="icon-btn back" aria-label="Back">←</button>' : '<div class="hud-brand">🕯️ Candle Quest</div>'}
-      ${title ? `<div class="hud-title">${esc(title)}</div>` : ''}
-      <div class="hud-right">
-        <div class="hud-level" title="Player level"><span>Lv ${li.lvl}</span><i style="width:${Math.round(li.pct * 100)}%"></i></div>
-        <div class="hud-coins">🪙 <b>${S.coins}</b></div>
-      </div>
+      ${backFn ? `<button class="icon-btn back" aria-label="Back">${ic('back')}</button>` : ''}
+      ${title ? `<div class="hud-title">${esc(title)}</div>` : wordmark()}
+      <div class="hud-right"><div class="hud-coins" title="Coins">${coin()}<b>${S.coins}</b></div></div>
     </header>`);
     if (backFn) on(bar, '.back', backFn);
+    return bar;
+  }
+
+  // Bottom tab bar for the five main areas.
+  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['school', 'School', 'school'], ['shop', 'Shop', 'shop'], ['me', 'Me', 'owl']];
+  function nav(active) {
+    const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), school: () => go(map), shop: () => go(shop), me: () => go(profile) };
+    const bar = el(`<nav class="tabbar" aria-label="Main">${TABS.map(([id, label, icon]) => `<button class="tab-item ${id === active ? 'on' : ''}" data-id="${id}" ${id === active ? 'aria-current="page"' : ''}><span class="tab-ic">${ic(icon)}</span>${label}</button>`).join('')}</nav>`);
+    bar.querySelectorAll('.tab-item').forEach((b) => b.addEventListener('click', () => { if (b.dataset.id !== active) { Store.sfx.tap(); routes[b.dataset.id](); } }));
+    app.classList.remove('no-tabs');
     return bar;
   }
 
@@ -94,66 +103,89 @@
     if (!S.name) return go(welcome);
     const li = Store.levelInfo(S.xp);
     const greet = pick([
-      `Hoot hoot, ${S.name}! Ready to read some charts?`,
-      `Welcome back, ${S.name}! The candles missed you 🕯️`,
-      `${S.name}, let's hunt some liquidity today! 💧`,
-      `Every chart tells a story, ${S.name}. Let's read one!`,
-      `The market is open, ${S.name}! Let's catch some Take Profits 🎯`,
+      'The market is open. Ready to catch some take profits?',
+      'Pip spotted fresh liquidity on the chart.',
+      'Wait for the sweep, then strike.',
+      'Every candle tells a story. Let\'s read one.',
     ]);
     const MS = window.CQLive.MISSIONS;
-    const mDone = MS.filter((m) => (S.missionStars || {})[m.id]).length;
+    const ms = S.missionStars || {};
+    const next = MS.find((m) => !ms[m.id]) || MS[MS.length - 1];
+    const nextNo = MS.indexOf(next) + 1;
     const scr = el(`<main class="screen home">
-      <section class="hero-live">
-        <div class="hero-row"><div class="hero-owl small">${owlSVG(S.hat, 'happy')}</div><div class="bubble side">${esc(greet)}</div></div>
-        <div class="home-chart"><span class="live-badge"><span class="live-dot"></span>LIVE</span></div>
+      <div class="greet"><div class="greet-owl">${owlSVG(S.hat, 'happy')}</div><div><h1 class="greet-title">Hey ${esc(S.name)}!</h1><p class="greet-sub">${esc(greet)}</p></div></div>
+      <section class="hero-card">
+        <div class="hc-head"><span class="live-badge"><span class="live-dot"></span>LIVE</span><b>Practice market</b></div>
+        <div class="home-chart"></div>
+        <div class="hc-cta"><button class="btn btn-play play-live"><span>Trade live</span><small>Mission ${nextNo} of ${MS.length}: ${esc(next.name)}</small></button></div>
       </section>
+      ${Store.dailyAvailable()
+        ? `<button class="daily card-pop"><span class="daily-ic">${ic('gift')}</span><span><b>Daily chest is ready</b><small>Open it every day to grow your streak</small></span><span class="daily-go">Open</span></button>`
+        : `<div class="daily claimed"><span class="daily-ic">${ic('flame')}</span><span><b>${S.streak}-day streak</b><small>Next chest tomorrow</small></span></div>`}
+      <div class="grid2">
+        <button class="tile t-free"><span class="tile-ic mint">${ic('trade')}</span><b>Free market</b><small>Trade as long as you like</small></button>
+        <button class="tile t-school"><span class="tile-ic violet">${ic('school')}</span><b>Trading school</b><small>Learn each setup step by step</small></button>
+      </div>
       <section class="stats-row">
         <div class="stat"><b>${li.lvl}</b><span>Level</span></div>
         <div class="stat"><b>${S.tpTotal || 0}</b><span>Take profits</span></div>
         <div class="stat"><b>${S.badges.length}</b><span>Badges</span></div>
       </section>
-      ${Store.dailyAvailable() ? `<button class="daily card-pop"><span class="daily-emoji">🎁</span><span><b>Daily Treasure is ready!</b><small>Come back every day to grow your streak</small></span><span class="daily-go">Open</span></button>` : `<div class="daily claimed"><span class="daily-emoji">🔥</span><span><b>${S.streak}-day streak</b><small>Next treasure tomorrow</small></span></div>`}
-      <button class="btn btn-play play-live"><span>📈 Trade Live</span><small>Missions ${mDone}/${MS.length} · hit your Take Profits, win coins</small></button>
-      <div class="grid2">
-        <button class="tile t-free"><span>🎮</span>Free Market<small>Trade all you want</small></button>
-        <button class="tile t-school"><span>🎓</span>Trading School<small>Lessons & quizzes</small></button>
-        <button class="tile t-shop"><span>🛍️</span>Shop<small>Hats & chart themes</small></button>
-        <button class="tile t-badges"><span>🏅</span>Badges<small>${S.badges.length}/${BADGES.length} earned</small></button>
-      </div>
-      <footer class="home-foot">
-        <button class="link sound">${S.sound ? '🔊 Sound on' : '🔇 Sound off'}</button>
-        <button class="link grownups">👪 For grown-ups</button>
-      </footer>
     </main>`);
-    app.append(hud(null), scr);
+    app.append(hud(null), scr, nav('home'));
     window.CQLive.homeTicker($('.home-chart', scr));
-    on(scr, '.play-live', () => go(window.CQLive.missions));
+    on(scr, '.play-live', () => go(window.CQLive.liveScreen, next));
     on(scr, '.t-free', () => go(window.CQLive.liveScreen, null));
     on(scr, '.t-school', () => go(map));
-    on(scr, '.t-shop', () => go(shop));
-    on(scr, '.t-badges', () => go(badges));
-    on(scr, '.sound', () => { S.sound = !S.sound; Store.save(); go(home); });
-    on(scr, '.grownups', () => grownups());
     on(scr, 'button.daily', () => {
       const r = Store.claimDaily();
       if (r) {
         Store.sfx.win(); confetti(40);
-        toast(`+${r} coins! Streak: ${S.streak} day${S.streak > 1 ? 's' : ''}`, '🎁');
+        toast(`+${r} coins · ${S.streak}-day streak`, '🎁');
         setTimeout(() => go(home), 900);
       }
     });
   }
 
+  function profile() {
+    const li = Store.levelInfo(S.xp);
+    const scr = el(`<main class="screen profile">
+      <section class="profile-card">
+        <div>${owlSVG(S.hat, 'happy')}</div>
+        <div><h2>${esc(S.name)}</h2><p class="tiny">Level ${li.lvl} · ${li.toNext} XP to level ${li.lvl + 1}</p><div class="xp-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div></div>
+      </section>
+      <section class="stats-row">
+        <div class="stat"><b>${S.tpTotal || 0}</b><span>Take profits</span></div>
+        <div class="stat"><b>${S.totalCoins}</b><span>Coins earned</span></div>
+        <div class="stat"><b>${S.practiceBest}</b><span>Best streak</span></div>
+      </section>
+      <h2 class="section-title">Badges <span class="tiny">${S.badges.length} of ${BADGES.length}</span></h2>
+      <div class="badge-grid"></div>
+      <div class="settings">
+        <button class="sound">${ic(S.sound ? 'sound' : 'mute')}Sound<small>${S.sound ? 'On' : 'Off'}</small></button>
+        <button class="grownups">${ic('info')}For grown-ups</button>
+      </div>
+    </main>`);
+    const grid = $('.badge-grid', scr);
+    BADGES.slice().sort((x, y) => S.badges.includes(y.id) - S.badges.includes(x.id)).forEach((b) => {
+      const got = S.badges.includes(b.id);
+      grid.appendChild(el(`<div class="badge ${got ? 'got' : ''}"><span class="medal">${got ? b.emoji : ic('lock')}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div>`));
+    });
+    app.append(hud(null, 'Me'), scr, nav('me'));
+    on(scr, '.sound', () => { S.sound = !S.sound; Store.save(); go(profile); });
+    on(scr, '.grownups', () => grownups());
+  }
+
   function welcome() {
     const scr = el(`<main class="screen welcome">
+      ${wordmark()}
       <div class="hero-owl big">${owlSVG('none', 'wow')}</div>
-      <h1>Candle Quest</h1>
-      <p class="lead">Hi! I'm <b>Pip</b>, the chart owl 🦉<br>Let's trade a live market together! Catch moves, hit your Take Profits and stack coins 🪙</p>
+      <p class="lead">I'm Pip, your trading coach. Together we'll trade a live practice market, hit take profits and stack coins.</p>
       <label class="name-label">What's your trader nickname?
         <input class="name-input" maxlength="14" placeholder="e.g. ChartChamp" autocomplete="off">
       </label>
-      <p class="tiny">Use a nickname, not your real name 🙂</p>
-      <button class="btn btn-play go">Let's go! 🚀</button>
+      <p class="tiny">Pick a nickname, not your real name.</p>
+      <button class="btn btn-play go">Start trading</button>
     </main>`);
     app.append(scr);
     const inp = $('.name-input', scr);
@@ -167,7 +199,7 @@
   }
 
   function grownups() {
-    const m = modal(`<h2>👪 For grown-ups</h2>
+    const m = modal(`<h2>For grown-ups</h2>
       <p><b>Candle Quest</b> teaches chart reading using concepts from the ICT ("Inner Circle Trader") method: candles, swing points, liquidity, fair value gaps, order blocks and market structure.</p>
       <ul>
         <li>All charts — including the live market — are computer-generated practice markets, not real market data.</li>
@@ -192,7 +224,7 @@
 
   // ---------- MAP ----------
   function map(scrollTo) {
-    const scr = el('<main class="screen map"><div class="school-top"><button class="tile t-practice"><span>🎯</span>Practice Arena<small>Endless quiz, farm coins</small></button><button class="tile t-learn"><span>📖</span>Lessons<small>Review any world</small></button></div></main>');
+    const scr = el(`<main class="screen map"><div class="school-top"><button class="tile t-practice"><span class="tile-ic gold">${ic('target')}</span><b>Practice arena</b><small>Endless quiz, 3 lives</small></button><button class="tile t-learn"><span class="tile-ic violet">${ic('book')}</span><b>Lessons</b><small>Review any world</small></button></div></main>`);
     on(scr, '.t-practice', () => go(practiceIntro));
     on(scr, '.t-learn', () => go(lessonPicker));
     WORLDS.forEach((w, wi) => {
@@ -200,10 +232,10 @@
       const got = w.levels.reduce((a, _, l) => a + starsOf(wi, l), 0);
       const card = el(`<section class="world ${open ? '' : 'locked'}" style="--wc:${w.color}" id="world-${wi}">
         <div class="world-head">
-          <span class="world-emoji">${open ? w.emoji : '🔒'}</span>
-          <div><h2>World ${wi + 1}: ${esc(w.name)}</h2><p>${esc(w.blurb)}</p></div>
+          <span class="world-emoji">${open ? w.emoji : ic('lock')}</span>
+          <div><h2>${esc(w.name)}</h2><p>${esc(w.blurb)}</p></div>
         </div>
-        <div class="world-meta"><span>⭐ ${got}/${w.levels.length * 3}</span>${open ? '<button class="chip lesson-btn">📖 Lesson</button>' : '<span class="chip">Finish the world before to unlock</span>'}</div>
+        <div class="world-meta"><span class="stars on">${ic('star', 'on')} ${got} of ${w.levels.length * 3}</span>${open ? `<button class="chip lesson-btn">${ic('book')}Lesson</button>` : `<span>Finish ${esc(WORLDS[wi - 1] ? WORLDS[wi - 1].name : '')} to unlock</span>`}</div>
         <div class="levels"></div>
       </section>`);
       const lv = $('.levels', card);
@@ -212,9 +244,9 @@
         const ok = levelOpen(wi, li);
         const isBoss = li === w.levels.length - 1;
         const node = el(`<button class="level-node ${ok ? '' : 'locked'} ${st ? 'done' : ''} ${isBoss ? 'boss' : ''}" ${ok ? '' : 'disabled'}>
-          <span class="ln-num">${ok ? (isBoss ? '👑' : li + 1) : '🔒'}</span>
+          <span class="ln-num">${ok ? (isBoss ? ic('trophy') : li + 1) : ic('lock')}</span>
           <span class="ln-name">${esc(L.name)}</span>
-          <span class="ln-stars">${[0, 1, 2].map((k) => `<i class="${k < st ? 'on' : ''}">★</i>`).join('')}</span>
+          ${starRow(st)}
         </button>`);
         if (ok) node.addEventListener('click', () => {
           Store.sfx.tap();
@@ -226,7 +258,7 @@
       if (open) on(card, '.lesson-btn', () => go(lesson, { w: wi }));
       scr.appendChild(card);
     });
-    app.append(hud(() => go(home), 'Trading School'), scr);
+    app.append(hud(null, 'Trading school'), scr, nav('school'));
     // scroll to the newest open world
     let target = scrollTo;
     if (target == null) { target = 0; WORLDS.forEach((_, wi) => { if (worldOpen(wi)) target = wi; }); }
@@ -236,14 +268,14 @@
 
   // ---------- LESSONS ----------
   function lessonPicker() {
-    const scr = el('<main class="screen picker"><h2 class="section-title">📖 Lessons</h2></main>');
+    const scr = el('<main class="screen picker"></main>');
     WORLDS.forEach((w, wi) => {
       const ok = worldOpen(wi);
-      const b = el(`<button class="pick-row ${ok ? '' : 'locked'}" ${ok ? '' : 'disabled'} style="--wc:${w.color}"><span>${ok ? w.emoji : '🔒'}</span><b>${esc(w.name)}</b><small>${w.lesson.map((p) => esc(p.title)).join(' · ')}</small></button>`);
+      const b = el(`<button class="pick-row ${ok ? '' : 'locked'}" ${ok ? '' : 'disabled'} style="--wc:${w.color}"><span class="world-emoji">${ok ? w.emoji : ic('lock')}</span><b>${esc(w.name)}</b><small>${w.lesson.map((p) => esc(p.title)).join(' · ')}</small></button>`);
       if (ok) b.addEventListener('click', () => go(lesson, { w: wi, back: lessonPicker }));
       scr.appendChild(b);
     });
-    app.append(hud(() => go(home), 'Lessons'), scr);
+    app.append(hud(() => go(map), 'Lessons'), scr);
   }
 
   function lesson(opt) {
@@ -256,7 +288,7 @@
         <div class="chart-host lesson-chart"></div>
         <div class="lesson-text"><div class="mini-owl">${owlSVG(S.hat, 'happy', 'owl mini')}</div><p></p></div>
       </div>
-      <div class="lesson-nav"><button class="btn btn-ghost prev">← Back</button><button class="btn next">Next →</button></div>
+      <div class="lesson-nav"><button class="btn btn-ghost prev">Back</button><button class="btn next">Next</button></div>
     </main>`);
     app.append(hud(() => go(opt.back || map, opt.back ? undefined : opt.w), w.name), scr);
     const host = $('.lesson-chart', scr);
@@ -266,7 +298,7 @@
       $('.lesson-title', scr).textContent = p.title;
       $('.lesson-text p', scr).textContent = p.text;
       $('.prev', scr).style.visibility = page ? 'visible' : 'hidden';
-      $('.next', scr).textContent = page === w.lesson.length - 1 ? (opt.then ? 'Start level! 🚀' : 'Done ✓') : 'Next →';
+      $('.next', scr).textContent = page === w.lesson.length - 1 ? (opt.then ? 'Start level' : 'Done') : 'Next';
       if (chart) { chart.destroy(); chart = null; host.innerHTML = ''; }
       if (p.demo) {
         host.style.display = '';
@@ -291,13 +323,12 @@
     const keys = practiceKeys();
     const scr = el(`<main class="screen practice-intro">
       <div class="hero-owl">${owlSVG(S.hat, 'wow')}</div>
-      <h2>🎯 Practice Arena</h2>
-      <p class="lead">Endless charts from every world you've unlocked. You have <b>3 hearts</b> ❤️❤️❤️ — how long can your streak go?</p>
-      <p class="tiny">Each correct answer = <b>+5 🪙</b>. Best streak: <b>${S.practiceBest}</b></p>
-      <p class="tiny">Concepts in the mix: ${keys.length}</p>
+      <h2>Practice arena</h2>
+      <p class="lead">Endless charts from every world you've unlocked. You have 3 lives. How long can your streak go?</p>
+      <p class="tiny">+5 coins per correct answer · best streak ${S.practiceBest} · ${keys.length} concepts in the mix</p>
       <button class="btn btn-play go">Start practice</button>
     </main>`);
-    app.append(hud(() => go(home), 'Practice'), scr);
+    app.append(hud(() => go(map), 'Practice'), scr);
     on(scr, '.go', () => go(play, { mode: 'practice' }));
   }
   function practiceKeys() {
@@ -333,7 +364,7 @@
     if (g.mode === 'level') {
       p.innerHTML = g.rounds.map((_, i) => `<i class="${g.results[i] === true ? 'ok' : g.results[i] === false ? 'no' : i === g.idx ? 'cur' : ''}"></i>`).join('');
     } else {
-      p.innerHTML = `<span class="hearts">${'❤️'.repeat(g.hearts)}${'🤍'.repeat(3 - g.hearts)}</span><span class="streak">🔥 Streak ${g.streak}</span>`;
+      p.innerHTML = `<span class="hearts">${[0, 1, 2].map((k) => ic('heart', k < g.hearts ? '' : 'lost')).join('')}</span><span class="streak">${ic('flame')}${g.streak}</span>`;
     }
   }
 
@@ -354,7 +385,7 @@
     const act = $('.actions', scr);
     act.innerHTML = '';
     if (sc.kind === 'tap') {
-      act.innerHTML = '<div class="tap-hint">👆 Tap a candle on the chart</div>';
+      act.innerHTML = `<div class="tap-hint">${ic('hand')}Tap a candle on the chart</div>`;
       chart.onTap = (hit) => answerTap(g, scr, hit);
     } else {
       chart.onTap = null;
@@ -404,7 +435,7 @@
         }
       }, 150);
       timers.push(t);
-      $('.actions', scr).insertAdjacentHTML('beforeend', '<div class="tap-hint watching">👀 Watch what happens…</div>');
+      $('.actions', scr).insertAdjacentHTML('beforeend', `<div class="tap-hint watching">${ic('eye')}Watch what happens…</div>`);
     } else {
       chart.update({ ann: sc.annBefore.concat(sc.ann) });
       resolve(g, scr, ok);
@@ -444,9 +475,9 @@
     const lastRound = g.mode === 'level' ? g.idx >= g.rounds.length - 1 : g.hearts <= 0;
     const fb = $('.feedback', scr);
     fb.className = 'feedback ' + (ok ? 'is-ok' : 'is-bad');
-    fb.innerHTML = `<div class="fb-head"><b>${ok ? pick(PRAISE) : pick(OOPS)}</b>${reward ? `<span class="fb-coins">+${reward} 🪙</span>` : ''}</div>
+    fb.innerHTML = `<div class="fb-head"><b>${ok ? pick(PRAISE) : pick(OOPS)}</b>${reward ? `<span class="fb-coins">+${reward}${coin()}</span>` : ''}</div>
       ${tradeLine}<p>${esc(sc.explain)}</p>
-      <button class="btn next">${lastRound ? 'See results ▶' : 'Next ▶'}</button>`;
+      <button class="btn btn-flame next">${lastRound ? 'See results' : 'Next chart'}</button>`;
     fb.hidden = false;
     $('.actions', scr).innerHTML = '';
     renderProgress(g, scr);
@@ -485,14 +516,14 @@
       const hasNext = g.l < w.levels.length - 1 || g.w < WORLDS.length - 1;
       const scr = el(`<main class="screen result">
         <div class="hero-owl">${owlSVG(S.hat, passed ? 'wow' : 'sad')}</div>
-        <h2>${passed ? (stars === 3 ? 'PERFECT! 🏆' : 'Level complete!') : 'Almost there!'}</h2>
-        <div class="big-stars">${[0, 1, 2].map((k) => `<i class="${k < stars ? 'on' : ''}" style="animation-delay:${0.2 + k * 0.25}s">★</i>`).join('')}</div>
+        <h2>${passed ? (stars === 3 ? 'Perfect!' : 'Level complete') : 'Almost there'}</h2>
+        ${starRow(stars, 'big-stars')}
         <p class="lead">${g.correct} of ${n} correct${passed ? '' : ` — you need ${need} to pass. You can do it!`}</p>
-        <div class="earn"><div><b>+${g.earned}</b><span>answers</span></div><div><b>+${bonus}</b><span>level bonus</span></div><div><b>🪙 ${S.coins}</b><span>total</span></div></div>
+        <div class="earn"><div><b>+${g.earned}</b><span>answers</span></div><div><b>+${bonus}</b><span>level bonus</span></div><div><b>${coin()}${S.coins}</b><span>total</span></div></div>
         <div class="result-actions">
-          ${passed && hasNext ? '<button class="btn btn-play nextlvl">Next level ▶</button>' : ''}
-          <button class="btn ${passed ? 'btn-ghost' : 'btn-play'} retry">↻ ${passed ? 'Replay for more stars' : 'Try again'}</button>
-          <button class="btn btn-ghost tomap">🗺️ Map</button>
+          ${passed && hasNext ? '<button class="btn btn-play nextlvl">Next level</button>' : ''}
+          <button class="btn ${passed ? 'btn-ghost' : 'btn-play'} retry">${passed ? 'Replay for more stars' : 'Try again'}</button>
+          <button class="btn btn-ghost tomap">Back to school</button>
         </div>
       </main>`);
       app.append(hud(() => go(map, g.w), w.name), scr);
@@ -506,7 +537,7 @@
         else go(play, { mode: 'level', w: nw, l: nl });
       });
       if (passed && worldDone(g.w) && g.l === w.levels.length - 1 && firstClear) {
-        setTimeout(() => toast(g.w < WORLDS.length - 1 ? `${WORLDS[g.w + 1].name} unlocked!` : 'You beat the whole game! 👑', '🗺️'), 900);
+        setTimeout(() => toast(g.w < WORLDS.length - 1 ? `${WORLDS[g.w + 1].name} unlocked!` : 'You finished Trading School!', '🏆'), 900);
       }
     });
   }
@@ -515,14 +546,14 @@
     go(() => {
       const scr = el(`<main class="screen result">
         <div class="hero-owl">${owlSVG(S.hat, 'wow')}</div>
-        <h2>Practice complete!</h2>
-        <p class="lead">You answered <b>${g.correct}</b> right and earned <b>${g.earned} 🪙</b>.</p>
-        <div class="earn"><div><b>${g.correct}</b><span>correct</span></div><div><b>${S.practiceBest}</b><span>best streak</span></div><div><b>🪙 ${S.coins}</b><span>total</span></div></div>
-        <div class="result-actions"><button class="btn btn-play again">↻ Play again</button><button class="btn btn-ghost home">🏠 Home</button></div>
+        <h2>Practice complete</h2>
+        <p class="lead">You answered ${g.correct} right and earned ${g.earned} coins.</p>
+        <div class="earn"><div><b>${g.correct}</b><span>correct</span></div><div><b>${S.practiceBest}</b><span>best streak</span></div><div><b>${coin()}${S.coins}</b><span>total</span></div></div>
+        <div class="result-actions"><button class="btn btn-play again">Play again</button><button class="btn btn-ghost home">Back to school</button></div>
       </main>`);
-      app.append(hud(() => go(home), 'Practice'), scr);
+      app.append(hud(() => go(map), 'Practice'), scr);
       on(scr, '.again', () => go(play, { mode: 'practice' }));
-      on(scr, '.home', () => go(home));
+      on(scr, '.home', () => go(map));
     });
   }
 
@@ -530,7 +561,7 @@
   function shop(tab) {
     tab = tab || 'hats';
     const scr = el(`<main class="screen shop">
-      <div class="tabs"><button class="tab ${tab === 'hats' ? 'on' : ''}" data-t="hats">🎩 Hats for Pip</button><button class="tab ${tab === 'themes' ? 'on' : ''}" data-t="themes">🎨 Chart themes</button></div>
+      <div class="tabs"><button class="tab ${tab === 'hats' ? 'on' : ''}" data-t="hats">Hats for Pip</button><button class="tab ${tab === 'themes' ? 'on' : ''}" data-t="themes">Chart themes</button></div>
       <div class="shop-grid"></div>
     </main>`);
     const grid = $('.shop-grid', scr);
@@ -544,10 +575,10 @@
         ? `<div class="shop-owl">${owlSVG(it.id, 'happy')}</div>`
         : `<div class="swatch" style="background:${it.bg}">${[3, 5, 2, 6, 4, 7, 5].map((hgt, i) => `<i style="height:${hgt * 8}px;background:${i % 3 === 2 ? it.down : it.up}"></i>`).join('')}</div>`;
       const card = el(`<div class="shop-item ${eq ? 'equipped' : ''}">${preview}<b>${esc(it.name)}</b>
-        <button class="btn small ${own ? (eq ? 'btn-ghost' : '') : 'buy'}" ${eq ? 'disabled' : ''}>${eq ? 'Equipped ✓' : own ? 'Equip' : `🪙 ${it.price}`}</button></div>`);
+        <button class="btn small ${own ? (eq ? 'btn-ghost' : '') : 'buy'}" ${eq ? 'disabled' : ''}>${eq ? 'Equipped' : own ? 'Equip' : `${coin()}${it.price}`}</button></div>`);
       on(card, 'button', () => {
         if (!own) {
-          if (S.coins < it.price) { Store.sfx.bad(); toast(`You need ${it.price - S.coins} more coins — try Practice Arena!`, '🪙'); return; }
+          if (S.coins < it.price) { Store.sfx.bad(); toast(`You need ${it.price - S.coins} more coins. Trade in the free market to earn them.`, '🪙'); return; }
           S.coins -= it.price;
           ownedList.push(it.id);
           Store.badge('shopper');
@@ -559,24 +590,15 @@
       });
       grid.appendChild(card);
     });
-    app.append(hud(() => go(home), 'Shop'), scr);
+    app.append(hud(null, 'Shop'), scr, nav('shop'));
     scr.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => go(shop, b.dataset.t)));
   }
 
-  // ---------- BADGES ----------
-  function badges() {
-    const scr = el(`<main class="screen badges"><p class="lead center">${S.badges.length} of ${BADGES.length} badges earned</p><div class="badge-grid"></div></main>`);
-    const grid = $('.badge-grid', scr);
-    BADGES.forEach((b) => {
-      const got = S.badges.includes(b.id);
-      grid.appendChild(el(`<div class="badge ${got ? 'got' : ''}"><span>${got ? b.emoji : '❔'}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div>`));
-    });
-    app.append(hud(() => go(home), 'Badges'), scr);
-  }
+  const badges = profile;
 
   // ---------- shared UI for live.js ----------
   window.CQUI = {
-    app, go, el, esc, hud, toast, confetti, giveCoins, theme, home,
+    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home,
     refreshCoins: () => { const c = $('.hud-coins b'); if (c) c.textContent = S.coins; },
   };
 

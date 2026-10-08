@@ -3,8 +3,8 @@
   'use strict';
 
   const ANN_COLORS = {
-    liq: '#8b5cf6', gold: '#f59e0b', gap: '#3b82f6', ob: '#f97316',
-    good: '#16a34a', bad: '#dc2626', info: '#64748b',
+    liq: '#B18CFF', gold: '#FFC94A', gap: '#4FA8FF', ob: '#FF9F43',
+    good: '#2EE6A6', bad: '#FF5C7A', info: '#9A8CC2',
   };
 
   class ChartView {
@@ -128,7 +128,7 @@
         ctx.setLineDash([]);
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = th.text;
-        ctx.font = '700 28px "Baloo 2", system-ui, sans-serif';
+        ctx.font = '700 28px Rubik, system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('?', (x0 + w) / 2, h / 2);
@@ -212,7 +212,7 @@
       if (m.i < 0 || m.i >= this.state.visible) return;
       const k = this.state.candles[m.i];
       const { ctx } = this;
-      const col = m.type === 'bad' ? '#dc2626' : m.type === 'good' ? '#16a34a' : '#f59e0b';
+      const col = m.type === 'bad' ? '#FF5C7A' : m.type === 'good' ? '#2EE6A6' : '#FFC94A';
       const x = g.cx(m.i), yt = Y(k.h) - 6, yb = Y(k.l) + 6;
       ctx.strokeStyle = col;
       ctx.lineWidth = 3;
@@ -257,7 +257,7 @@
   }
 
   function pill(ctx, text, x, y, col, align, base) {
-    ctx.font = '700 12px "Baloo 2", system-ui, sans-serif';
+    ctx.font = '700 12px Rubik, system-ui, sans-serif';
     const tw = ctx.measureText(text).width;
     const pw = tw + 12, ph = 20;
     let px = align === 'right' ? x - pw : align === 'left' ? x : x - pw / 2;
@@ -266,7 +266,7 @@
     ctx.fillStyle = col;
     roundRect(ctx, px, py, pw, ph, 10);
     ctx.fill();
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = (col === '#2EE6A6' || col === '#FFC94A') ? '#0B2A20' : '#fff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, px + 6, py + ph / 2 + 1);

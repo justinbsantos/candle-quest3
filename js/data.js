@@ -97,12 +97,12 @@
   const WORLD_KEYS = WORLDS.map((w) => Array.from(new Set(w.levels.flatMap((l) => l.rounds))));
 
   const THEMES = [
-    { id: 'classic', name: 'Classic', price: 0, bg: '#ffffff', grid: '#eef2f7', up: '#16a34a', down: '#e11d48', text: '#334155', future: '#f1f5f9' },
-    { id: 'night', name: 'Night Owl', price: 150, bg: '#0f172a', grid: '#1e293b', up: '#4ade80', down: '#fb7185', text: '#e2e8f0', future: '#1e293b' },
-    { id: 'candy', name: 'Candy Land', price: 200, bg: '#fff1f7', grid: '#fcdcec', up: '#10b981', down: '#f43f5e', text: '#831843', future: '#fde4f0' },
-    { id: 'ocean', name: 'Deep Ocean', price: 250, bg: '#e0f2fe', grid: '#bae6fd', up: '#059669', down: '#dc2626', text: '#0c4a6e', future: '#cdeafc' },
-    { id: 'jungle', name: 'Jungle', price: 300, bg: '#f0fdf4', grid: '#d9f99d', up: '#15803d', down: '#c2410c', text: '#14532d', future: '#e2f7d2' },
-    { id: 'neon', name: 'Neon Arcade', price: 450, bg: '#0b0b1e', grid: '#1d1d3d', up: '#39ff14', down: '#ff2e88', text: '#e0e0ff', future: '#16163a' },
+    { id: 'classic', name: 'Midnight', price: 0, bg: '#1B1236', grid: '#271B4A', up: '#2EE6A6', down: '#FF5C7A', text: '#E9E2FF', future: '#22173F' },
+    { id: 'day', name: 'Daylight', price: 150, bg: '#FFFFFF', grid: '#EEF0F6', up: '#12B886', down: '#F03E5E', text: '#2B2350', future: '#F3F1FA' },
+    { id: 'candy', name: 'Candy Land', price: 200, bg: '#2A0F2E', grid: '#3D1B42', up: '#7CFFCB', down: '#FF7AB6', text: '#FFE3F3', future: '#331437' },
+    { id: 'ocean', name: 'Deep Ocean', price: 250, bg: '#071E33', grid: '#0E2E4A', up: '#3CE0C0', down: '#FF8A5C', text: '#D6F1FF', future: '#0B2640' },
+    { id: 'jungle', name: 'Jungle', price: 300, bg: '#0E2318', grid: '#17352A', up: '#9BF05A', down: '#FF8A4C', text: '#E3FFE9', future: '#132C20' },
+    { id: 'neon', name: 'Neon Arcade', price: 450, bg: '#08051A', grid: '#1A1240', up: '#39FF14', down: '#FF2E88', text: '#E0E0FF', future: '#110B2C' },
   ];
 
   const HATS = [

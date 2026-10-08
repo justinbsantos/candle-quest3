@@ -9,6 +9,10 @@
   const S = Store.state;
   const { owlSVG } = window.CQMascot;
   const UI = () => window.CQUI;
+  const { ic, coin } = window.CQIcons;
+  const C = { gap: '#4FA8FF', liq: '#B18CFF', up: '#2EE6A6', down: '#FF5C7A', gold: '#FFC94A', entry: '#9A8CC2' };
+  const inkOn = (col) => (col === C.up || col === C.gold ? '#0B2A20' : '#fff');
+  const starRow = (n, cls) => `<span class="${cls || 'stars'}">${[0, 1, 2].map((k) => ic('star', k < n ? 'on' : '')).join('')}</span>`;
 
   const TICKS = 14;
   const VIEW = 34;
@@ -107,16 +111,16 @@
         if (endX < g.padL) continue;
         if (st.show.fvg) {
           const x0 = xl(st.fvgA), y0 = this.Y(st.gapHi), y1 = this.Y(st.gapLo);
-          ctx.fillStyle = '#3b82f6'; ctx.globalAlpha = 0.16; ctx.fillRect(x0, y0, endX - x0, y1 - y0);
-          ctx.globalAlpha = 0.75; ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 1.5; ctx.strokeRect(x0 + 0.5, y0 + 0.5, endX - x0 - 1, y1 - y0 - 1);
+          ctx.fillStyle = C.gap; ctx.globalAlpha = 0.16; ctx.fillRect(x0, y0, endX - x0, y1 - y0);
+          ctx.globalAlpha = 0.75; ctx.strokeStyle = C.gap; ctx.lineWidth = 1.5; ctx.strokeRect(x0 + 0.5, y0 + 0.5, endX - x0 - 1, y1 - y0 - 1);
           ctx.globalAlpha = 1;
-          if (st.resolvedAt == null) tag(ctx, '🕳️ Gap', x0 + 2, y0 - 2, '#3b82f6', 'left', 'bottom', 11);
+          if (st.resolvedAt == null) tag(ctx, '🕳️ Gap', x0 + 2, y0 - 2, C.gap, 'left', 'bottom', 11);
         }
         if (st.show.liq) {
           const y = Math.round(this.Y(st.target)) + 0.5, x0 = xl(st.a1);
-          ctx.strokeStyle = '#8b5cf6'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+          ctx.strokeStyle = C.liq; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
           ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(endX, y); ctx.stroke(); ctx.setLineDash([]);
-          if (st.resolvedAt == null) tag(ctx, '💰 Liquidity', Math.max(x0, g.padL) + 2, st.dir === 'buy' ? y - 3 : y + 3, '#8b5cf6', 'left', st.dir === 'buy' ? 'bottom' : 'top', 11);
+          if (st.resolvedAt == null) tag(ctx, '💰 Liquidity', Math.max(x0, g.padL) + 2, st.dir === 'buy' ? y - 3 : y + 3, C.liq, 'left', st.dir === 'buy' ? 'bottom' : 'top', 11);
         }
       }
 
@@ -126,12 +130,12 @@
         const x0 = Math.max(g.padL, g.x(pos.openIdx) - g.slot / 2);
         const ye = this.Y(pos.entry), yt = this.Y(pos.tp), ys = this.Y(pos.sl);
         ctx.globalAlpha = 0.16;
-        ctx.fillStyle = '#16a34a'; ctx.fillRect(x0, Math.min(ye, yt), g.right - x0, Math.abs(yt - ye));
-        ctx.fillStyle = '#dc2626'; ctx.fillRect(x0, Math.min(ye, ys), g.right - x0, Math.abs(ys - ye));
+        ctx.fillStyle = C.up; ctx.fillRect(x0, Math.min(ye, yt), g.right - x0, Math.abs(yt - ye));
+        ctx.fillStyle = C.down; ctx.fillRect(x0, Math.min(ye, ys), g.right - x0, Math.abs(ys - ye));
         ctx.globalAlpha = 1;
-        hline(ctx, x0, w, ye, '#64748b', true, 1.5);
-        hline(ctx, x0, w, yt, '#16a34a', false, 2.5);
-        hline(ctx, x0, w, ys, '#dc2626', false, 2.5);
+        hline(ctx, x0, w, ye, C.entry, true, 1.5);
+        hline(ctx, x0, w, yt, C.up, false, 2.5);
+        hline(ctx, x0, w, ys, C.down, false, 2.5);
       }
 
       // candles
@@ -171,8 +175,8 @@
 
       if (pos) {
         const coins = potential(pos);
-        gutterTag(ctx, g, this.Y(pos.tp), '🎯 +' + coins.tp, '#16a34a', this.drag === 'tp');
-        gutterTag(ctx, g, this.Y(pos.sl), '🛑 −' + coins.sl, '#dc2626', this.drag === 'sl');
+        gutterTag(ctx, g, this.Y(pos.tp), '🎯 +' + coins.tp, C.up, this.drag === 'tp');
+        gutterTag(ctx, g, this.Y(pos.sl), '🛑 −' + coins.sl, C.down, this.drag === 'sl');
       }
       gutterTag(ctx, g, py, fmt(s.price), pc, false, true);
     }
@@ -212,27 +216,27 @@
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
   }
   function tag(ctx, text, x, y, col, align, base, size) {
-    ctx.font = `700 ${size || 12}px "Baloo 2", system-ui, sans-serif`;
+    ctx.font = `700 ${size || 12}px Rubik, system-ui, sans-serif`;
     const tw = ctx.measureText(text).width, pw = tw + 12, ph = (size || 12) + 8;
     let px = align === 'right' ? x - pw : align === 'center' ? x - pw / 2 : x;
     const py = base === 'bottom' ? y - ph : base === 'middle' ? y - ph / 2 : y;
     ctx.fillStyle = col; rr(ctx, px, py, pw, ph, ph / 2); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = inkOn(col); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     ctx.fillText(text, px + 6, py + ph / 2 + 1);
   }
   function gutterTag(ctx, g, y, text, col, active, isPrice) {
-    ctx.font = '800 12px "Baloo 2", system-ui, sans-serif';
+    ctx.font = '800 12px Rubik, system-ui, sans-serif';
     const ph = 22, px = g.right + 3, pw = g.gutter - 6;
     const py = Math.max(1, Math.min(ctx.canvas.clientHeight - ph - 1, y - ph / 2));
     ctx.fillStyle = col;
     rr(ctx, px, py, pw, ph, isPrice ? 6 : 11); ctx.fill();
-    if (active) { ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3; ctx.stroke(); }
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (active) { ctx.strokeStyle = C.gold; ctx.lineWidth = 3; ctx.stroke(); }
+    ctx.fillStyle = isPrice ? '#0B0620' : inkOn(col); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(text, px + pw / 2, py + ph / 2 + 1);
     if (!isPrice) { ctx.font = '700 10px system-ui'; ctx.fillText('⇕', px + pw - 6, py + ph / 2); }
   }
   function mark(ctx, chart, g, k, i, label, above, color) {
-    const x = g.x(i), col = color || '#f59e0b';
+    const x = g.x(i), col = color || C.gold;
     const y = above ? chart.Y(k.h) - 6 : chart.Y(k.l) + 6;
     ctx.fillStyle = col; ctx.beginPath();
     if (above) { ctx.moveTo(x, y + 3); ctx.lineTo(x - 5, y - 5); ctx.lineTo(x + 5, y - 5); }
@@ -446,7 +450,7 @@
       tp = buy ? entry + 2 * risk : entry - 2 * risk;
     }
     s.position = { dir, entry, sl, tp, stake: s.stake, openIdx: s.market.candles.length, perfect, against: !!(st && !match), setup: st ? st.id : null };
-    s.marks.push({ i: s.market.candles.length, label: buy ? '▲ BUY' : '▼ SELL', above: !buy, color: buy ? '#16a34a' : '#dc2626' });
+    s.marks.push({ i: s.market.candles.length, label: buy ? '▲ BUY' : '▼ SELL', above: !buy, color: buy ? C.up : C.down });
     Store.sfx.good();
     if (perfect) coach('🌟 PERFECT ICT entry! In the gap, after the sweep and MSS. Win this one for 1.5× coins!', 'wow');
     else if (st && !match && s.hints >= 1) coach(`😬 Careful — the setup is pointing ${st.dir === 'buy' ? 'UP' : 'DOWN'}. ${buy ? 'Buying' : 'Selling'} here goes against it.`, 'sad');
@@ -481,9 +485,9 @@
     }
     if (reason === 'sl') s.stats.sl++;
     s.stats.trades.push({ dir: pos.dir, reason, coins, perfect: pos.perfect, entry: pos.entry, exit, sl: pos.sl, tp: pos.tp, setup: pos.setup });
-    s.marks.push({ i: s.market.candles.length, label: reason === 'tp' ? '🎯' : reason === 'sl' ? '🛑' : '✋', above: true, color: coins >= 0 ? '#16a34a' : '#dc2626' });
+    s.marks.push({ i: s.market.candles.length, label: reason === 'tp' ? '🎯' : reason === 'sl' ? '🛑' : '✋', above: true, color: coins >= 0 ? C.up : C.down });
 
-    const msg = reason === 'tp' ? `🎯 TAKE PROFIT! +${coins}🪙` : reason === 'sl' ? `🛑 Stopped out ${coins}🪙` : `${coins >= 0 ? '✋ Closed +' : '✋ Closed '}${coins}🪙`;
+    const msg = reason === 'tp' ? `Take profit! +${coins}` : reason === 'sl' ? `Stopped out ${coins}` : `Closed ${coins >= 0 ? '+' : ''}${coins}`;
     popup(msg, coins >= 0 ? 'win' : 'loss');
     if (reason === 'tp') {
       Store.sfx.win(); UI().confetti(pos.perfect ? 70 : 35);
@@ -509,9 +513,9 @@
   // ---------------------------------------------------------------- goals
   function goalText(m) {
     const g = m.goal;
-    if (g.tp) return `🎯 ${Math.min(sess.stats.tp, g.tp)}/${g.tp} TPs` + (g.maxSL != null ? ` · 🛑 ${sess.stats.sl}/${g.maxSL} max` : '');
-    if (g.coins) return `🪙 ${sess.stats.net >= 0 ? '+' : ''}${sess.stats.net}/${g.coins}`;
-    if (g.perfect) return `🌟 ${Math.min(sess.stats.perfectWins, g.perfect)}/${g.perfect} perfect wins`;
+    if (g.tp) return `${Math.min(sess.stats.tp, g.tp)} of ${g.tp} take profits` + (g.maxSL != null ? `, ${sess.stats.sl} of ${g.maxSL} stop allowed` : '');
+    if (g.coins) return `${sess.stats.net >= 0 ? '+' : ''}${sess.stats.net} of +${g.coins} coins`;
+    if (g.perfect) return `${Math.min(sess.stats.perfectWins, g.perfect)} of ${g.perfect} perfect wins`;
     return '';
   }
   function goalMet(m, st) {
@@ -540,13 +544,13 @@
     if (ui.lastBar && now - ui.lastBar < 120) return;
     ui.lastBar = now;
     const ch = s.price - s.market.candles[s.market.candles.length - 1].c;
-    ui.ticker.innerHTML = `<b>${s.asset}</b><span class="${s.price >= s.live.o ? 'up' : 'down'}">${fmt(s.price)} ${s.price >= s.live.o ? '▲' : '▼'}</span>`;
+    ui.ticker.innerHTML = `<b>${s.asset}</b><span class="${s.price >= s.live.o ? 'up' : 'down'}">${fmt(s.price)}${ic(s.price >= s.live.o ? 'up' : 'down')}</span>`;
     void ch;
-    if (s.mission) ui.goal.textContent = `${goalText(s.mission)} · ⏱ ${s.candlesLeft} candles`;
-    else ui.goal.textContent = `Free market · 🎯 ${s.stats.tp} TPs · ${s.stats.net >= 0 ? '+' : ''}${s.stats.net}🪙`;
+    if (s.mission) ui.goal.textContent = `${goalText(s.mission)}  ·  ${s.candlesLeft} candles left`;
+    else ui.goal.textContent = `${s.stats.tp} take profits  ·  ${s.stats.net >= 0 ? '+' : ''}${s.stats.net} coins this session`;
     if (s.position) {
       const c = coinsFor(s.position, s.price);
-      ui.pnl.textContent = `${c >= 0 ? '+' : ''}${c} 🪙`;
+      ui.pnl.firstChild.textContent = `${c >= 0 ? '+' : ''}${c}`;
       ui.pnl.className = 'pnl ' + (c >= 0 ? 'up' : 'down');
     }
   }
@@ -556,18 +560,18 @@
     if (s.position) {
       const p = s.position;
       box.innerHTML = `<div class="pos-panel ${p.dir}">
-        <div class="pos-top"><span class="pos-dir">${p.dir === 'buy' ? '▲ BUY' : '▼ SELL'} · risk ${p.stake}🪙${p.perfect ? ' · 🌟 perfect entry' : ''}</span><span class="pnl">0 🪙</span></div>
-        <p class="pos-hint">Drag the 🎯 and 🛑 tags on the right edge of the chart to move your Take Profit and Stop Loss.</p>
-        <button class="btn btn-ghost close-trade">✋ Close trade now</button>
+        <div class="pos-top"><span class="pos-dir">${ic(p.dir === 'buy' ? 'up' : 'down')}${p.dir === 'buy' ? 'Buying' : 'Selling'} · risking ${p.stake}${p.perfect ? ' <span class="pill">Perfect entry</span>' : ''}</span><span class="pnl"><span>0</span>${coin()}</span></div>
+        <p class="pos-hint">Drag the take-profit and stop-loss tags on the right edge of the chart to move them.</p>
+        <button class="btn btn-ghost close-trade">Close trade now</button>
       </div>`;
       s.ui.pnl = box.querySelector('.pnl');
       box.querySelector('.close-trade').addEventListener('click', () => { Store.sfx.tap(); closeTrade(s.price, 'manual'); });
     } else {
       box.innerHTML = `<div class="trade-btns">
-          <button class="trade-btn trade-buy"><b>▲ BUY</b><small>price goes up</small></button>
-          <button class="trade-btn trade-sell"><b>▼ SELL</b><small>price goes down</small></button>
+          <button class="trade-btn trade-buy"><b>${ic('up')}BUY</b><small>price goes up</small></button>
+          <button class="trade-btn trade-sell"><b>${ic('down')}SELL</b><small>price goes down</small></button>
         </div>
-        <div class="stake-row"><span>Risk per trade</span>${s.stakes.map((v) => `<button class="stake ${v === s.stake ? 'on' : ''}" data-v="${v}">${v}🪙</button>`).join('')}</div>`;
+        <div class="stake-row"><span>Risk per trade</span>${s.stakes.map((v) => `<button class="stake ${v === s.stake ? 'on' : ''}" data-v="${v}">${coin()}${v}</button>`).join('')}</div>`;
       box.querySelector('.trade-buy').addEventListener('click', () => openTrade('buy'));
       box.querySelector('.trade-sell').addEventListener('click', () => openTrade('sell'));
       box.querySelectorAll('.stake').forEach((b) => b.addEventListener('click', () => { s.stake = +b.dataset.v; Store.sfx.tap(); renderControls(); }));
@@ -583,13 +587,13 @@
       <div class="live-top">
         <div class="ticker"></div>
         <div class="live-ctrl">
-          ${mission ? '' : '<button class="chip hints-btn"></button>'}
-          <button class="chip speed-btn">1×</button>
-          <button class="chip pause-btn">⏸</button>
+          ${mission ? '' : '<button class="chip hints-btn" aria-label="Hints"></button>'}
+          <button class="chip speed-btn" aria-label="Speed">1×</button>
+          <button class="chip pause-btn" aria-label="Pause">${ic('pause')}</button>
         </div>
       </div>
-      <div class="goal-row"><span class="goal"></span></div>
-      <div class="goal-done" hidden><b>🏆 Mission complete!</b><button class="btn small finish">Finish ▶</button></div>
+      <div class="goal-row">${ic(mission ? 'target' : 'trade')}<span class="goal"></span></div>
+      <div class="goal-done" hidden><span>Mission complete!</span><button class="btn small finish">Finish</button></div>
       <div class="coach"><div class="mini-owl"></div><p></p></div>
       <div class="chart-wrap"><div class="chart-host live-chart"></div></div>
       <div class="controls"></div>
@@ -604,10 +608,10 @@
     const sp = root.querySelector('.speed-btn');
     sp.addEventListener('click', () => { s.speedMult = s.speedMult === 1 ? 2 : s.speedMult === 2 ? 0.5 : 1; sp.textContent = s.speedMult === 0.5 ? '½×' : s.speedMult + '×'; Store.sfx.tap(); });
     const pb = root.querySelector('.pause-btn');
-    pb.addEventListener('click', () => { s.paused = !s.paused; pb.textContent = s.paused ? '▶' : '⏸'; Store.sfx.tap(); });
+    pb.addEventListener('click', () => { s.paused = !s.paused; pb.innerHTML = ic(s.paused ? 'play' : 'pause'); Store.sfx.tap(); });
     const hb = root.querySelector('.hints-btn');
     if (hb) {
-      const lab = () => { hb.textContent = ['🙈 No hints', '👀 Some hints', '🦉 Full hints'][s.hints]; };
+      const lab = () => { hb.innerHTML = ic(['eyeOff', 'eye', 'owl'][s.hints]) + ['No hints', 'Some hints', 'Full hints'][s.hints]; };
       lab();
       hb.addEventListener('click', () => { s.hints = (s.hints + 2) % 3; S.freeHints = s.hints; Store.save(); lab(); coach(hintsLabel[s.hints], 'happy'); });
     }
@@ -659,18 +663,18 @@
       const st = s.stats;
       const passed = m ? stars > 0 : true;
       const rows = st.trades.length
-        ? st.trades.map((t) => `<li><span>${t.dir === 'buy' ? '▲ BUY' : '▼ SELL'}${t.perfect ? ' 🌟' : ''}</span><span>${{ tp: '🎯 Take profit', sl: '🛑 Stop loss', manual: '✋ Closed', end: '⏱ Closed at end' }[t.reason]}</span><b class="${t.coins >= 0 ? 'up' : 'down'}">${t.coins >= 0 ? '+' : ''}${t.coins}🪙</b></li>`).join('')
+        ? st.trades.map((t) => `<li><span class="tl-dir ${t.dir === 'buy' ? 'up' : 'down'}">${ic(t.dir === 'buy' ? 'up' : 'down')}${t.dir === 'buy' ? 'Buy' : 'Sell'}</span><span class="tl-why">${{ tp: 'Take profit hit', sl: 'Stopped out', manual: 'Closed early', end: 'Closed at the bell' }[t.reason]}${t.perfect ? ' · perfect entry' : ''}</span><b class="${t.coins >= 0 ? 'up' : 'down'}">${t.coins >= 0 ? '+' : ''}${t.coins}${coin()}</b></li>`).join('')
         : '<li class="empty">No trades this time. Next time tap BUY or SELL when you see a setup!</li>';
       const root = U.el(`<main class="screen result">
         <div class="hero-owl">${owlSVG(S.hat, passed && st.net >= 0 ? 'wow' : 'sad')}</div>
-        <h2>${m ? (passed ? (stars === 3 ? 'PERFECT MISSION! 🏆' : 'Mission complete!') : 'Mission not done yet') : 'Market closed!'}</h2>
-        ${m ? `<div class="big-stars">${[0, 1, 2].map((k) => `<i class="${k < stars ? 'on' : ''}" style="animation-delay:${0.2 + k * 0.25}s">★</i>`).join('')}</div><p class="tiny">★ goal · ★ finish up with ≤1 stop loss · ★ a perfect ICT entry that won</p>` : ''}
+        <h2>${m ? (passed ? (stars === 3 ? 'Perfect mission!' : 'Mission complete') : 'Not quite yet') : 'Market closed'}</h2>
+        ${m ? `${starRow(stars, 'big-stars')}<p class="tiny">Stars: reach the goal · finish up with at most 1 stop loss · win a perfect ICT entry</p>` : ''}
         <div class="earn"><div><b>${st.tp}</b><span>take profits</span></div><div><b class="${st.net >= 0 ? 'up' : 'down'}">${st.net >= 0 ? '+' : ''}${st.net}</b><span>trading coins</span></div><div><b>+${bonus}</b><span>mission bonus</span></div></div>
         <ul class="trade-list">${rows}</ul>
         <div class="result-actions">
-          ${m && passed && MISSIONS.indexOf(m) < MISSIONS.length - 1 ? '<button class="btn btn-play next-m">Next mission ▶</button>' : ''}
-          <button class="btn ${m && !passed ? 'btn-play' : 'btn-ghost'} again">↻ ${m ? 'Play mission again' : 'Trade again'}</button>
-          <button class="btn btn-ghost back-m">${m ? '📈 All missions' : '🏠 Home'}</button>
+          ${m && passed && MISSIONS.indexOf(m) < MISSIONS.length - 1 ? '<button class="btn btn-play next-m">Next mission</button>' : ''}
+          <button class="btn ${m && !passed ? 'btn-play' : 'btn-ghost'} again">${m ? 'Play mission again' : 'Trade again'}</button>
+          <button class="btn btn-ghost back-m">${m ? 'All missions' : 'Home'}</button>
         </div>
       </main>`);
       U.app.append(U.hud(() => U.go(m ? missions : U.home), m ? m.name : 'Free Market'), root);
@@ -686,23 +690,24 @@
     const U = UI();
     const ms = S.missionStars || {};
     const root = U.el(`<main class="screen missions">
-      <p class="lead">Trade a <b>live market</b>. Tap BUY or SELL, set your 🎯 Take Profit and 🛑 Stop Loss, and earn coins when price hits your target.</p>
+      <p class="lead">Tap buy or sell, set your take profit and stop loss, and earn coins every time price hits your target.</p>
       <div class="mission-list"></div>
     </main>`);
     const list = root.querySelector('.mission-list');
     MISSIONS.forEach((m, i) => {
       const open = i === 0 || (ms[MISSIONS[i - 1].id] || 0) > 0;
       const st = ms[m.id] || 0;
-      const card = U.el(`<button class="mission ${open ? '' : 'locked'} ${st ? 'done' : ''}" ${open ? '' : 'disabled'}>
-        <span class="m-icon">${open ? m.icon : '🔒'}</span>
-        <span class="m-body"><b>${i + 1}. ${U.esc(m.name)}</b><small>${U.esc(m.text)}</small>
-          <span class="m-tags"><i>${['🙈 No hints', '👀 Some hints', '🦉 Full hints'][m.hints]}</i><i>${m.speed <= 800 ? '⚡ Fast' : m.speed <= 1000 ? '🏃 Quick' : '🐢 Calm'}</i></span></span>
-        <span class="m-stars">${[0, 1, 2].map((k) => `<i class="${k < st ? 'on' : ''}">★</i>`).join('')}</span>
+      const isNext = open && !st;
+      const card = U.el(`<button class="mission ${open ? '' : 'locked'} ${st ? 'done' : ''} ${isNext ? 'next' : ''}" ${open ? '' : 'disabled'}>
+        <span class="m-icon">${open ? m.icon : ic('lock')}</span>
+        <span class="m-body"><b>${U.esc(m.name)}</b><small>${U.esc(m.text)}</small>
+          <span class="m-tags"><i>${['No hints', 'Some hints', 'Full hints'][m.hints]}</i><i>${m.speed <= 800 ? 'Fast market' : m.speed <= 1000 ? 'Quick market' : 'Calm market'}</i></span></span>
+        ${starRow(st)}
       </button>`);
       if (open) card.addEventListener('click', () => { Store.sfx.tap(); U.go(liveScreen, m); });
       list.appendChild(card);
     });
-    U.app.append(U.hud(() => U.go(U.home), 'Live Trading'), root);
+    U.app.append(U.hud(null, 'Trade live'), root, U.nav('trade'));
   }
 
   // Small always-moving chart for the home screen.
@@ -749,7 +754,7 @@
       });
       const py = Y(live.c), pc = live.c >= live.o ? th.up : th.down;
       ctx.fillStyle = pc; rr(ctx, w - 52, py - 10, 48, 20, 6); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.font = '800 11px "Baloo 2", system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#0B0620'; ctx.font = '800 11px Rubik, system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(fmt(live.c), w - 28, py + 1);
       requestAnimationFrame(draw);
     }
