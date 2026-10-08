@@ -17,7 +17,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #14112b; --bg2: #1c1838; --ink: #f1efff; --muted: #a5a3c4; --card: #221d45; --line: #332c63;
-    --shadow: 0 6px 0 rgba(0, 0, 0, .25), 0 12px 28px rgba(0, 0, 0, .3);
+    --shadow: 0 6px 0 rgba(0, 0, 0, .25), 0 12px 28px rgba(0, 0, 0, .3); color-scheme: dark;
   }
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,7 +30,13 @@ body {
   font-size: 17px;
   line-height: 1.35;
 }
-@media (prefers-color-scheme: dark) { body { background: linear-gradient(180deg, var(--bg), var(--bg2)); } }
+:root[data-theme="dark"] {
+  --bg: #14112b; --bg2: #1c1838; --ink: #f1efff; --muted: #a5a3c4; --card: #221d45; --line: #332c63;
+    --shadow: 0 6px 0 rgba(0, 0, 0, .25), 0 12px 28px rgba(0, 0, 0, .3); color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body { background: linear-gradient(180deg, var(--bg), var(--bg2)); } }
+:root[data-theme="dark"] body { background: linear-gradient(180deg, var(--bg), var(--bg2)); }
+.danger { background: var(--bad) !important; color: #fff !important; box-shadow: none !important; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
 button:disabled { cursor: default; }
 .app { max-width: 540px; margin: 0 auto; min-height: 100vh; padding: 0 0 calc(24px + env(safe-area-inset-bottom)); }
@@ -43,9 +49,9 @@ h1, h2 { margin: 0; line-height: 1.1; }
 
 /* HUD */
 .hud {
-  position: sticky; top: 0; z-index: 20;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
   display: flex; align-items: center; gap: 10px;
-  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  padding: 10px 16px;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
 }

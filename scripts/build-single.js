@@ -10,4 +10,8 @@ html = html.replace('<body>', '<body>\n  <script>window.CQ_SINGLE_FILE = true;</
 html = html.replace(/\s*<link rel="manifest"[^>]*>/, '').replace(/\s*<link rel="(apple-touch-)?icon"[^>]*>/g, '');
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 fs.writeFileSync(path.join(root, 'dist', 'candle-quest.html'), html);
+// Artifact variant: body content only (the host supplies doctype/head/body).
+const head = html.match(/<head>([\s\S]*?)<\/head>/)[1].replace(/\s*<meta[^>]*>/g, '');
+const body = html.match(/<body>([\s\S]*?)<\/body>/)[1];
+fs.writeFileSync(path.join(root, 'dist', 'candle-quest.artifact.html'), head.trim() + '\n' + body.trim() + '\n');
 console.log('Built dist/candle-quest.html (' + Math.round(html.length / 1024) + ' KB)');

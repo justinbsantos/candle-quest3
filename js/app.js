@@ -174,8 +174,9 @@
       </ul>
       <div class="modal-actions"><button class="btn btn-ghost reset">Reset all progress</button><button class="btn close">Close</button></div>`);
     on(m, '.close', () => m.remove());
-    on(m, '.reset', () => {
-      if (confirm('Erase all progress, coins and badges on this device?')) { Store.reset(); m.remove(); go(home); }
+    on(m, '.reset', (e, b) => {
+      if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Tap again to erase everything'; b.classList.add('danger'); return; }
+      Store.reset(); m.remove(); go(home);
     });
   }
 
