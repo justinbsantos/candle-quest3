@@ -73,3 +73,9 @@ Before publishing to kids, review Apple's Kids Category and Google Play Families
 
 ## Order ticket
 Tap BUY or SELL to open a ticket: choose Market or Limit, drag the gold entry, red stop loss and green take profit lines on the chart (or tap 1R / 2R / 3R / Coach), see the risk, reward and R:R, then Place. Limit and stop orders wait on the chart and fill by themselves when price reaches the entry. Flip on One-tap trading for instant market orders with the coach's levels.
+
+## Your trader and gems
+- **Character creator (Me → Edit my look, or tap your avatar on Home):** a soft 3D character built from layered vector parts: face, skin tone, 8 hairstyles, tops, bottoms, shoes and extras, each with colors. Your character shows on Home, the profile, the league table and sitting at the desk in your room.
+- **Two currencies.** Coins are earned only and pay for trading and setup upgrades. Gems are the premium currency for cosmetics only: they never convert to coins, can't be staked on trades, can't be cashed out, and nothing is random.
+- **Earning gems free:** level up (+25), new badge (+10), every 7-day streak (+30), league promotion (+50).
+- **Gem shop (tap the gem counter):** featured items that rotate daily, a one-time $2.99 starter pack, Wickd Club ($4.99/mo, $39.99/yr, $59.99/yr family), Season 1 pass (coming soon) and gem packs from $0.99 to $49.99 with every price shown in dollars. Purchases require a parent's approval. Checkout is not connected yet; a clearly labeled test mode adds gems without paying.

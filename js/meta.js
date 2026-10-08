@@ -140,7 +140,7 @@
       const res = settle(me.rank, S.league || 0);
       S.leagueResult = { week: S.weekKey, rank: me.rank, from: S.league || 0, to: res.to, reward: res.reward, seen: false };
       S.league = res.to;
-      if (res.to > (S.leagueResult.from)) Store.badge('promoted');
+      if (res.to > (S.leagueResult.from)) { Store.badge('promoted'); Store.addGems(50, 'League promotion'); }
       if (res.reward) { S.coins += res.reward; S.totalCoins += res.reward; }
     }
     S.weekKey = wk; S.weekXP = 0;

@@ -31,6 +31,7 @@
   function owlSVG(hat, mood, cls) { return coachSVG(mood, cls); }
 
   function avatarSVG(name, flairId, cls) {
+    if (G.CQAvatar && G.CQStore) return G.CQAvatar.avatar(flairId, cls);
     const id = 'av' + (++uid);
     const [a, b] = flair(flairId);
     const letter = String(name || '?').trim().charAt(0).toUpperCase() || '?';

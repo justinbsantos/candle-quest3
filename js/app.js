@@ -45,11 +45,22 @@
     root.querySelectorAll(sel).forEach((n) => n.addEventListener('click', (e) => { Store.sfx.tap(); fn(e, n); }));
   }
 
+  // one toast at a time, queued, so rewards never pile on top of each other
+  const toastQ = [];
+  let toastBusy = false;
   function toast(text, emoji) {
-    const t = el(`<div class="toast"><span class="toast-emoji">${emoji || '🏅'}</span><span>${esc(text)}</span></div>`);
+    toastQ.push([text, emoji]);
+    if (!toastBusy) nextToast();
+  }
+  function nextToast() {
+    const n = toastQ.shift();
+    if (!n) { toastBusy = false; return; }
+    toastBusy = true;
+    const t = el(`<div class="toast"><span class="toast-emoji">${n[1] || '🏅'}</span><span>${esc(n[0])}</span></div>`);
     document.body.appendChild(t);
     requestAnimationFrame(() => t.classList.add('show'));
-    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2600);
+    const hold = toastQ.length ? 1700 : 2600;
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => { t.remove(); nextToast(); }, 350); }, hold);
   }
   Store.onBadge((id) => {
     const b = BADGES.find((x) => x.id === id);
@@ -82,9 +93,10 @@
     const bar = el(`<header class="hud">
       ${backFn ? `<button class="icon-btn back" aria-label="Back">${ic('back')}</button>` : ''}
       ${title ? `<div class="hud-title">${esc(title)}</div>` : wordmark()}
-      <div class="hud-right"><div class="hud-coins" title="Coins">${coin()}<b>${S.coins}</b></div></div>
+      <div class="hud-right"><button class="hud-gems" aria-label="Gems: open the gem shop">${window.CQGems.icon()}<b>${(S.gems || 0).toLocaleString()}</b></button><div class="hud-coins" title="Coins">${coin()}<b>${S.coins}</b></div></div>
     </header>`);
     if (backFn) on(bar, '.back', backFn);
+    on(bar, '.hud-gems', () => { Store.sfx.tap(); go(window.CQGems.shop, { back: () => go(home) }); });
     return bar;
   }
 
@@ -117,7 +129,7 @@
     const atRisk = Store.dailyAvailable() && Store.streakAtRisk();
     const pa = P.account();
     const scr = el(`<main class="screen home">
-      <div class="greet"><div class="greet-owl">${avatarSVG(S.name, S.hat)}</div><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><p class="greet-sub">${esc(greet)}</p></div>
+      <div class="greet"><button class="greet-owl" aria-label="Edit my look">${avatarSVG(S.name, S.hat)}</button><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><p class="greet-sub">${esc(greet)}</p></div>
         <span class="streak-pill" title="Daily streak">${ic('flame')}${S.streak || 0}</span></div>
       ${cards.zoneCard}
       <section class="hero-card">
@@ -141,6 +153,7 @@
       </section>
     </main>`);
     app.append(hud(null), scr, nav('home'));
+    on(scr, '.greet-owl', () => go(window.CQAvatar.creator, { back: () => go(home) }));
     window.CQLive.homeTicker($('.home-chart', scr));
     window.CQRoom.mountRoom($('.room-mini', scr));
     on(scr, '.room-card', () => go(window.CQRoom.roomScreen));
@@ -175,7 +188,7 @@
     const li = Store.levelInfo(S.xp);
     const scr = el(`<main class="screen profile">
       <section class="profile-card">
-        <div>${avatarSVG(S.name, S.hat)}</div>
+        <button class="pc-fig" aria-label="Edit my look">${window.CQAvatar.svg(null, { cls: 'trader' })}</button>
         <div><h2>${esc(S.name)}</h2><p class="tiny">Level ${li.lvl} · ${li.toNext} XP to level ${li.lvl + 1}</p><div class="xp-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div></div>
       </section>
       <section class="stats-row">
@@ -183,6 +196,7 @@
         <div class="stat"><b>${S.totalCoins}</b><span>Coins earned</span></div>
         <div class="stat"><b>${S.practiceBest}</b><span>Best streak</span></div>
       </section>
+      <div class="me-actions"><button class="btn me-look">Edit my look</button><button class="btn btn-ghost me-gems">${window.CQGems.icon()}Gem shop</button></div>
       <h2 class="section-title">Badges <span class="tiny">${S.badges.length} of ${BADGES.length}</span></h2>
       <div class="badge-grid"></div>
       <div class="settings">
@@ -197,6 +211,9 @@
     });
     app.append(hud(null, 'Me'), scr, nav('me'));
     on(scr, '.sound', () => { S.sound = !S.sound; Store.save(); go(profile); });
+    on(scr, '.pc-fig', () => go(window.CQAvatar.creator, { back: () => go(profile) }));
+    on(scr, '.me-look', () => go(window.CQAvatar.creator, { back: () => go(profile) }));
+    on(scr, '.me-gems', () => go(window.CQGems.shop, { back: () => go(profile) }));
     on(scr, '.grownups', () => grownups());
   }
 
@@ -623,11 +640,16 @@
 
   // ---------- shared UI for live.js ----------
   window.CQUI = {
-    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home, shop, map,
+    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home, shop, map, modal, profile,
     refreshCoins: () => { const c = $('.hud-coins b'); if (c) c.textContent = S.coins; },
   };
 
   // ---------- boot ----------
+  Store.onGems((n, why) => {
+    window.CQGems.refresh();
+    if (n > 0 && why !== 'purchase') setTimeout(() => toast(`+${n} gems · ${why}`, '💎'), 900);
+  });
+  window.CQGems.clubDaily();
   go(home);
   if ('serviceWorker' in navigator && location.protocol === 'https:' && !window.CQ_SINGLE_FILE) {
     navigator.serviceWorker.register('sw.js').catch(() => {});

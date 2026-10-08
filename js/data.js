@@ -128,6 +128,7 @@
     { id: 'practice10', emoji: '🎯', name: 'Sharp Eye', desc: '10 in a row in Practice Arena' },
     { id: 'practice25', emoji: '🦅', name: 'Eagle Eye', desc: '25 in a row in Practice Arena' },
     { id: 'rich', emoji: '💰', name: 'Coin Collector', desc: 'Earn 1,000 coins in total' },
+    { id: 'stylish', emoji: '✨', name: 'Fresh Fit', desc: 'Unlock a premium look' },
     { id: 'shopper', emoji: '🛍️', name: 'Style Star', desc: 'Buy something in the shop' },
     { id: 'win5', emoji: '📈', name: 'Winning Trader', desc: 'Win 5 boss trades in Trading School' },
     { id: 'tp1', emoji: '🎯', name: 'First Take Profit', desc: 'Hit your first TP in the live market' },

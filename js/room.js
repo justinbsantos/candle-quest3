@@ -62,16 +62,29 @@
 
   // You, from behind, sitting at the desk in a hoodie that matches your avatar ring.
   function drawPlayer(ctx, chairL) {
-    const [a, b] = window.CQMascot.flair(S.hat);
+    const A = window.CQAvatar, L = A.look(), c = A.palette(L);
     const cx = 185, seat = chairL === 0 ? 250 : chairL === 1 ? 236 : 232;
+    // long hair falls behind the shoulders
+    if (L.hair === 'long' || L.hair === 'afro' || L.hair === 'braids') {
+      ctx.fillStyle = c.hair; rr(ctx, cx - 14, seat - 52, 28, 30, 10); ctx.fill();
+    }
     const g = ctx.createLinearGradient(cx - 24, seat - 40, cx + 24, seat);
-    g.addColorStop(0, a); g.addColorStop(1, b);
+    g.addColorStop(0, c.topHi); g.addColorStop(1, c.topLo);
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.moveTo(cx - 25, seat); ctx.quadraticCurveTo(cx - 27, seat - 34, cx - 11, seat - 39); ctx.lineTo(cx + 11, seat - 39); ctx.quadraticCurveTo(cx + 27, seat - 34, cx + 25, seat); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(cx, seat - 37, 13, 6, 0, 0, Math.PI); ctx.fill();
-    ctx.fillStyle = '#2A1B12'; ctx.beginPath(); ctx.arc(cx, seat - 50, 11, 0, 7); ctx.fill();
-    ctx.strokeStyle = '#0E0B1E'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, seat - 51, 13, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
-    ctx.fillStyle = '#0E0B1E'; rr(ctx, cx - 16, seat - 55, 6, 10, 3); ctx.fill(); rr(ctx, cx + 10, seat - 55, 6, 10, 3); ctx.fill();
+    if (L.top === 'varsity') { ctx.fillStyle = '#E9E6F5'; rr(ctx, cx - 27, seat - 30, 7, 28, 3); ctx.fill(); rr(ctx, cx + 20, seat - 30, 7, 28, 3); ctx.fill(); }
+    if (L.top === 'hoodie') { ctx.fillStyle = c.topLo; ctx.beginPath(); ctx.ellipse(cx, seat - 37, 13, 6, 0, 0, Math.PI); ctx.fill(); }
+    ctx.fillStyle = c.skinLo; ctx.fillRect(cx - 4, seat - 44, 8, 6);
+    ctx.fillStyle = c.hair; ctx.beginPath(); ctx.arc(cx, seat - 52, 11, 0, 7); ctx.fill();
+    if (L.hair === 'buns') { ctx.beginPath(); ctx.arc(cx - 9, seat - 63, 5, 0, 7); ctx.arc(cx + 9, seat - 63, 5, 0, 7); ctx.fill(); }
+    if (L.hair === 'curls' || L.hair === 'afro') { for (let k = -2; k <= 2; k++) { ctx.beginPath(); ctx.arc(cx + k * 6, seat - 60 + Math.abs(k) * 2, 6, 0, 7); ctx.fill(); } }
+    if (L.hair === 'braids') { rr(ctx, cx - 16, seat - 50, 5, 24, 2.5); ctx.fill(); rr(ctx, cx + 11, seat - 50, 5, 24, 2.5); ctx.fill(); }
+    if (L.acc === 'cap' || L.acc === 'beanie') { ctx.fillStyle = c.acc; ctx.beginPath(); ctx.arc(cx, seat - 54, 11.5, Math.PI, 0); ctx.fill(); }
+    {
+      // headphones are the trader's signature at the desk
+      ctx.strokeStyle = L.acc === 'headphones' ? c.acc : '#0E0B1E'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, seat - 53, 13, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+      ctx.fillStyle = L.acc === 'headphones' ? c.acc : '#0E0B1E'; rr(ctx, cx - 16, seat - 57, 6, 10, 3); ctx.fill(); rr(ctx, cx + 10, seat - 57, 6, 10, 3); ctx.fill();
+    }
   }
 
   // Pip, the coach orb, floating in the corner.

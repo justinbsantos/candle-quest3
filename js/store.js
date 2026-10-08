@@ -6,7 +6,7 @@
   const DEFAULT = {
     name: '', coins: 50, xp: 0, totalCoins: 50,
     stars: {}, // "w1-0": 3
-    owned: { themes: ['classic'], hats: ['none'] },
+    owned: { themes: ['classic'], hats: ['none'], items: [] },
     theme: 'classic', hat: 'none',
     lastDaily: null, streak: 0,
     badges: [], practiceBest: 0, tradesWon: 0,
@@ -16,12 +16,18 @@
     weekKey: null, weekXP: 0, league: 0, leagueResult: null,
     quests: null, freezes: 0, bestWinStreak: 0,
     pro: null,
+    gems: 0, gemsEarned: 0, look: null, starterBought: false,
   };
 
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) return Object.assign(JSON.parse(JSON.stringify(DEFAULT)), JSON.parse(raw));
+      if (raw) {
+        const st = Object.assign(JSON.parse(JSON.stringify(DEFAULT)), JSON.parse(raw));
+        st.owned = Object.assign({ themes: ['classic'], hats: ['none'], items: [] }, st.owned);
+        if (!st.owned.items) st.owned.items = [];
+        return st;
+      }
     } catch (e) { /* storage blocked: play without saving */ }
     return JSON.parse(JSON.stringify(DEFAULT));
   }
@@ -49,6 +55,24 @@
   const listeners = [];
   function onBadge(fn) { listeners.push(fn); }
 
+  // Gems: premium currency. Earned in small amounts or bought by a parent.
+  // They only buy cosmetics: never coins, never a trade stake, never cash.
+  const gemHooks = [];
+  function onGems(fn) { gemHooks.push(fn); }
+  function addGems(n, why) {
+    if (!n) return;
+    state.gems = (state.gems || 0) + n;
+    if (why !== 'purchase') state.gemsEarned = (state.gemsEarned || 0) + n;
+    save();
+    gemHooks.forEach((fn) => fn(n, why));
+  }
+  function spendGems(n) {
+    if ((state.gems || 0) < n) return false;
+    state.gems -= n; save();
+    gemHooks.forEach((fn) => fn(-n, 'spend'));
+    return true;
+  }
+
   const earnHooks = [];
   function onEarn(fn) { earnHooks.push(fn); }
   function addCoins(n) {
@@ -59,7 +83,9 @@
     state.xp += n;
     if (state.totalCoins >= 1000) badge('rich');
     save();
-    return levelInfo(state.xp).lvl > before;
+    const up = levelInfo(state.xp).lvl > before;
+    if (up) addGems(25, 'Level up');
+    return up;
   }
 
   function badge(id) {
@@ -67,6 +93,7 @@
     state.badges.push(id);
     save();
     listeners.forEach((fn) => fn(id));
+    addGems(10, 'New badge');
     return true;
   }
 
@@ -95,6 +122,7 @@
     addCoins(reward);
     if (state.streak >= 3) badge('streak3');
     if (state.streak >= 7) badge('streak7');
+    if (state.streak % 7 === 0) addGems(30, state.streak + '-day streak');
     save();
     return reward;
   }
@@ -129,5 +157,5 @@
 
   function buzz(pattern) { try { if (state.sound && navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* no haptics */ } }
 
-  G.CQStore = { state, save, reset, levelInfo, addCoins, onEarn, badge, onBadge, dailyAvailable, claimDaily, streakAtRisk, daysSinceClaim, sfx, buzz };
+  G.CQStore = { state, save, addGems, spendGems, onGems, reset, levelInfo, addCoins, onEarn, badge, onBadge, dailyAvailable, claimDaily, streakAtRisk, daysSinceClaim, sfx, buzz };
 })(window);
