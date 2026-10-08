@@ -1,0 +1,12 @@
+{
+  "name": "candle-quest",
+  "version": "0.1.0",
+  "description": "Kids' adventure game that teaches chart reading and ICT trading concepts.",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes http-server -c-1 -p 8080 .",
+    "test": "node tests/scenarios.test.js",
+    "build:single": "node scripts/build-single.js"
+  },
+  "license": "UNLICENSED"
+}

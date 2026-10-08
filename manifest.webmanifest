@@ -1,0 +1,14 @@
+{
+  "name": "Candle Quest",
+  "short_name": "Candle Quest",
+  "description": "Learn to read trading charts with Pip the owl.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f3ff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
