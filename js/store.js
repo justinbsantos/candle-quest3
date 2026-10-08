@@ -11,6 +11,7 @@
     lastDaily: null, streak: 0,
     badges: [], practiceBest: 0, tradesWon: 0,
     sound: true, seenLessons: {},
+    missionStars: {}, tpTotal: 0, freeHints: 2,
   };
 
   function load() {

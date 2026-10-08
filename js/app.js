@@ -26,6 +26,7 @@
   function clearTimers() { timers.forEach(clearInterval); timers.forEach(clearTimeout); timers = []; }
   function go(fn, arg) {
     clearTimers();
+    if (window.CQLive) window.CQLive.stop();
     if (chart) { chart.destroy(); chart = null; }
     app.innerHTML = '';
     app.scrollTop = 0;
@@ -97,26 +98,27 @@
       `Welcome back, ${S.name}! The candles missed you 🕯️`,
       `${S.name}, let's hunt some liquidity today! 💧`,
       `Every chart tells a story, ${S.name}. Let's read one!`,
+      `The market is open, ${S.name}! Let's catch some Take Profits 🎯`,
     ]);
-    const done = WORLDS.reduce((a, w, wi) => a + w.levels.filter((_, l) => starsOf(wi, l) > 0).length, 0);
-    const total = WORLDS.reduce((a, w) => a + w.levels.length, 0);
+    const MS = window.CQLive.MISSIONS;
+    const mDone = MS.filter((m) => (S.missionStars || {})[m.id]).length;
     const scr = el(`<main class="screen home">
-      <section class="hero">
-        <div class="bubble">${esc(greet)}</div>
-        <div class="hero-owl">${owlSVG(S.hat, 'happy')}</div>
+      <section class="hero-live">
+        <div class="hero-row"><div class="hero-owl small">${owlSVG(S.hat, 'happy')}</div><div class="bubble side">${esc(greet)}</div></div>
+        <div class="home-chart"><span class="live-badge"><span class="live-dot"></span>LIVE</span></div>
       </section>
       <section class="stats-row">
         <div class="stat"><b>${li.lvl}</b><span>Level</span></div>
-        <div class="stat"><b>${done}/${total}</b><span>Missions</span></div>
+        <div class="stat"><b>${S.tpTotal || 0}</b><span>Take profits</span></div>
         <div class="stat"><b>${S.badges.length}</b><span>Badges</span></div>
       </section>
       ${Store.dailyAvailable() ? `<button class="daily card-pop"><span class="daily-emoji">🎁</span><span><b>Daily Treasure is ready!</b><small>Come back every day to grow your streak</small></span><span class="daily-go">Open</span></button>` : `<div class="daily claimed"><span class="daily-emoji">🔥</span><span><b>${S.streak}-day streak</b><small>Next treasure tomorrow</small></span></div>`}
-      <button class="btn btn-play">▶ Play Adventure</button>
+      <button class="btn btn-play play-live"><span>📈 Trade Live</span><small>Missions ${mDone}/${MS.length} · hit your Take Profits, win coins</small></button>
       <div class="grid2">
-        <button class="tile t-practice"><span>🎯</span>Practice Arena<small>Farm coins!</small></button>
+        <button class="tile t-free"><span>🎮</span>Free Market<small>Trade all you want</small></button>
+        <button class="tile t-school"><span>🎓</span>Trading School<small>Lessons & quizzes</small></button>
         <button class="tile t-shop"><span>🛍️</span>Shop<small>Hats & chart themes</small></button>
         <button class="tile t-badges"><span>🏅</span>Badges<small>${S.badges.length}/${BADGES.length} earned</small></button>
-        <button class="tile t-learn"><span>📖</span>Lessons<small>Review the basics</small></button>
       </div>
       <footer class="home-foot">
         <button class="link sound">${S.sound ? '🔊 Sound on' : '🔇 Sound off'}</button>
@@ -124,11 +126,12 @@
       </footer>
     </main>`);
     app.append(hud(null), scr);
-    on(scr, '.btn-play', () => go(map));
-    on(scr, '.t-practice', () => go(practiceIntro));
+    window.CQLive.homeTicker($('.home-chart', scr));
+    on(scr, '.play-live', () => go(window.CQLive.missions));
+    on(scr, '.t-free', () => go(window.CQLive.liveScreen, null));
+    on(scr, '.t-school', () => go(map));
     on(scr, '.t-shop', () => go(shop));
     on(scr, '.t-badges', () => go(badges));
-    on(scr, '.t-learn', () => go(lessonPicker));
     on(scr, '.sound', () => { S.sound = !S.sound; Store.save(); go(home); });
     on(scr, '.grownups', () => grownups());
     on(scr, 'button.daily', () => {
@@ -145,7 +148,7 @@
     const scr = el(`<main class="screen welcome">
       <div class="hero-owl big">${owlSVG('none', 'wow')}</div>
       <h1>Candle Quest</h1>
-      <p class="lead">Hi! I'm <b>Pip</b>, the chart owl 🦉<br>I'll teach you to read price charts like a pro trader — one level at a time.</p>
+      <p class="lead">Hi! I'm <b>Pip</b>, the chart owl 🦉<br>Let's trade a live market together! Catch moves, hit your Take Profits and stack coins 🪙</p>
       <label class="name-label">What's your trader nickname?
         <input class="name-input" maxlength="14" placeholder="e.g. ChartChamp" autocomplete="off">
       </label>
@@ -167,7 +170,7 @@
     const m = modal(`<h2>👪 For grown-ups</h2>
       <p><b>Candle Quest</b> teaches chart reading using concepts from the ICT ("Inner Circle Trader") method: candles, swing points, liquidity, fair value gaps, order blocks and market structure.</p>
       <ul>
-        <li>All charts are computer-generated practice charts — not real market data.</li>
+        <li>All charts — including the live market — are computer-generated practice markets, not real market data.</li>
         <li>Coins are play money only. There are no ads, no purchases and no chat.</li>
         <li>Progress is saved only on this device.</li>
         <li>Nothing here is financial advice. Real trading carries real risk.</li>
@@ -189,7 +192,9 @@
 
   // ---------- MAP ----------
   function map(scrollTo) {
-    const scr = el('<main class="screen map"></main>');
+    const scr = el('<main class="screen map"><div class="school-top"><button class="tile t-practice"><span>🎯</span>Practice Arena<small>Endless quiz, farm coins</small></button><button class="tile t-learn"><span>📖</span>Lessons<small>Review any world</small></button></div></main>');
+    on(scr, '.t-practice', () => go(practiceIntro));
+    on(scr, '.t-learn', () => go(lessonPicker));
     WORLDS.forEach((w, wi) => {
       const open = worldOpen(wi);
       const got = w.levels.reduce((a, _, l) => a + starsOf(wi, l), 0);
@@ -221,7 +226,7 @@
       if (open) on(card, '.lesson-btn', () => go(lesson, { w: wi }));
       scr.appendChild(card);
     });
-    app.append(hud(() => go(home), 'Adventure Map'), scr);
+    app.append(hud(() => go(home), 'Trading School'), scr);
     // scroll to the newest open world
     let target = scrollTo;
     if (target == null) { target = 0; WORLDS.forEach((_, wi) => { if (worldOpen(wi)) target = wi; }); }
@@ -568,6 +573,12 @@
     });
     app.append(hud(() => go(home), 'Badges'), scr);
   }
+
+  // ---------- shared UI for live.js ----------
+  window.CQUI = {
+    app, go, el, esc, hud, toast, confetti, giveCoins, theme, home,
+    refreshCoins: () => { const c = $('.hud-coins b'); if (c) c.textContent = S.coins; },
+  };
 
   // ---------- boot ----------
   go(home);

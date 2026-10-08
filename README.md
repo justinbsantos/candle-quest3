@@ -1,8 +1,18 @@
 # 🕯️ Candle Quest
 
-**A mobile-first adventure game that teaches kids to read trading charts — using ICT concepts — with Pip the chart owl 🦉.**
+**A mobile game where kids trade a LIVE, moving market — and learn ICT trading while they do it — with Pip the chart owl 🦉.**
 
-Kids travel through 6 worlds and 22 levels, tapping candles on real-looking candlestick charts, predicting what price does next, and finally taking pretend trades with a stop and target. Every chart is generated fresh, so the game never runs out of practice.
+## The core loop: Trade Live 📈
+- Candles form **tick by tick** and the chart scrolls in real time.
+- Kids tap **BUY** or **SELL**, then drag their **🎯 Take Profit** and **🛑 Stop Loss** lines right on the chart.
+- **Coins when price hits their TP.** Losses only cost the coins they chose to risk (10 / 25 / 50).
+- The market is built from real ICT setups: equal highs/lows (liquidity) ➜ sweep ➜ market structure shift ➜ Fair Value Gap ➜ retrace into the gap ➜ run to the liquidity. Some setups fail on purpose, so kids learn why stops matter.
+- **Perfect ICT entry** (in the gap, with the setup) = **1.5× coins** on a win, and the trade auto-uses ICT levels: stop beyond the sweep, target at the liquidity.
+- **Pip coaches live**: "💰 Equal highs!", "🧹 Sweep!", "⚡ MSS + gap — wait for price to come back", "🟢 Entry zone — tap BUY!". Hints fade out as missions get harder.
+- **9 missions** (First Take Profit ➜ Kill Zone Master) with goals, stars and speed-ups, plus an endless **Free Market** to farm coins (hints on/off, 0.5×–2× speed, pause).
+
+## Trading School 🎓
+6 worlds and 22 quiz levels that teach each concept on its own:
 
 | World | Concepts |
 |---|---|
@@ -28,7 +38,7 @@ No build step, no dependencies.
 
 ```bash
 npm start            # serves on http://localhost:8080
-npm test             # validates 17 scenario types x 400 random charts each
+npm test             # validates every quiz chart + 150 live markets (setups, TP/SL behaviour, tick paths)
 npm run build:single # dist/candle-quest.html — the whole game in one file
 ```
 Or just open `index.html` in a browser.
@@ -38,7 +48,9 @@ Or just open `index.html` in a browser.
 index.html             app shell
 css/style.css          all styles (light + dark)
 js/scenarios.js        chart engine: builds each ICT concept + correct answer (pure logic, unit-tested)
-js/chart.js            canvas candlestick renderer with annotations & tap detection
+js/market.js           live market simulator: endless stream of ICT setups + tick-by-tick candle paths
+js/live.js             live trading: moving chart, BUY/SELL, draggable TP/SL, coins, coaching, missions
+js/chart.js            canvas renderer for the Trading School quizzes
 js/data.js             worlds, levels, lessons, shop items, badges
 js/store.js            save game, coins/XP/levels, daily streak, sound effects
 js/mascot.js           Pip the owl (SVG) + hats

@@ -490,6 +490,37 @@
     return { cs, T, a1, a2, s, S0, A, B, C, gapLo, gapHi, v, Lw, pl, H, hs };
   }
 
+  // Episodes for the LIVE market. Prices are relative; the market shifts them
+  // so each episode starts where the previous one ended.
+  function episode(rng, opts) {
+    opts = opts || {};
+    if (opts.kind === 'filler') {
+      const P = new Path(rng, 100);
+      const n = ri(rng, 2, 3);
+      for (let k = 0; k < n; k++) P.to(P.p + (rng() < 0.5 ? -1 : 1) * rr(rng, 1.2, 3), ri(rng, 2, 5));
+      return { candles: P.c, meta: null };
+    }
+    const d = tradeCore(rng);
+    let cs = d.cs;
+    if (opts.fail) {
+      cs = cs.slice(0, d.v + 1);
+      const P = new Path(rng, cs[d.v].c);
+      P.c = cs;
+      P.to(d.S0 - rr(rng, 1.2, 2), ri(rng, 4, 5));
+      P.to(P.p + rr(rng, -1, 1), ri(rng, 3, 4));
+      cs = P.c;
+    }
+    const m = {
+      dir: 'buy', a1: d.a1, a2: d.a2, sweep: d.s, mss: d.B, fvgA: d.A, fvgC: d.C, entry: d.v,
+      gapLo: d.gapLo, gapHi: d.gapHi, target: d.T, stop: d.S0 - 0.25, swept: d.Lw, fail: !!opts.fail,
+    };
+    if (opts.bear) {
+      cs = flipCandles(cs);
+      Object.assign(m, { dir: 'sell', gapLo: fy(d.gapHi), gapHi: fy(d.gapLo), target: fy(d.T), stop: fy(d.S0 - 0.25), swept: fy(d.Lw) });
+    }
+    return { candles: cs, meta: m };
+  }
+
   S.trade = (rng) => {
     const d = tradeCore(rng);
     const bear = rng() < 0.5;
@@ -540,5 +571,5 @@
     return sc;
   }
 
-  G.CQScenarios = { generate, keys: Object.keys(S), findFVGs, RNG };
+  G.CQScenarios = { generate, keys: Object.keys(S), findFVGs, RNG, episode };
 })(typeof window !== 'undefined' ? window : globalThis);
