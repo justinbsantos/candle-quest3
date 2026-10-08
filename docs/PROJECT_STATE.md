@@ -1,134 +1,211 @@
-# Wickd — Project State & Challenge Brief
+# Wickd — Project State
 
-*Snapshot as of October 8, 2026 · GitHub: justinbsantos/candle-quest3 · baseline commit `8285c9f` on `main`*
+*Snapshot: October 8, 2026 · GitHub: justinbsantos/candle-quest3 (`main`)*
 
-This document describes exactly where the Wickd game stands today, so any developer (human or AI) can pick it up from here. The development challenge starts from this snapshot: same code, same goals, and the question is who can make it the better game and the better business.
+Everything built and decided so far, in one place. **The final character and room designs are still TBA.** The game ships with working placeholder versions, and the concepts we are choosing between are in `docs/concepts/`.
 
 ---
 
 ## 1. What Wickd is
 
-**One line:** a mobile game for teens (13–17) where you trade a live, moving practice market, learn to read price like a pro trader, earn coins when your trades hit their take profit, and spend those coins upgrading your trading room from a bedroom to a moon base.
+A mobile game for teens (13–17) where you trade a live practice market, learn to read price like a pro, earn coins for good trades, and grow from a run-down tiny room to a penthouse.
 
-- **Audience:** teens 13–17 (chosen deliberately: fits the US high-school personal-finance requirement and avoids the strictest under-13 privacy rules). Parents are the paying customer.
-- **What it teaches:** how price actually moves, using concepts from the ICT ("Inner Circle Trader") style of trading: candles and wicks, swing highs and lows, trend, buy-side and sell-side liquidity, liquidity sweeps, fair value gaps (FVGs), order blocks, market structure shifts (MSS), and the full model: sweep → MSS with a gap → entry on the retrace → stop beyond the sweep → target at the opposite liquidity. Above all it teaches risk management: every trade has a stop loss.
-- **Tone:** it must feel like a real, fun mobile game first, and education second. No childish visuals.
-- **Money is play money.** Coins can never be bought or cashed out (earn-only for now).
-- **Branding note:** don't use the trademarked "ICT" name in marketing; use the generic concept names.
+- **Audience:** teens 13–17, girls and boys equally. Parents are the paying customer.
+- **What it teaches:**
+  - **How price moves:** candles, swing highs and lows, liquidity, sweeps, fair value gaps, market structure shifts, and the full setup (sweep → structure shift with a gap → entry on the retrace → stop beyond the sweep → target at the opposite liquidity).
+  - **Risk management above all:** every trade has a stop, and a small risk per trade is how an account survives and compounds.
+- **Tone:** a real, fun mobile game first and education second. It should feel premium, not childish.
+- **Money is play money.** Coins are earned only and can never be bought or cashed out.
+- **Branding:** "ICT" is a third party's term, so it is never used in marketing or in the game. The game uses the generic concept names.
 
-## 2. The player experience today
+## 2. What's built and playable today
 
-Bottom tab bar with five areas: **Home · Trade · My room · School · Me**.
+The bottom tab bar has five areas: **Home · Trade · League · My room · Me**. The top bar shows **gems** (tap it for the gem shop) and **coins**.
 
 ### Home
-- Greeting with the player's avatar (initial inside a colored ring).
-- **Live practice market** hero: a real candlestick chart that keeps forming candles tick-by-tick, with a live price tag, and a big "Trade live" button that jumps straight into the next mission.
-- Daily chest (claim once a day, streak grows the reward: 20 + 10 × streak coins, max 7).
-- My room card (mini live render of your room + trading-bot earnings to collect).
-- Shortcuts to Free market and Trading school, plus level / take profits / badges stats.
+- **Greeting:** your avatar (tap it to edit your look), a streak flame, and a kill zone card. Kill zones are the London, NY AM, NY PM and Asia sessions, in New York time, and they pay 2× coins.
+- **Live practice market:** a hero chart with a "Trade live" button that starts the next mission.
+- **Daily quests:** 3 a day, with a +100 bonus for finishing all three.
+- **League card, daily chest and streak freezes:** a freeze costs 150 coins and you can hold up to 2.
+- **Shortcuts:** Pro Account tile, room card and stats.
 
-### Trade (the core loop)
-- A **live market** streams candles in real time; each candle is built from ~14 ticks, so price visibly moves up and down inside the candle.
-- Player taps **BUY** or **SELL** and picks a risk per trade (10 / 25 / 50 coins).
-- On entry, the chart shows a **green take-profit zone and a red stop-loss zone**; both lines can be **dragged** on the chart, and their tags show the coins you'd win or lose.
-- Price hitting the TP pays coins (R-multiple × stake, capped at 5R); hitting the SL costs exactly the stake. Player can also close early.
-- The market is generated from **ICT setup "episodes"**: equal highs/lows (liquidity) → sweep → displacement candle that breaks structure and leaves an FVG → retrace into the FVG → run to the liquidity target. Some setups **fail on purpose** (stop out) so players learn why stops matter. Random filler moves sit between setups.
-- **Perfect ICT entry:** entering inside the gap, in the setup's direction, after the sweep and MSS, auto-places ICT levels (stop beyond the sweep, target at the liquidity) and pays **1.5× coins** on a win.
-- **Pip, the AI coach** (a glowing orb), calls out events live: "Equal highs, liquidity is resting above", "Sweep!", "Structure shift and a gap, wait for the retrace", "Entry zone, tap BUY". The right button pulses. Hints fade out as missions get harder.
-- **9 missions** with goals and 3 stars each:
-  1. First Take Profit (1 TP, full hints, calm speed)
-  2. Double Up (2 TPs)
-  3. Coin Hunter (finish +40 coins)
-  4. Gap Sniper (1 perfect-entry win, fewer hints)
-  5. Steady Hands (2 TPs, max 1 stop)
-  6. Speed Round (fast market)
-  7. No Training Wheels (no hints)
-  8. High Roller (+120 coins, bigger stakes)
-  9. Kill Zone Master (3 perfect wins, no hints, fast)
-  - Stars: reach the goal · finish up with ≤1 stop loss · win at least one perfect entry.
-- **Free market:** endless session, hints on/some/off, speed ½× / 1× / 2×, pause.
-- Session results screen lists every trade (direction, outcome, coins).
+### Trade
+- **Live market:** candles build tick by tick, about 14 moves per candle. The market is generated from teaching setups: equal highs or lows → sweep → structure shift with a gap → retrace → run to the target. Some setups fail on purpose so players learn why stops matter.
+- **Order ticket:**
+  - Tap BUY or SELL to plan the trade.
+  - Drag the red stop-loss and green take-profit lines on the chart, or tap 1R, 2R, 3R or Coach.
+  - The ticket shows risk, reward and risk:reward, plus a coaching tip ("At 1:3 you can lose 3 of 4 trades and still break even").
+- **Order types:**
+  - **Market:** fills right away.
+  - **Limit:** a gold entry line you drag into place. The game names the order (buy limit, buy stop, sell limit, sell stop), it waits on the chart, and it fills by itself when price reaches it. You can drag it again or cancel it.
+- **One-tap trading:** a toggle for instant market orders that use the coach's levels.
+- **Coin payouts:**
+  - Payouts scale with how far price moved compared with your risk, capped at 5×.
+  - A "perfect entry" (in the gap, after the sweep and the structure shift) pays 1.5× coins.
+  - Bonuses: screens +5% per level, kill zone 2×, win streak +10% per win up to +50%.
+- **Coaching:** Pip, the AI coach, calls out setups live. Hints fade out as missions get harder.
+- **9 missions with stars,** plus a free market with adjustable hints and speed.
+- **Pro Account:**
+  - $1,000 of play money; you risk 0.5–10% of the balance per trade, so the account compounds.
+  - A growth calculator shows compounding and losing-streak drawdowns.
+  - If the balance falls below $100 the account is blown, and a restart costs 250 coins.
+  - Milestones from $2k to $1M pay coins.
+- **Trading school:** 6 worlds, 22 quiz levels, lessons and a practice arena, reached from Trade.
 
-### My room (tycoon / long-term coin sink)
-- Six rooms: **Bedroom → Garage studio → Downtown office → Skyscraper floor → Penthouse → Moon base** (moving costs 800 / 2,500 / 6,000 / 14,000 / 35,000 coins).
-- Eight upgrade lines, levels 0–6, each room caps how far they go (tier + 2):
-  - **Screens** (1 → 8 monitors, each showing live mini charts): **+5% coins on every take profit per level.**
-  - **Trading bot** (old laptop → AI supercomputer): **earns 12 / 30 / 60 / 100 / 160 / 240 coins per hour while away**, stores max 8 hours, collected from Home or the room.
-  - Desk, Chair, Lights (desk lamp → neon "TAKE PROFIT" sign → chandelier → aurora), Wall decor (posters → golden bull → hall of fame), Plant, Pet (goldfish, cat, puppy, robot dog, baby dragon, phoenix): cosmetic.
-- The room is drawn live on canvas: animated monitors, neon flicker, moving clouds, pets, the player sitting at the desk in a hoodie that matches their avatar ring, and Pip floating nearby.
-- Costs scale: base × 1.85^level.
+### League
+- **Weekly leagues:** 6 tiers of 20 players. The top 5 move up and the bottom 5 move down.
+- **AI rivals:** the other players are AI and clearly labeled as such. A real online leaderboard needs accounts and a server, which is planned.
+- **Rewards:** coins for your finishing place, plus 50 gems for a promotion.
 
-### School (structured lessons)
-- 6 worlds, 22 quiz levels, 3-page illustrated lessons per world, and an endless Practice Arena (3 lives, streaks).
-- Question types: tap the right candle on a chart, predict what happens next (chart plays forward), and full trade setups (Buy/Sell, then the trade plays out).
-- Worlds: Candle Island (candles, wicks, highs) · Mountain Trail (swings, trend) · Liquidity Lagoon (BSL/SSL, sweeps) · Gap Canyon (FVGs) · Block Fortress (order blocks, MSS) · Kill Zone Volcano (full model).
+### My room (current placeholder, final design TBA)
+- **Six homes:** Bedroom → Garage studio → Downtown office → Skyscraper floor → Penthouse → Moon base.
+- **Eight upgrade lines:**
+  - **Screens:** +5% take-profit coins per level.
+  - **Trading bot:** earns 12–240 coins an hour, up to 8 hours.
+  - **Cosmetic:** desk, chair, lights, decor, plant, pet.
+- The room is drawn live, with your character at the desk.
 
 ### Me
-- Profile card (avatar, level, XP bar), stats, 21 badges, sound toggle, and a "For grown-ups" note (practice markets only, play money, no ads, not financial advice, reset progress).
+- **Profile:** your full-body character, an Edit my look button, the gem shop, stats, 29 badges, sound settings and a "For grown-ups" note.
+- **Character creator (current placeholder, final design TBA):** a soft 3D character. It already has the full system: tabs, colors, free and gem-priced items, try-on before buying, and shuffle.
 
-### Style shop (from My room)
-- Avatar rings (Ultraviolet free, Mint Wave, Sunset, Ice, Gold, Holo) and chart themes (Glass free, Daylight, Candy Land, Deep Ocean, Jungle, Neon Arcade).
+### Gems (premium currency, built)
+- **Two currencies:**
+  - **Coins:** earned only; pay for trading and setup upgrades.
+  - **Gems:** cosmetics only. They never convert into coins, can't be bet on trades, can't be cashed out, and nothing is random.
+- **Earning gems free:** level up +25, new badge +10, every 7-day streak +30, league promotion +50.
+- **Gem shop:**
+  - Featured items that rotate daily.
+  - A $2.99 starter pack (shown after early wins).
+  - Wickd Club: $4.99/mo, $39.99/yr, or $59.99/yr for a family of up to 5 kids.
+  - A Season 1 pass preview: $4.99 for 6 weeks.
+  - Gem packs from $0.99 to $49.99, every price shown in dollars.
+- **Parent approval:** every purchase goes to an "Ask a grown-up" screen. Checkout isn't connected yet; a clearly labeled test mode adds gems without paying.
 
-### Economy summary
-| Source | Coins |
-|---|---|
-| Live trade TP | stake × R (×1.5 for perfect entry, × screens bonus) |
-| Live trade SL | −stake |
-| School correct answer | +10 (boss trade +30) |
-| Practice arena correct | +5 |
-| Level clear | +15 per star, +25 first clear |
-| Mission clear | +20 per star, +30 first clear |
-| Daily chest | 20 + 10 × streak (max 7) |
-| Trading bot | up to 240/hour, 8-hour cap |
-| Out of coins in a session | coach spots 50 coins once |
+## 3. Character: concepts (TBA)
 
-XP = coins earned; player level n needs 50·n·(n−1) XP.
+Concept files and previews are in `docs/concepts/`, and live versions are on the design board in Claude.
 
-## 3. Look & feel (current design system)
+| Concept | Idea | Status |
+|---|---|---|
+| Soft 3D trader | Chibi human, full outfits, skin tones | Built into the game as the placeholder |
+| Wicklings | Squishy capsule bodies (party-game style), costume halves, emotes, a candle flame on top | Concept |
+| **Animal crew** (latest) | Same squishy body as 8 animals: Bull, Bear, Wolf, Fox, Frog, Cat, Bunny, Panda | **Leading direction, not final** |
 
-- **Name/brand:** "wickd" lowercase wordmark; the dot on the i is a gradient flame (the candle wick). App icon: gradient tile with a white wick-and-flame "i".
-- **Style:** "glassy social" (Discord/Snapchat energy): frosted-glass cards over a slowly drifting aurora background (violet, pink, cyan, mint), big rounded cards, pill buttons, floating pill tab bar.
-- **Colors:** page #0B0920 · brand gradient #7C5CFF → #FF4FD8 · up/buy #3CFFB1 · down/sell #FF4D6D · coins #FFC94A.
-- **Type:** Unbounded (display, numbers, buttons) + Plus Jakarta Sans (body).
-- **Coach:** Pip is a glowing orb with a flame (no cartoon animal). Player avatar is their initial inside a colored ring.
+**Animal crew details (`animal-crew.png`):**
+- **Bull and Bear come first:** in trading, bulls bet prices go up and bears bet they go down, so picking your animal is a lesson and a team identity.
+- **Cute / Cool / Both vibe switch:** filters items so everyone can find their style; mixing is always allowed.
+  - **Cute:** bows, bucket hat, puffer, skirt, overalls, hearts and dots, pastels.
+  - **Cool:** shades, "locked in" eyes, cap, beanie, headphones, hoodie, varsity jacket, lightning patterns, deep colors.
+  - **Both:** the Crown and Gold flame, which are league rewards.
+- **Customization:** fur color and patterns (including a candlestick pattern), eyes, mouth, top, bottom and headwear. The "Wick flame" is an accessory.
+- **Emotes:** idle wobble, wave, jump, dance.
+- **Presets:** Bull run, Bear market, Night wolf, Sakura bunny, Boba panda, Matcha frog, Gold fox.
 
-## 4. Tech
+## 4. Home and room: concepts (TBA)
 
-- Plain HTML/CSS/JavaScript, **no build step, no dependencies**, mobile-first, installable PWA (offline via service worker). Canvas for all charts and the room.
-- `npm start` (local server) · `npm test` (validates 17 quiz scenario types × 400 charts each, plus 150 simulated live markets: setups behave, winning setups hit target before stop, failing ones stop out, tick paths hit every candle's high and low) · `npm run build:single` (whole game in one HTML file).
-- Save data in `localStorage` only (no accounts or backend yet).
-- Files:
-  - `js/scenarios.js`: procedural chart engine for every concept + correct answers (pure, unit-tested)
-  - `js/market.js`: live market simulator (endless ICT episodes, tick paths)
-  - `js/live.js`: live trading, positions, TP/SL dragging, coaching, missions, home ticker
-  - `js/room.js`: room tycoon (canvas drawing, upgrades, bot income)
-  - `js/chart.js`: quiz chart renderer · `js/data.js`: worlds, lessons, shop, badges
-  - `js/store.js`: save, coins/XP/levels, daily streak, sounds · `js/mascot.js`: coach + avatars · `js/icons.js`: logo + icon set
-  - `js/app.js`: screens and navigation · `css/style.css`: design system
-- Going native later: wrap with Capacitor for iOS/Android.
+| Concept | Idea | Status |
+|---|---|---|
+| Canvas bedroom | Side-view room with 6 home tiers | Built into the game as the placeholder |
+| **Diorama room** (latest) | Isometric cutaway "dollhouse" room, based on Justin's reference image | **Leading direction, not final** |
+| Lifestyle: home & garage | Homes and cars that unlock as the Pro Account grows | Concept |
 
-## 5. Business direction (agreed so far)
+**Diorama room: start small and broke, then upgrade (`room-progression.png`):**
+- **Homes:** Tiny room (6×6) → Bedroom (8×8) → Studio apartment (10×10) → loft, house, villa, penthouse.
+- **The start is deliberately rough:** grey walls, cracked concrete, a water stain, a taped-up poster, a mattress on the floor, an old laptop on a cardboard box, a milk-crate seat and one bare bulb.
+- **Upgrade lines, each with a gameplay perk:**
+  - **Screens:** laptop → 1 monitor → dual screens + PC → triple curved + RGB desk. +5% take-profit coins per level.
+  - **Lighting:** bulb → desk lamp → hex LEDs → full neon. Kill zone bonus from level 2.
+  - **Seating:** crate → bean bags → gaming chair. A streak freeze slot from level 2.
+  - **Media wall:** TV console → TV wall + shelves. Needs the Bedroom.
+- **Each home caps how far upgrades can go,** so moving up is the goal.
+- **Themes:** Midnight, Cozy, Clean.
 
-- **Goal:** a $1M+/year business.
-- **Monetization plan (earn-only coins for now):**
-  - Family subscription (~$7.99/mo or $59.99/yr; free tier = first missions, bedroom + garage, first school worlds). Optional lifetime unlock.
-  - Parent dashboard + weekly progress email (the reason parents pay).
-  - Seasonal pass with fixed-price cosmetics, bought by parents (no loot boxes, no pay-to-win).
-  - Schools and districts (classroom mode, teacher dashboard; 30 US states now require a personal-finance course for graduation).
-  - Sponsors (credit unions/banks) and co-branded editions for trading educators (affiliate/rev-share).
-- **Avoid:** ads to minors, loot boxes, coins convertible to real money, "undo a loss" power-ups.
+**Lifestyle (concept):**
+- **Two kinds of progress:** coins buy your trading setup, while homes and cars unlock by growing your Pro Account. That ties the lifestyle to disciplined compounding.
+- **Homes:** Bedroom → Studio apartment ($2k) → City loft ($10k) → Family house ($50k) → Beach villa ($250k) → Sky penthouse ($1M).
+- **Cars:** e-scooter → city hatch ($5k) → sport coupe ($25k) → hyper GT ($250k).
+- Car designs are made up, with no real brands. Gems can buy paint but never the car itself.
 
-## 6. Known gaps / what's next
+### Art direction decisions
+- **Characters stay drawn in code from layered vector parts.** Every combination works, it animates, files are tiny, and it's human-authored. Purely AI-generated art generally can't be copyrighted in the US, so the mascot should be human-made.
+- **AI or 3D art is for room items, homes and cars:**
+  1. Lock one style: reference image, palette and camera angle.
+  2. Generate the room shell and each item separately.
+  3. Remove backgrounds.
+  4. Layer the items in the game.
+- **Tools already connected:** Arcads (images + background removal), ElevenLabs (images, Pip's voice, sound effects), Canva (marketing).
+- **Highest-quality option:** a 3D artist building the room in Blender.
+- **Prompt rules:** check each tool's commercial terms, and never use brand names such as "Fall Guys" in prompts.
 
-1. Accounts + cloud save (backend), privacy-safe analytics.
-2. Free vs paid split + checkout (Stripe on web first, then in-app subscriptions).
-3. Parent dashboard + weekly progress email.
-4. "Pro Floor" mode: no coaching at all, rougher market, coins-as-account with % risk, personal-best scoreboard.
-5. Make it feel more like a hit game: season pass, weekly leagues/leaderboards, streaks with freezes, limited-time events, collections, social/friends, better juice (sound, haptics, animations).
-6. Beta with 50–100 teens; target D1 ≥ 40%, D7 ≥ 20%.
+## 5. Design system
 
-## 7. Challenge rules (suggested)
+- **Look:** "glassy social": frosted-glass cards over a drifting aurora, big rounded cards, pill buttons, and a floating pill tab bar.
+- **Colors:**
+  - page `#0B0920`;
+  - brand gradient `#7C5CFF → #FF4FD8`;
+  - buy/up `#3CFFB1`;
+  - sell/down `#FF4D6D`;
+  - coins `#FFC94A`;
+  - gems `#5BE3FF`.
+- **Type:** Unbounded (display) + Plus Jakarta Sans (body).
+- **Brand:** the lowercase "wickd" wordmark with a flame on the i; Pip the coach is a glowing orb.
 
-- Start from this exact snapshot (commit `8285c9f`).
-- Keep the core: live moving market, TP/SL trading for coins, teen audience, ICT-style concepts, earn-only coins, room tycoon.
-- Judge on: **fun** (would a 15-year-old play it daily?), **learning** (do they actually get better at reading charts and managing risk?), **look & feel**, **retention mechanics**, **monetization readiness**, and **code quality/tests**.
+## 6. Business plan
+
+- **Goal:** $1M+ a year. That's about 8,300 paying families at $10 a month, which at a typical 4% payer rate means roughly 200,000 monthly players.
+- **Revenue:** gem packs, starter pack, Wickd Club membership (with a family plan), season pass, then school and district licenses and sponsors. The full research with sources is the "Wickd Gem Monetization Plan" doc.
+- **Rules we follow:**
+  - No loot boxes or random rewards, and no gem-to-coin conversion.
+  - Prices always in dollars, and pack sizes that match item prices.
+  - Parent approval on every purchase; no one-tap buying.
+  - No pressure timers or "friends bought this" nudges.
+  - No ads or tracking aimed at minors; chat off by default.
+- **Legal background:**
+  - FTC: Epic Games 2022, HoYoverse 2025 and Apple 2014 settlements.
+  - COPPA rules for under-13s.
+  - App Store and Google Play billing rules.
+  - The UK Children's Code and EU virtual currency principles.
+  - State app store laws (Louisiana's took effect July 2026).
+- **Trademarks:** check every name before launch. No exact "WICKD" mark was found, but there are sound-alike "WICKED" marks: an adult-content company's mark covering services that may overlap ours, and Universal's mark for clothing. Get an attorney to clear the name before launch.
+
+## 7. Tech
+
+- **Stack:** plain HTML/CSS/JavaScript with no build step, installable as an offline app, with canvas and SVG rendering. Saves live in the browser only.
+- **Commands:**
+  - `npm start`
+  - `npm test` (scenario, market and meta test suites)
+  - `npm run build:single` (one-file build)
+- **Files:**
+  - `js/scenarios.js`: chart engine
+  - `js/market.js`: live market
+  - `js/live.js`: trading, order ticket, missions
+  - `js/meta.js`: leagues, kill zones, quests
+  - `js/pro.js`: Pro Account
+  - `js/room.js`: room
+  - `js/avatar.js`: character
+  - `js/gems.js`: gems and shop
+  - `js/store.js`: save, economy, sounds
+  - `js/app.js`: screens
+- **Going native:** wrap the app with Capacitor for iOS and Android.
+
+## 8. Next steps
+
+1. **Pick the final character and room:** animal crew plus diorama room are leading. Build them into the game in place of the placeholders.
+2. **Lifestyle:** homes and garage tied to Pro Account milestones.
+3. **Accounts and cloud saves,** then a real online leaderboard and friends.
+4. **Real checkout:** App Store and Google Play billing with Ask to Buy and Family Link, a parent dashboard with spending limits, and the Season 1 pass.
+5. **Compliance:** a neutral age gate and under-13 flow, a lawyer review of purchases, and trademark clearance for "Wickd".
+6. **Beta:** 50–100 teens. Targets: day-1 retention of 40% or more and day-7 retention of 20% or more.
+
+## 9. Challenge note (for the Grok comparison)
+
+- **Start point:** this snapshot.
+- **Keep the core:** live market, trading with stops and targets, teen audience, earn-only coins, the room tycoon, and gems for cosmetics only.
+- **Judging:**
+  - **Fun:** would a 15-year-old play it daily?
+  - **Learning:** do players get better at reading charts and managing risk?
+  - **Look and feel.**
+  - **Retention.**
+  - **Monetization readiness.**
+  - **Code quality and tests.**

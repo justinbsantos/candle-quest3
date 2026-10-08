@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trading setup room</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0B0920; color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="position: relative; height: 392px; flex: none; background: {{stageBg}}">
+    <div style="position: absolute; top: 18px; left: 18px; right: 18px; display: flex; align-items: center; justify-content: space-between; z-index: 2">
+      <div style="display: flex; flex-direction: column">
+        <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 18px">My setup</div>
+        <div style="font-size: 12px; color: #A9A4CC">Bedroom · tier 1 of 6</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(11,9,32,.6); border: 1px solid rgba(255,255,255,.14); font-family: Unbounded, sans-serif; font-weight: 700; font-size: 15px"><span style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFE69A, #FFC94A 60%, #C98A1A)"></span>4,820</div>
+    </div>
+    <svg style="position: absolute; left: 0; top: 54px" width="390" height="325" viewBox="0 -20 360 300" aria-label="Your trading room">
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{sky1}}"></stop><stop offset="1" stop-color="{{sky2}}"></stop></linearGradient>
+      </defs>
+      <sc-for list="{{faces}}" as="f" hint-placeholder-count="40">
+        <polygon points="{{f.pts}}" fill="{{f.fill}}" stroke="{{f.stroke}}" stroke-width="1.2" stroke-linejoin="round" opacity="{{f.op}}"></polygon>
+      </sc-for>
+      <sc-for list="{{lines}}" as="l" hint-placeholder-count="4">
+        <polyline points="{{l.pts}}" stroke="{{l.col}}" stroke-width="{{l.w}}" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="{{l.filter}}" opacity="{{l.op}}"></polyline>
+      </sc-for>
+      <sc-for list="{{blobs}}" as="b" hint-placeholder-count="5">
+        <circle cx="{{b.x}}" cy="{{b.y}}" r="{{b.r}}" fill="{{b.fill}}"></circle>
+      </sc-for>
+    </svg>
+    <div style="position: absolute; right: 16px; bottom: 14px; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(11,9,32,.65); border: 1px solid rgba(255,255,255,.14)">
+      <sc-for list="{{moods}}" as="m" hint-placeholder-count="3">
+        <button onClick="{{m.pick}}" style="{{m.style}}">{{m.label}}</button>
+      </sc-for>
+    </div>
+    <div style="position: absolute; left: 16px; bottom: 14px; padding: 6px 12px; border-radius: 999px; background: rgba(60,255,177,.16); border: 1px solid rgba(60,255,177,.4); color: #3CFFB1; font-size: 12px; font-weight: 700">+{{tpBonus}}% coins per take profit</div>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 14px 18px 18px; border-radius: 28px 28px 0 0; background: rgba(255,255,255,.05); border-top: 1px solid rgba(255,255,255,.12)">
+    <div style="display: flex; align-items: baseline; justify-content: space-between">
+      <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 15px">Upgrade your setup</div>
+      <div style="font-size: 12px; color: #A9A4CC">Bot earns {{botRate}} coins/hr</div>
+    </div>
+    <sc-for list="{{slots}}" as="s" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 18px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1)">
+        <div style="{{s.iconStyle}}">{{s.lv}}</div>
+        <div style="display: flex; flex-direction: column; min-width: 0; flex: 1">
+          <div style="font-weight: 700; font-size: 14px">{{s.name}} <span style="color: #A9A4CC; font-weight: 600">· {{s.item}}</span></div>
+          <div style="font-size: 12px; color: #3CFFB1">{{s.perk}}</div>
+        </div>
+        <button onClick="{{s.up}}" style="min-height: 40px; padding: 0 12px; border-radius: 999px; border: 0; background: #FFC94A; color: #2A1A00; font-weight: 800; font-size: 12px; white-space: nowrap">{{s.cost}}</button>
+      </div>
+    </sc-for>
+    <div style="display: flex; align-items: center; gap: 8px">
+      <span style="font-size: 12px; color: #A9A4CC; font-weight: 700">Wall paint</span>
+      <sc-for list="{{paints}}" as="p" hint-placeholder-count="6">
+        <button aria-label="{{p.label}}" onClick="{{p.pick}}" style="{{p.style}}"></button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { screens: 2, desk: 1, pc: 1, chair: 1, paint: 0, mood: 'day' }; }
+  shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const t = amt < 0 ? 0 : 255, p = Math.abs(amt);
+    r = Math.round(r + (t - r) * p); g = Math.round(g + (t - g) * p); b = Math.round(b + (t - b) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  renderVals() {
+    const st = this.state, sh = (h, a) => this.shade(h, a);
+    const night = st.mood === 'night', sunset = st.mood === 'sunset';
+    const dim = night ? -0.5 : sunset ? -0.12 : 0;
+    const L = (h) => (dim ? sh(h, dim) : h);
+    const P = (gx, gy, z) => (180 + (gx - gy) * 15).toFixed(1) + ',' + (110 + (gx + gy) * 7.5 - z * 15).toFixed(1);
+    const faces = [], lines = [], blobs = [];
+    const poly = (pts, fill, op) => faces.push({ pts: pts.join(' '), fill, stroke: fill, op: op == null ? 1 : op });
+    const box = (gx, gy, w, d, h, z, col) => {
+      const c = L(col);
+      poly([P(gx + w, gy, z), P(gx + w, gy + d, z), P(gx + w, gy + d, z + h), P(gx + w, gy, z + h)], sh(c, -0.28));
+      poly([P(gx, gy + d, z), P(gx + w, gy + d, z), P(gx + w, gy + d, z + h), P(gx, gy + d, z + h)], sh(c, -0.1));
+      poly([P(gx, gy, z + h), P(gx + w, gy, z + h), P(gx + w, gy + d, z + h), P(gx, gy + d, z + h)], sh(c, 0.12));
+    };
+    const shadow = (gx, gy, w, d) => faces.push({ pts: [P(gx + .2, gy + .2, 0), P(gx + w + .4, gy + .2, 0), P(gx + w + .4, gy + d + .4, 0), P(gx + .2, gy + d + .4, 0)].join(' '), fill: '#000000', stroke: 'none', op: .22 });
+
+    const PAINT = ['#B9A7F2', '#F2B8C6', '#A8D8C8', '#F3D9A4', '#9DB7E8', '#3A3550'];
+    const wall = PAINT[st.paint];
+    const floor = st.desk >= 3 ? '#D9D4CC' : '#C8996A';
+    // walls + floor
+    poly([P(0, 0, 0), P(0, 10, 0), P(0, 10, 8), P(0, 0, 8)], L(sh(wall, -0.08)));
+    poly([P(0, 0, 0), P(10, 0, 0), P(10, 0, 8), P(0, 0, 8)], L(wall));
+    poly([P(0, 10, 0), P(0, 10, 8), P(-0.4, 10.4, 8), P(-0.4, 10.4, 0)], L(sh(wall, -0.3)));
+    poly([P(10, 0, 0), P(10, 0, 8), P(10.4, -0.4, 8), P(10.4, -0.4, 0)], L(sh(wall, -0.3)));
+    poly([P(0, 0, 0), P(10, 0, 0), P(10, 10, 0), P(0, 10, 0)], L(floor));
+    for (let i = 1; i < 10; i++) lines.push({ pts: P(i, 0, 0) + ' ' + P(i, 10, 0), col: L(sh(floor, -0.12)), w: 1, filter: '', op: st.desk >= 3 ? .35 : .6 });
+    // window + poster
+    faces.push({ pts: [P(0, 4, 3.4), P(0, 7.4, 3.4), P(0, 7.4, 6.8), P(0, 4, 6.8)].join(' '), fill: 'url(#sky)', stroke: '#F4F2FF', op: 1 });
+    lines.push({ pts: P(0, 5.7, 3.4) + ' ' + P(0, 5.7, 6.8), col: '#F4F2FF', w: 2, filter: '', op: .8 });
+    poly([P(6.2, 0, 4.2), P(8.8, 0, 4.2), P(8.8, 0, 6.6), P(6.2, 0, 6.6)], night ? '#1B1430' : '#241B45');
+    const chart = [0, .2, .15, .45, .35, .7, .6, .9];
+    lines.push({ pts: chart.map((v, i) => P(6.4 + i * 0.3, 0, 4.5 + v * 1.8)).join(' '), col: '#3CFFB1', w: 2, filter: night ? 'url(#glow)' : '', op: 1 });
+    // rug + shadows
+    poly([P(2.6, 3.4, .02), P(7.4, 3.4, .02), P(7.4, 7.6, .02), P(2.6, 7.6, .02)], L(st.desk >= 2 ? '#7C5CFF' : '#E7C3A1'), .85);
+    shadow(3.2, 0, 5.2, 2.4); shadow(0, 6.6, 3.2, 3.4); shadow(5, 3, 1.4, 1.4);
+    // plant
+    box(0.3, 2.8, 0.9, 0.9, 0.9, 0, '#E9B38E');
+    const pc = P(0.75, 3.25, 1.6).split(',').map(Number);
+    blobs.push({ x: pc[0] - 6, y: pc[1] + 2, r: 9, fill: L('#5FAE6E') }, { x: pc[0] + 6, y: pc[1] - 2, r: 10, fill: L('#77C487') }, { x: pc[0], y: pc[1] - 10, r: 9, fill: L('#8ED39C') });
+    // desk
+    const deskCol = ['#C8996A', '#C8996A', '#25213A', '#F4F2FF', '#F4F2FF'][st.desk];
+    const deskW = st.desk >= 3 ? 5.6 : 5;
+    box(3.4, 0.2, 0.3, 2, 2.4, 0, sh(deskCol, -0.2));
+    box(3.2 + deskW - 0.5, 0.2, 0.3, 2, 2.4, 0, sh(deskCol, -0.2));
+    box(3.2, 0, deskW, 2.4, 0.35, 2.4, deskCol);
+    if (st.desk === 2 || st.desk >= 4) lines.push({ pts: P(3.2, 2.4, 2.45) + ' ' + P(3.2 + deskW, 2.4, 2.45), col: '#FF4FD8', w: 3, filter: 'url(#glow)', op: 1 }, { pts: P(3.2, 2.4, 2.45) + ' ' + P(3.2 + deskW, 2.4, 2.45), col: '#FF9FEA', w: 1.5, filter: '', op: 1 });
+    // monitors
+    const n = st.screens, mw = n >= 3 ? 1.25 : 1.6, gap = 0.12;
+    const total = n * mw + (n - 1) * gap, start = 3.2 + (deskW - total) / 2;
+    for (let i = 0; i < n; i++) {
+      const gx = start + i * (mw + gap);
+      box(gx + mw / 2 - 0.12, 0.45, 0.24, 0.24, 0.5, 2.75, '#2B2F45');
+      box(gx, 0.3, mw, 0.22, 1.15, 3.2, '#1E2235');
+      faces.push({ pts: [P(gx + .08, .52, 3.28), P(gx + mw - .08, .52, 3.28), P(gx + mw - .08, .52, 4.27), P(gx + .08, .52, 4.27)].join(' '), fill: '#0B1530', stroke: '#0B1530', op: 1 });
+      const pts = [.2, .35, .3, .55, .5, .75, .7].map((v, k) => P(gx + .15 + k * (mw - .3) / 6, .52, 3.4 + v * .8)).join(' ');
+      lines.push({ pts, col: i % 2 ? '#FF4D6D' : '#3CFFB1', w: 1.5, filter: '', op: 1 });
+    }
+    // pc tower = trading bot
+    if (st.pc >= 1) {
+      box(8.9, 0.3, 0.9, 1.6, 2.1 + st.pc * 0.15, 0, st.pc >= 3 ? '#F4F2FF' : '#2B2F45');
+      faces.push({ pts: [P(9.8, .55, .3), P(9.8, 1.65, .3), P(9.8, 1.65, 1.8 + st.pc * .15), P(9.8, .55, 1.8 + st.pc * .15)].join(' '), fill: st.pc >= 2 ? '#7C5CFF' : '#3A3F5C', stroke: 'none', op: st.pc >= 2 ? .9 : .6 });
+    }
+    // chair
+    const chairCol = ['#8A8FA8', '#5B6CFF', '#FF4FD8', '#2B2F45', '#E9D6C0'][st.chair];
+    box(5.55, 3.55, 0.3, 0.3, 1.3, 0, '#3A3F5C');
+    box(5, 3, 1.4, 1.4, 0.32, 1.3, chairCol);
+    box(5, 4.15, 1.4, 0.3, st.chair >= 2 ? 2.4 : 1.7, 1.6, chairCol);
+    // bed
+    box(0, 6.6, 3.1, 3.4, 0.9, 0, L('#8C6A4F'));
+    box(0.1, 6.7, 2.9, 3.2, 0.45, 0.9, '#F4F2FF');
+    box(0.1, 7.6, 2.9, 2.3, 0.18, 1.35, PAINT[(st.paint + 2) % 5]);
+    box(0.3, 6.8, 1, 0.7, 0.35, 1.35, '#FFFFFF');
+    if (night) {
+      lines.push({ pts: P(0.2, 0, 7.6) + ' ' + P(10, 0, 7.6), col: '#7C5CFF', w: 6, filter: 'url(#glow)', op: 1 }, { pts: P(0.2, 0, 7.6) + ' ' + P(10, 0, 7.6), col: '#C9B8FF', w: 2, filter: '', op: 1 });
+      lines.push({ pts: P(0, 0.2, 7.6) + ' ' + P(0, 10, 7.6), col: '#FF4FD8', w: 6, filter: 'url(#glow)', op: 1 }, { pts: P(0, 0.2, 7.6) + ' ' + P(0, 10, 7.6), col: '#FFB8F0', w: 2, filter: '', op: 1 });
+    }
+
+    const DESK = ['', 'Wood desk', 'Gamer desk', 'Studio desk', 'Trading floor desk'];
+    const SCR = ['', '1 monitor', '2 monitors', '3 monitors', '4 monitors'];
+    const PC = ['', 'Old laptop', 'Gaming PC', 'Workstation', 'AI rig'];
+    const CH = ['', 'Desk chair', 'Gaming chair', 'Pro chair', 'Lounge chair'];
+    const RATE = [0, 12, 30, 60, 100];
+    const cost = (lv, base) => lv >= 4 ? 'Maxed' : Math.round(base * Math.pow(1.85, lv)).toLocaleString();
+    const icon = (col) => 'width: 40px; height: 40px; flex: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: Unbounded, sans-serif; font-weight: 700; font-size: 13px; color: #0B0920; background: linear-gradient(145deg, ' + sh(col, .25) + ', ' + col + ' 55%, ' + sh(col, -.25) + ')';
+    const up = (k) => () => this.setState({ [k]: st[k] >= 4 ? 1 : st[k] + 1 });
+    return {
+      faces, lines, blobs,
+      stageBg: night ? 'radial-gradient(70% 60% at 50% 50%, #2A1B66, #0B0920)' : sunset ? 'radial-gradient(70% 60% at 50% 50%, #5A2D4F, #160F2E)' : 'radial-gradient(70% 60% at 50% 50%, #3B3270, #120E2C)',
+      sky1: night ? '#0E1240' : sunset ? '#FF8A5C' : '#7EC8FF', sky2: night ? '#3A2E8C' : sunset ? '#FFC1A1' : '#DDF1FF',
+      tpBonus: st.screens * 5, botRate: RATE[st.pc],
+      moods: [['day', 'Day'], ['sunset', 'Sunset'], ['night', 'Night']].map((m) => ({ label: m[1], pick: () => this.setState({ mood: m[0] }),
+        style: 'min-height: 32px; padding: 0 10px; border-radius: 999px; border: 0; font-weight: 700; font-size: 12px; color: ' + (st.mood === m[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (st.mood === m[0] ? '#F4F2FF' : 'transparent') })),
+      slots: [
+        { name: 'Screens', item: SCR[st.screens], perk: '+' + st.screens * 5 + '% coins on every take profit', lv: 'L' + st.screens, cost: cost(st.screens, 300), up: up('screens'), iconStyle: icon('#3CFFB1') },
+        { name: 'Trading bot', item: PC[st.pc], perk: 'Earns ' + RATE[st.pc] + ' coins/hr while you’re away', lv: 'L' + st.pc, cost: cost(st.pc, 500), up: up('pc'), iconStyle: icon('#B69CFF') },
+        { name: 'Desk', item: DESK[st.desk], perk: 'Fits ' + (st.desk + 1) + ' screens', lv: 'L' + st.desk, cost: cost(st.desk, 400), up: up('desk'), iconStyle: icon('#FFC94A') },
+        { name: 'Chair', item: CH[st.chair], perk: st.chair >= 2 ? '+1 streak freeze slot' : 'Style only', lv: 'L' + st.chair, cost: cost(st.chair, 250), up: up('chair'), iconStyle: icon('#FF8FB8') },
+      ],
+      paints: PAINT.map((c, i) => ({ label: 'Wall paint ' + (i + 1), pick: () => this.setState({ paint: i }),
+        style: 'width: 30px; height: 30px; border-radius: 50%; padding: 0; background: ' + c + '; border: 3px solid ' + (st.paint === i ? '#FFC94A' : 'rgba(255,255,255,.12)') })),
+    };
+  }
+}
+</script>
+</body>
+</html>

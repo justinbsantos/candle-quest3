@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lifestyle home and garage</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0B0920; color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="position: relative; height: 380px; flex: none; background: {{stageBg}}; overflow: hidden">
+    <div style="position: absolute; top: 18px; left: 18px; right: 18px; display: flex; align-items: center; justify-content: space-between; z-index: 2">
+      <div style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(11,9,32,.6); border: 1px solid rgba(255,255,255,.14)">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="2">
+          <button onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+        </sc-for>
+      </div>
+      <div style="padding: 8px 12px; border-radius: 999px; background: rgba(11,9,32,.6); border: 1px solid rgba(255,255,255,.14); font-size: 12px; font-weight: 700">Pro Account $12,480</div>
+    </div>
+
+    <sc-if value="{{isHome}}" hint-placeholder-val="{{ true }}">
+      <svg style="position: absolute; left: 0; top: 60px" width="390" height="300" viewBox="0 0 360 277" aria-label="{{home.name}}">
+        <ellipse cx="180" cy="232" rx="150" ry="34" fill="{{groundCol}}"></ellipse>
+        <sc-for list="{{homeFaces}}" as="f" hint-placeholder-count="30">
+          <polygon points="{{f.pts}}" fill="{{f.fill}}" stroke="{{f.fill}}" stroke-width="1.2" stroke-linejoin="round" opacity="{{f.op}}"></polygon>
+        </sc-for>
+        <sc-for list="{{trees}}" as="b" hint-placeholder-count="4">
+          <circle cx="{{b.x}}" cy="{{b.y}}" r="{{b.r}}" fill="{{b.fill}}"></circle>
+        </sc-for>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{isGarage}}" hint-placeholder-val="{{ false }}">
+      <svg style="position: absolute; left: 0; top: 80px" width="390" height="280" viewBox="0 0 360 258" aria-label="{{car.name}}">
+        <defs>
+          <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{paintHi}}"></stop><stop offset=".55" stop-color="{{paint}}"></stop><stop offset="1" stop-color="{{paintLo}}"></stop></linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#CFE8FF"></stop><stop offset="1" stop-color="#4A5C8C"></stop></linearGradient>
+        </defs>
+        <ellipse cx="180" cy="214" rx="160" ry="22" fill="rgba(182,156,255,.25)"></ellipse>
+        <ellipse cx="180" cy="208" rx="128" ry="10" fill="rgba(0,0,0,.45)"></ellipse>
+        <sc-if value="{{carScooter}}" hint-placeholder-val="{{ false }}">
+          <path d="M110 186 Q120 140 168 140 L214 140 Q232 112 226 84 L240 82 Q252 120 234 158 L250 186 Z" fill="url(#paint)"></path>
+          <rect x="222" y="74" width="34" height="9" rx="4.5" fill="#2B2F45"></rect>
+          <path d="M140 140 Q150 124 182 126 L196 140 Z" fill="#2B2F45"></path>
+        </sc-if>
+        <sc-if value="{{carHatch}}" hint-placeholder-val="{{ true }}">
+          <path d="M58 190 Q52 150 82 140 L118 132 Q144 94 196 92 L232 94 Q262 100 286 136 Q312 142 306 190 Z" fill="url(#paint)"></path>
+          <path d="M128 132 Q150 104 190 102 L192 132 Z M202 102 L228 104 Q250 110 268 132 L202 132 Z" fill="url(#glass)"></path>
+        </sc-if>
+        <sc-if value="{{carCoupe}}" hint-placeholder-val="{{ false }}">
+          <path d="M44 190 Q40 156 76 148 L132 138 Q168 104 214 106 Q256 108 282 140 Q318 146 318 190 Z" fill="url(#paint)"></path>
+          <path d="M142 138 Q172 114 204 114 L206 140 Z M216 114 Q248 116 268 140 L216 140 Z" fill="url(#glass)"></path>
+          <path d="M304 150 L322 146" stroke="{{paintLo}}" stroke-width="6" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{carSuper}}" hint-placeholder-val="{{ false }}">
+          <path d="M34 192 Q30 170 60 162 L150 140 Q186 116 226 120 Q268 126 296 152 L330 160 Q340 176 330 192 Z" fill="url(#paint)"></path>
+          <path d="M160 142 Q190 124 222 126 Q252 130 272 150 Z" fill="url(#glass)"></path>
+          <path d="M300 146 L334 140 L336 150 L304 156 Z" fill="{{paintLo}}"></path>
+          <path d="M70 176 H120 M210 176 H290" stroke="{{paintHi}}" stroke-width="3" stroke-linecap="round" opacity=".6"></path>
+        </sc-if>
+        <circle cx="{{w1}}" cy="192" r="{{wr}}" fill="#1B1726"></circle>
+        <circle cx="{{w2}}" cy="192" r="{{wr}}" fill="#1B1726"></circle>
+        <circle cx="{{w1}}" cy="192" r="{{rimR}}" fill="{{rim}}"></circle>
+        <circle cx="{{w2}}" cy="192" r="{{rimR}}" fill="{{rim}}"></circle>
+        <circle cx="{{w1}}" cy="192" r="4" fill="#1B1726"></circle>
+        <circle cx="{{w2}}" cy="192" r="4" fill="#1B1726"></circle>
+        <ellipse cx="150" cy="128" rx="60" ry="5" fill="#FFFFFF" opacity=".18"></ellipse>
+      </svg>
+    </sc-if>
+
+    <div style="position: absolute; left: 18px; right: 18px; bottom: 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 20px">{{title}}</div>
+        <div style="font-size: 13px; color: #D8D3F5">{{subtitle}}</div>
+      </div>
+      <div style="{{statusStyle}}">{{status}}</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 16px 18px 18px">
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #A9A4CC">{{listLabel}}</div>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{items}}" as="it" hint-placeholder-count="5">
+        <button onClick="{{it.pick}}" style="{{it.style}}">
+          <div style="{{it.dot}}">{{it.n}}</div>
+          <div style="display: flex; flex-direction: column; align-items: flex-start; min-width: 0; flex: 1">
+            <span style="font-weight: 700; font-size: 14px; color: #F4F2FF">{{it.name}}</span>
+            <span style="font-size: 12px; color: #A9A4CC">{{it.perk}}</span>
+          </div>
+          <span style="{{it.tagStyle}}">{{it.tag}}</span>
+        </button>
+      </sc-for>
+    </div>
+    <sc-if value="{{isGarage}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span style="font-size: 12px; color: #A9A4CC; font-weight: 700">Paint</span>
+        <sc-for list="{{paints}}" as="p" hint-placeholder-count="6">
+          <button aria-label="{{p.label}}" onClick="{{p.pick}}" style="{{p.style}}"></button>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 'home', home: 2, car: 2, paint: 0 }; }
+  shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const t = amt < 0 ? 0 : 255, p = Math.abs(amt);
+    r = Math.round(r + (t - r) * p); g = Math.round(g + (t - g) * p); b = Math.round(b + (t - b) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  renderVals() {
+    const st = this.state, sh = (h, a) => this.shade(h, a);
+    const BAL = 12480;
+    const HOMES = [
+      { name: 'Bedroom', perk: 'Your first setup · 2 screens max', need: 0 },
+      { name: 'Studio apartment', perk: '3 screens · +5% daily chest', need: 2000 },
+      { name: 'City loft', perk: '4 screens · rooftop hangout', need: 10000 },
+      { name: 'Family house', perk: '6 screens · garage for 2 cars', need: 50000 },
+      { name: 'Beach villa', perk: '8 screens · pool party events', need: 250000 },
+      { name: 'Sky penthouse', perk: 'Trading floor · hall of fame', need: 1000000 },
+    ];
+    const CARS = [
+      { name: 'E-scooter', perk: 'Gets you to school', need: 0, kind: 'scooter' },
+      { name: 'City hatch', perk: 'First car · +1 daily quest reroll', need: 5000, kind: 'hatch' },
+      { name: 'Sport coupe', perk: '+10% weekend coins', need: 25000, kind: 'coupe' },
+      { name: 'Hyper GT', perk: 'Gold league flex · animated badge', need: 250000, kind: 'super' },
+    ];
+    const money = (v) => '$' + (v >= 1e6 ? v / 1e6 + 'M' : v >= 1000 ? v / 1000 + 'k' : v);
+    const isHome = st.tab === 'home';
+
+    // iso home
+    const P = (gx, gy, z) => (180 + (gx - gy) * 13).toFixed(1) + ',' + (150 + (gx + gy) * 6.5 - z * 13).toFixed(1);
+    const faces = [];
+    const poly = (pts, fill, op) => faces.push({ pts: pts.join(' '), fill, op: op == null ? 1 : op });
+    const box = (gx, gy, w, d, h, z, c) => {
+      poly([P(gx + w, gy, z), P(gx + w, gy + d, z), P(gx + w, gy + d, z + h), P(gx + w, gy, z + h)], sh(c, -0.25));
+      poly([P(gx, gy + d, z), P(gx + w, gy + d, z), P(gx + w, gy + d, z + h), P(gx, gy + d, z + h)], sh(c, -0.08));
+      poly([P(gx, gy, z + h), P(gx + w, gy, z + h), P(gx + w, gy + d, z + h), P(gx, gy + d, z + h)], sh(c, 0.12));
+    };
+    const roof = (gx, gy, w, d, z, rh, c) => {
+      const mid = gy + d / 2;
+      poly([P(gx, gy, z), P(gx + w, gy, z), P(gx + w, mid, z + rh), P(gx, mid, z + rh)], sh(c, 0.1));
+      poly([P(gx, gy + d, z), P(gx + w, gy + d, z), P(gx + w, mid, z + rh), P(gx, mid, z + rh)], sh(c, -0.05));
+      poly([P(gx + w, gy, z), P(gx + w, gy + d, z), P(gx + w, mid, z + rh)], sh(c, -0.25));
+    };
+    const winRow = (gx, gy, w, z, n, lit) => {
+      for (let i = 0; i < n; i++) { const x = gx + 0.4 + i * (w - 0.8) / n; poly([P(x, gy, z), P(x + 0.6, gy, z), P(x + 0.6, gy, z + 0.9), P(x, gy, z + 0.9)], lit); }
+    };
+    const winSide = (gx, gy, d, z, n, lit) => {
+      for (let i = 0; i < n; i++) { const y = gy + 0.4 + i * (d - 0.8) / n; poly([P(gx, y, z), P(gx, y + 0.6, z), P(gx, y + 0.6, z + 0.9), P(gx, y, z + 0.9)], lit); }
+    };
+    const lit = '#FFE3A3';
+    const trees = [];
+    const tree = (gx, gy, s) => { const p = P(gx, gy, 1.2 * s).split(',').map(Number); trees.push({ x: p[0], y: p[1], r: 12 * s, fill: '#5FAE6E' }, { x: p[0] - 5 * s, y: p[1] - 8 * s, r: 9 * s, fill: '#8ED39C' }); };
+    const H = st.home;
+    poly([P(-1, -1, 0), P(9, -1, 0), P(9, 9, 0), P(-1, 9, 0)], H === 4 ? '#F2DDB0' : '#6FBF7E');
+    if (H === 0) { box(1, 1, 6, 5, 3.2, 0, '#E9D6C0'); roof(1, 1, 6, 5, 3.2, 2, '#B0453A'); box(4.5, 6, 1, 0.1, 1.6, 0, '#8C6A4F'); winRow(1, 6, 3, 1.4, 1, lit); winSide(7, 1, 5, 1.4, 2, lit); poly([P(2, 6.01, 1.2), P(3.4, 6.01, 1.2), P(3.4, 6.01, 2.4), P(2, 6.01, 2.4)], '#FFB8F0'); tree(8, 7, 1); }
+    if (H === 1) { box(1, 1, 6, 6, 7, 0, '#C7B9E8'); for (let z = 0.8; z < 6.5; z += 1.6) { winRow(1, 7, 6, z, 3, lit); winSide(7, 1, 6, z, 3, lit); } box(1, 1, 6, 6, 0.4, 7, '#9A8CC7'); tree(8, 8, 0.9); }
+    if (H === 2) { box(0.5, 0.5, 7, 6, 5, 0, '#5A5E78'); for (let z = 0.8; z < 4.5; z += 1.8) { winRow(0.5, 6.5, 7, z, 4, z > 2 ? '#FFC1D9' : lit); winSide(7.5, 0.5, 6, z, 4, lit); } box(1.5, 1.5, 3, 3, 1.2, 5, '#3CFFB1'); poly([P(5, 4, 5.05), P(7, 4, 5.05), P(7, 6, 5.05), P(5, 6, 5.05)], '#7C5CFF'); tree(8.4, 7.5, 0.8); }
+    if (H === 3) { box(0.5, 1, 7, 5, 3.4, 0, '#F4EBDD'); roof(0.5, 1, 7, 5, 3.4, 2.4, '#4A4F6A'); box(5.4, 6, 2.1, 1.6, 2.2, 0, '#E3D8C6'); box(3, 6, 1.1, 0.1, 2, 0, '#8C6A4F'); winRow(0.5, 6, 2.5, 1.3, 2, lit); winSide(7.5, 1, 5, 1.3, 3, lit); tree(-0.4, 7.4, 1.1); tree(8.6, 0.2, 0.9); }
+    if (H === 4) { box(0.5, 0.5, 7.5, 4.5, 2.6, 0, '#FFFFFF'); box(1, 0.8, 4.5, 3.8, 2.2, 2.6, '#F7F3EC'); poly([P(1, 5.6, .05), P(7.5, 5.6, .05), P(7.5, 8.4, .05), P(1, 8.4, .05)], '#4FC3E8'); winRow(0.5, 5, 7.5, 0.8, 5, '#BFE8FF'); winRow(1, 4.6, 4.5, 3.2, 3, '#BFE8FF'); winSide(8, 0.5, 4.5, 0.8, 3, '#BFE8FF'); tree(8.6, 6.4, 1.2); tree(-0.6, 8.2, 1); }
+    if (H === 5) { box(2, 2, 4, 4, 13, 0, '#2E3350'); for (let z = 0.8; z < 12.5; z += 1.3) { winRow(2, 6, 4, z, 3, z > 11 ? '#FFC94A' : '#9DB7E8'); winSide(6, 2, 4, z, 3, '#9DB7E8'); } box(2.6, 2.6, 2.8, 2.8, 1.2, 13, '#FFC94A'); tree(7.6, 7.6, 0.8); }
+
+    // garage
+    const PAINTS = ['#7C5CFF', '#FF4D6D', '#3CFFB1', '#F4F2FF', '#FFC94A', '#1E2235'];
+    const paint = PAINTS[st.paint];
+    const car = CARS[st.car];
+    const wheels = { scooter: [126, 236, 18, 9], hatch: [98, 262, 26, 14], coupe: [92, 272, 27, 16], super: [84, 282, 28, 18] }[car.kind];
+
+    const sel = isHome ? HOMES[st.home] : car;
+    const owned = BAL >= sel.need;
+    const list = isHome ? HOMES : CARS;
+    const cur = isHome ? st.home : st.car;
+    return {
+      isHome, isGarage: !isHome, home: HOMES[st.home], car,
+      homeFaces: faces, trees, groundCol: 'rgba(0,0,0,.25)',
+      stageBg: isHome ? (st.home === 4 ? 'linear-gradient(180deg, #FF9E80 0%, #7C5CFF 70%, #0B0920 100%)' : 'linear-gradient(180deg, #3B3270 0%, #1A1240 60%, #0B0920 100%)') : 'radial-gradient(70% 70% at 50% 60%, #2A1B66, #0B0920)',
+      paint, paintHi: sh(paint, 0.35), paintLo: sh(paint, -0.35),
+      rim: '#C9CDE0', w1: wheels[0], w2: wheels[1], wr: wheels[2], rimR: wheels[3],
+      carScooter: car.kind === 'scooter', carHatch: car.kind === 'hatch', carCoupe: car.kind === 'coupe', carSuper: car.kind === 'super',
+      title: sel.name, subtitle: sel.perk,
+      status: owned ? (sel.need ? 'Unlocked' : 'Owned') : 'Unlocks at ' + money(sel.need),
+      statusStyle: 'flex: none; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; ' + (owned ? 'background: rgba(60,255,177,.18); color: #3CFFB1; border: 1px solid rgba(60,255,177,.4)' : 'background: rgba(255,201,74,.16); color: #FFC94A; border: 1px solid rgba(255,201,74,.4)'),
+      listLabel: isHome ? 'Homes · unlock by growing your Pro Account' : 'Garage · unlock by growing your Pro Account',
+      tabs: [['home', 'Home'], ['garage', 'Garage']].map((t) => ({ label: t[1], pick: () => this.setState({ tab: t[0] }),
+        style: 'min-height: 36px; padding: 0 16px; border-radius: 999px; border: 0; font-weight: 700; font-size: 13px; color: ' + (st.tab === t[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (st.tab === t[0] ? '#F4F2FF' : 'transparent') })),
+      items: list.map((it, i) => {
+        const on = cur === i, ok = BAL >= it.need;
+        return { n: i + 1, name: it.name, perk: it.perk, tag: ok ? (it.need ? 'Unlocked' : 'Owned') : money(it.need),
+          pick: () => this.setState(isHome ? { home: i } : { car: i }),
+          tagStyle: 'font-size: 12px; font-weight: 800; color: ' + (ok ? '#3CFFB1' : '#FFC94A'),
+          dot: 'width: 30px; height: 30px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: Unbounded, sans-serif; font-weight: 700; font-size: 12px; color: ' + (ok ? '#0B0920' : '#A9A4CC') + '; background: ' + (ok ? 'linear-gradient(145deg, #C9B8FF, #7C5CFF)' : 'rgba(255,255,255,.08)'),
+          style: 'display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 12px; border-radius: 16px; text-align: left; background: ' + (on ? 'rgba(124,92,255,.25)' : 'rgba(255,255,255,.05)') + '; border: 1.5px solid ' + (on ? '#B69CFF' : 'rgba(255,255,255,.08)') };
+      }),
+      paints: PAINTS.map((c, i) => ({ label: 'Paint ' + (i + 1), pick: () => this.setState({ paint: i }),
+        style: 'width: 30px; height: 30px; border-radius: 50%; padding: 0; background: radial-gradient(circle at 35% 30%, ' + sh(c, .35) + ', ' + c + ' 55%, ' + sh(c, -.3) + '); border: 3px solid ' + (st.paint === i ? '#FFC94A' : 'rgba(255,255,255,.12)') })),
+    };
+  }
+}
+</script>
+</body>
+</html>

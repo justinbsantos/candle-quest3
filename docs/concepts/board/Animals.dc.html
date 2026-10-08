@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Animal crew creator</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+@keyframes wkIdle{0%,100%{transform:scale(1,1)}50%{transform:scale(1.04,.96)}}
+@keyframes wkJump{0%{transform:translateY(0) scale(1.1,.88)}30%{transform:translateY(-70px) scale(.92,1.1)}55%{transform:translateY(-80px) scale(1,1)}80%{transform:translateY(0) scale(1.14,.84)}100%{transform:translateY(0) scale(1,1)}}
+@keyframes wkDance{0%,100%{transform:rotate(-8deg) scale(1,1)}25%{transform:rotate(0) scale(1.06,.94)}50%{transform:rotate(8deg) scale(1,1)}75%{transform:rotate(0) scale(1.06,.94)}}
+@keyframes wkFlame{0%,100%{transform:scale(1,1)}50%{transform:scale(.92,1.1)}}
+@keyframes wkWave{0%,100%{transform:rotate(-30deg)}50%{transform:rotate(10deg)}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0B0920; color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="position: relative; height: 372px; flex: none; background: radial-gradient(70% 60% at 50% 55%, {{glow}} 0%, rgba(11,9,32,0) 70%), linear-gradient(180deg, #1A1240, #0B0920); overflow: hidden">
+    <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; flex-direction: column">
+        <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 18px">{{title}}</div>
+        <div style="font-size: 12px; color: #A9A4CC">{{presetName}}</div>
+      </div>
+      <button aria-label="Random look" onClick="{{shuffle}}" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #F4F2FF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"></path><path d="M4 20 21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg></button>
+    </div>
+    <div style="position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); width: 200px; height: 34px; border-radius: 50%; background: radial-gradient(closest-side, rgba(182,156,255,.5), rgba(124,92,255,.1) 70%, rgba(0,0,0,0)); border: 1px solid rgba(182,156,255,.3)"></div>
+    <div style="position: absolute; left: 50%; bottom: 36px; margin-left: -105px; width: 210px; height: 280px; transform-origin: 50% 100%; {{anim}}">
+      <svg width="210" height="280" viewBox="0 0 240 320" aria-label="Your trader">
+        <defs>
+          <clipPath id="wkBody"><rect x="62" y="70" width="116" height="200" rx="58"></rect></clipPath>
+          <radialGradient id="wkG" cx="34%" cy="24%" r="85%"><stop offset="0" stop-color="{{c.bodyHi}}"></stop><stop offset=".55" stop-color="{{c.body}}"></stop><stop offset="1" stop-color="{{c.bodyLo}}"></stop></radialGradient>
+          <linearGradient id="wkT" x1="0" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="{{c.topHi}}"></stop><stop offset="1" stop-color="{{c.topLo}}"></stop></linearGradient>
+          <linearGradient id="wkB" x1="0" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="{{c.botHi}}"></stop><stop offset="1" stop-color="{{c.botLo}}"></stop></linearGradient>
+          <linearGradient id="wkH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{c.hatHi}}"></stop><stop offset="1" stop-color="{{c.hatLo}}"></stop></linearGradient>
+          <linearGradient id="wkF" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="{{c.flameA}}"></stop><stop offset="1" stop-color="{{c.flameB}}"></stop></linearGradient>
+        </defs>
+        <ellipse cx="120" cy="304" rx="64" ry="9" fill="rgba(0,0,0,.4)"></ellipse>
+        <rect x="94" y="244" width="22" height="44" rx="11" fill="{{c.legs}}"></rect>
+        <rect x="124" y="244" width="22" height="44" rx="11" fill="{{c.legs}}"></rect>
+        <ellipse cx="102" cy="290" rx="17" ry="10" fill="{{c.shoe}}"></ellipse>
+        <ellipse cx="138" cy="290" rx="17" ry="10" fill="{{c.shoe}}"></ellipse>
+        <ellipse cx="96" cy="286" rx="6" ry="3" fill="#FFFFFF" opacity=".35"></ellipse>
+        <ellipse cx="132" cy="286" rx="6" ry="3" fill="#FFFFFF" opacity=".35"></ellipse>
+        <ellipse cx="58" cy="182" rx="13" ry="24" fill="{{c.arm}}" transform="rotate(18 58 182)"></ellipse>
+        <g style="transform-origin: 178px 164px; {{waveAnim}}">
+          <ellipse cx="182" cy="182" rx="13" ry="24" fill="{{c.arm}}" transform="rotate(-18 182 182)"></ellipse>
+        </g>
+        <sc-if value="{{sp.bull}}" hint-placeholder-val="{{ false }}">
+          <path d="M172 228 Q204 236 200 268" stroke="{{c.bodyLo}}" stroke-width="5" fill="none" stroke-linecap="round"></path>
+          <ellipse cx="200" cy="272" rx="7" ry="9" fill="{{c.bodyLo}}"></ellipse>
+          <path d="M80 92 C58 88 44 70 50 50 C60 64 72 72 90 76 Z" fill="#F4E6CC"></path>
+          <path d="M160 92 C182 88 196 70 190 50 C180 64 168 72 150 76 Z" fill="#F4E6CC"></path>
+          <ellipse cx="54" cy="116" rx="16" ry="9" fill="url(#wkG)" transform="rotate(-20 54 116)"></ellipse>
+          <ellipse cx="186" cy="116" rx="16" ry="9" fill="url(#wkG)" transform="rotate(20 186 116)"></ellipse>
+        </sc-if>
+        <sc-if value="{{sp.bear}}" hint-placeholder-val="{{ false }}">
+          <circle cx="80" cy="84" r="20" fill="url(#wkG)"></circle><circle cx="160" cy="84" r="20" fill="url(#wkG)"></circle>
+          <circle cx="80" cy="84" r="10" fill="{{c.bodyLo}}"></circle><circle cx="160" cy="84" r="10" fill="{{c.bodyLo}}"></circle>
+          <circle cx="172" cy="236" r="10" fill="{{c.bodyLo}}"></circle>
+        </sc-if>
+        <sc-if value="{{sp.panda}}" hint-placeholder-val="{{ false }}">
+          <circle cx="80" cy="84" r="20" fill="#1E1B26"></circle><circle cx="160" cy="84" r="20" fill="#1E1B26"></circle>
+        </sc-if>
+        <sc-if value="{{sp.wolf}}" hint-placeholder-val="{{ false }}">
+          <path d="M70 96 L76 36 L108 78 Z" fill="url(#wkG)"></path><path d="M170 96 L164 36 L132 78 Z" fill="url(#wkG)"></path>
+          <path d="M80 86 L82 52 L100 78 Z" fill="{{c.bodyLo}}"></path><path d="M160 86 L158 52 L140 78 Z" fill="{{c.bodyLo}}"></path>
+          <path d="M170 236 Q214 220 206 186 Q192 210 168 214 Z" fill="url(#wkG)"></path>
+        </sc-if>
+        <sc-if value="{{sp.fox}}" hint-placeholder-val="{{ false }}">
+          <path d="M168 230 Q224 230 212 176 Q200 160 194 180 Q196 210 166 210 Z" fill="url(#wkG)"></path>
+          <path d="M212 176 Q200 160 194 180 Q204 186 212 176 Z" fill="#FFFFFF"></path>
+          <path d="M70 98 L72 38 L106 78 Z" fill="url(#wkG)"></path><path d="M170 98 L168 38 L134 78 Z" fill="url(#wkG)"></path>
+          <path d="M72 48 L74 38 L84 50 Z" fill="#2A1E3A"></path><path d="M168 48 L166 38 L156 50 Z" fill="#2A1E3A"></path>
+          <path d="M80 86 L80 56 L98 78 Z" fill="#FFFFFF" opacity=".8"></path><path d="M160 86 L160 56 L142 78 Z" fill="#FFFFFF" opacity=".8"></path>
+        </sc-if>
+        <sc-if value="{{sp.cat}}" hint-placeholder-val="{{ false }}">
+          <path d="M72 96 L78 50 L108 80 Z" fill="url(#wkG)"></path><path d="M168 96 L162 50 L132 80 Z" fill="url(#wkG)"></path>
+          <path d="M82 88 L84 62 L100 80 Z" fill="#FFB8D2"></path><path d="M158 88 L156 62 L140 80 Z" fill="#FFB8D2"></path>
+          <path d="M172 240 Q206 236 204 204 Q202 186 214 180" stroke="url(#wkG)" stroke-width="10" fill="none" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{sp.bunny}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="96" cy="42" rx="14" ry="38" fill="url(#wkG)" transform="rotate(-10 96 42)"></ellipse>
+          <ellipse cx="144" cy="42" rx="14" ry="38" fill="url(#wkG)" transform="rotate(10 144 42)"></ellipse>
+          <ellipse cx="96" cy="46" rx="6" ry="26" fill="#FFB8D2" transform="rotate(-10 96 46)"></ellipse>
+          <ellipse cx="144" cy="46" rx="6" ry="26" fill="#FFB8D2" transform="rotate(10 144 46)"></ellipse>
+          <circle cx="176" cy="240" r="13" fill="#FFFFFF"></circle>
+        </sc-if>
+        <rect x="62" y="70" width="116" height="200" rx="58" fill="url(#wkG)"></rect>
+        <g clip-path="url(#wkBody)">
+          <sc-if value="{{belly}}" hint-placeholder-val="{{ false }}">
+            <ellipse cx="120" cy="214" rx="40" ry="50" fill="{{c.belly}}"></ellipse>
+          </sc-if>
+          <sc-if value="{{sp.fox}}" hint-placeholder-val="{{ false }}">
+            <path d="M62 128 Q92 120 120 150 Q148 120 178 128 L178 170 L62 170 Z" fill="#FFFFFF"></path>
+          </sc-if>
+          <sc-if value="{{p.stripes}}" hint-placeholder-val="{{ false }}">
+            <rect x="40" y="96" width="160" height="12" fill="{{c.patt}}" opacity=".55"></rect>
+            <rect x="40" y="126" width="160" height="12" fill="{{c.patt}}" opacity=".55"></rect>
+            <rect x="40" y="156" width="160" height="12" fill="{{c.patt}}" opacity=".55"></rect>
+            <rect x="40" y="186" width="160" height="12" fill="{{c.patt}}" opacity=".55"></rect>
+            <rect x="40" y="216" width="160" height="12" fill="{{c.patt}}" opacity=".55"></rect>
+          </sc-if>
+          <sc-if value="{{p.dots}}" hint-placeholder-val="{{ false }}">
+            <circle cx="80" cy="96" r="7" fill="{{c.patt}}"></circle><circle cx="160" cy="104" r="6" fill="{{c.patt}}"></circle><circle cx="74" cy="150" r="6" fill="{{c.patt}}"></circle><circle cx="166" cy="160" r="7" fill="{{c.patt}}"></circle><circle cx="90" cy="206" r="7" fill="{{c.patt}}"></circle><circle cx="152" cy="214" r="6" fill="{{c.patt}}"></circle><circle cx="120" cy="246" r="7" fill="{{c.patt}}"></circle>
+          </sc-if>
+          <sc-if value="{{p.split}}" hint-placeholder-val="{{ false }}">
+            <rect x="120" y="60" width="80" height="220" fill="{{c.patt}}" opacity=".8"></rect>
+          </sc-if>
+          <sc-if value="{{p.candles}}" hint-placeholder-val="{{ false }}">
+            <rect x="72" y="200" width="10" height="34" rx="2" fill="#3CFFB1"></rect><rect x="76" y="192" width="2" height="50" fill="#3CFFB1"></rect>
+            <rect x="160" y="96" width="10" height="26" rx="2" fill="#FF4D6D"></rect><rect x="164" y="88" width="2" height="42" fill="#FF4D6D"></rect>
+            <rect x="152" y="210" width="10" height="30" rx="2" fill="#3CFFB1"></rect><rect x="156" y="202" width="2" height="44" fill="#3CFFB1"></rect>
+          </sc-if>
+          <sc-if value="{{p.hearts}}" hint-placeholder-val="{{ false }}">
+            <path d="M84 104 C78 98 81 93 84 97 C87 93 90 98 84 104 Z" fill="{{c.patt}}"></path><path d="M158 120 C150 112 154 106 158 111 C162 106 166 112 158 120 Z" fill="{{c.patt}}"></path><path d="M78 164 C72 158 75 153 78 157 C81 153 84 158 78 164 Z" fill="{{c.patt}}"></path><path d="M150 196 C142 188 146 182 150 187 C154 182 158 188 150 196 Z" fill="{{c.patt}}"></path><path d="M100 238 C94 232 97 227 100 231 C103 227 106 232 100 238 Z" fill="{{c.patt}}"></path>
+          </sc-if>
+          <sc-if value="{{p.bolts}}" hint-placeholder-val="{{ false }}">
+            <path d="M84 90 L74 112 L84 112 L76 134 L96 106 L86 106 L92 90 Z" fill="{{c.patt}}"></path>
+            <path d="M162 150 L152 172 L162 172 L154 194 L174 166 L164 166 L170 150 Z" fill="{{c.patt}}"></path>
+            <path d="M96 206 L88 224 L96 224 L90 242 L106 220 L98 220 L104 206 Z" fill="{{c.patt}}"></path>
+          </sc-if>
+          <sc-if value="{{b.shorts}}" hint-placeholder-val="{{ true }}">
+            <rect x="50" y="218" width="140" height="60" fill="url(#wkB)"></rect>
+            <path d="M120 236 V280" stroke="{{c.botLo}}" stroke-width="3"></path>
+          </sc-if>
+          <sc-if value="{{b.overalls}}" hint-placeholder-val="{{ false }}">
+            <rect x="50" y="210" width="140" height="70" fill="url(#wkB)"></rect>
+            <rect x="92" y="172" width="56" height="44" rx="8" fill="url(#wkB)"></rect>
+            <path d="M92 176 L74 140 M148 176 L166 140" stroke="{{c.bot}}" stroke-width="8" stroke-linecap="round"></path>
+            <circle cx="98" cy="182" r="4" fill="#FFC94A"></circle><circle cx="142" cy="182" r="4" fill="#FFC94A"></circle>
+          </sc-if>
+          <sc-if value="{{t.hoodie}}" hint-placeholder-val="{{ true }}">
+            <rect x="50" y="160" width="140" height="62" fill="url(#wkT)"></rect>
+            <path d="M96 194 H144 L140 218 H100 Z" fill="{{c.topLo}}" opacity=".6"></path>
+            <path d="M108 160 L106 186 M132 160 L134 186" stroke="#F4F2FF" stroke-width="3" stroke-linecap="round"></path>
+          </sc-if>
+          <sc-if value="{{t.tee}}" hint-placeholder-val="{{ false }}">
+            <rect x="50" y="164" width="140" height="56" fill="url(#wkT)"></rect>
+            <path d="M104 186 L116 198 L138 176" stroke="#F4F2FF" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+          </sc-if>
+          <sc-if value="{{t.varsity}}" hint-placeholder-val="{{ false }}">
+            <rect x="50" y="160" width="140" height="62" fill="url(#wkT)"></rect>
+            <rect x="50" y="160" width="26" height="62" fill="#F4F2FF"></rect><rect x="164" y="160" width="26" height="62" fill="#F4F2FF"></rect>
+            <circle cx="104" cy="186" r="10" fill="#F4F2FF"></circle>
+            <path d="M99 181 L102 191 L104 185 L106 191 L109 181" stroke="{{c.top}}" stroke-width="2" fill="none" stroke-linejoin="round"></path>
+          </sc-if>
+          <sc-if value="{{t.puffer}}" hint-placeholder-val="{{ false }}">
+            <rect x="50" y="152" width="140" height="74" rx="10" fill="url(#wkT)"></rect>
+            <path d="M50 172 H190 M50 194 H190 M50 214 H190 M120 152 V226" stroke="{{c.topLo}}" stroke-width="3"></path>
+          </sc-if>
+          <ellipse cx="94" cy="98" rx="20" ry="13" fill="#FFFFFF" opacity=".28"></ellipse>
+          <ellipse cx="158" cy="200" rx="6" ry="26" fill="#000000" opacity=".08"></ellipse>
+        </g>
+        <sc-if value="{{b.skirt}}" hint-placeholder-val="{{ false }}">
+          <path d="M66 220 H174 L188 262 Q120 280 52 262 Z" fill="url(#wkB)"></path>
+          <path d="M92 224 L82 266 M120 224 V272 M148 224 L158 266" stroke="{{c.botLo}}" stroke-width="3"></path>
+        </sc-if>
+
+        <sc-if value="{{sp.panda}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="100" cy="124" rx="17" ry="20" fill="#1E1B26" transform="rotate(20 100 124)"></ellipse>
+          <ellipse cx="140" cy="124" rx="17" ry="20" fill="#1E1B26" transform="rotate(-20 140 124)"></ellipse>
+        </sc-if>
+        <sc-if value="{{sp.frog}}" hint-placeholder-val="{{ false }}">
+          <circle cx="94" cy="78" r="22" fill="url(#wkG)"></circle><circle cx="146" cy="78" r="22" fill="url(#wkG)"></circle>
+          <circle cx="94" cy="78" r="14" fill="#FFFFFF"></circle><circle cx="146" cy="78" r="14" fill="#FFFFFF"></circle>
+          <circle cx="97" cy="80" r="8" fill="#1B1430"></circle><circle cx="149" cy="80" r="8" fill="#1B1430"></circle>
+          <circle cx="100" cy="76" r="3" fill="#FFFFFF"></circle><circle cx="152" cy="76" r="3" fill="#FFFFFF"></circle>
+        </sc-if>
+        <sc-if value="{{f.round}}" hint-placeholder-val="{{ true }}">
+          <ellipse cx="102" cy="122" rx="11" ry="14" fill="#1B1430"></ellipse><ellipse cx="138" cy="122" rx="11" ry="14" fill="#1B1430"></ellipse>
+          <circle cx="106" cy="116" r="4" fill="#FFFFFF"></circle><circle cx="142" cy="116" r="4" fill="#FFFFFF"></circle>
+          <circle cx="99" cy="127" r="2" fill="#FFFFFF"></circle><circle cx="135" cy="127" r="2" fill="#FFFFFF"></circle>
+        </sc-if>
+        <sc-if value="{{f.happy}}" hint-placeholder-val="{{ false }}">
+          <path d="M90 126 Q102 110 114 126 M126 126 Q138 110 150 126" stroke="#1B1430" stroke-width="6" fill="none" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{f.focus}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="102" cy="124" rx="10" ry="11" fill="#1B1430"></ellipse><ellipse cx="138" cy="124" rx="10" ry="11" fill="#1B1430"></ellipse>
+          <circle cx="105" cy="120" r="3" fill="#FFFFFF"></circle><circle cx="141" cy="120" r="3" fill="#FFFFFF"></circle>
+          <path d="M88 104 L114 110 M152 104 L126 110" stroke="#1B1430" stroke-width="5" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{f.star}}" hint-placeholder-val="{{ false }}">
+          <path d="M102 108 L106 118 L116 120 L106 124 L102 134 L98 124 L88 120 L98 118 Z" fill="#FFC94A"></path>
+          <path d="M138 108 L142 118 L152 120 L142 124 L138 134 L134 124 L124 120 L134 118 Z" fill="#FFC94A"></path>
+        </sc-if>
+        <sc-if value="{{f.shades}}" hint-placeholder-val="{{ false }}">
+          <rect x="82" y="106" width="76" height="28" rx="14" fill="#15121F"></rect>
+          <path d="M92 114 L104 114" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity=".7"></path>
+          <path d="M130 114 L142 114" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity=".7"></path>
+          <rect x="82" y="106" width="76" height="28" rx="14" fill="none" stroke="{{c.hatLo}}" stroke-width="3"></rect>
+        </sc-if>
+        <sc-if value="{{sp.bull}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="120" cy="156" rx="34" ry="20" fill="#F2B8A0"></ellipse>
+          <ellipse cx="108" cy="152" rx="5" ry="4" fill="#8A4A3A"></ellipse><ellipse cx="132" cy="152" rx="5" ry="4" fill="#8A4A3A"></ellipse>
+          <path d="M110 162 Q120 168 130 162" stroke="#8A4A3A" stroke-width="3.5" fill="none" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{snout}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="120" cy="150" rx="20" ry="14" fill="{{c.belly}}"></ellipse>
+          <ellipse cx="120" cy="142" rx="7" ry="5" fill="#1E1B26"></ellipse>
+        </sc-if>
+        <sc-if value="{{sp.cat}}" hint-placeholder-val="{{ false }}">
+          <path d="M114 138 L126 138 L120 145 Z" fill="#FF8FB0"></path>
+          <path d="M80 140 L58 134 M80 148 L58 150 M160 140 L182 134 M160 148 L182 150" stroke="#1B1430" stroke-width="2" stroke-linecap="round" opacity=".6"></path>
+        </sc-if>
+        <sc-if value="{{sp.bunny}}" hint-placeholder-val="{{ false }}">
+          <path d="M114 138 L126 138 L120 145 Z" fill="#FF8FB0"></path>
+          <rect x="114" y="156" width="12" height="10" rx="2" fill="#FFFFFF" stroke="#E2DCD0" stroke-width="1"></rect>
+        </sc-if>
+        <circle cx="88" cy="146" r="9" fill="#FF6F91" opacity=".35"></circle><circle cx="152" cy="146" r="9" fill="#FF6F91" opacity=".35"></circle>
+        <sc-if value="{{m.smile}}" hint-placeholder-val="{{ true }}">
+          <path d="M108 146 Q120 158 132 146" stroke="#1B1430" stroke-width="5" fill="none" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{m.grin}}" hint-placeholder-val="{{ false }}">
+          <path d="M104 144 Q120 168 136 144 Z" fill="#3A1426"></path><path d="M112 156 Q120 162 128 156" stroke="#FF7FA0" stroke-width="5" fill="none" stroke-linecap="round"></path>
+        </sc-if>
+        <sc-if value="{{m.cat}}" hint-placeholder-val="{{ false }}">
+          <path d="M106 146 Q113 154 120 146 Q127 154 134 146" stroke="#1B1430" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+        </sc-if>
+        <sc-if value="{{m.o}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="120" cy="150" rx="7" ry="9" fill="#3A1426"></ellipse>
+        </sc-if>
+
+        <g transform="{{hatT}}">
+        <sc-if value="{{h.cap}}" hint-placeholder-val="{{ false }}">
+          <path d="M66 98 C66 50 174 50 174 98 Z" fill="url(#wkH)"></path>
+          <path d="M66 96 Q120 86 196 100 Q202 108 188 108 Q120 100 66 104 Z" fill="{{c.hatLo}}"></path>
+        </sc-if>
+        <sc-if value="{{h.beanie}}" hint-placeholder-val="{{ false }}">
+          <path d="M64 100 C62 44 178 44 176 100 Z" fill="url(#wkH)"></path>
+          <rect x="60" y="88" width="120" height="20" rx="10" fill="{{c.hatLo}}"></rect>
+        </sc-if>
+        <sc-if value="{{h.bucket}}" hint-placeholder-val="{{ false }}">
+          <path d="M76 96 C78 56 162 56 164 96 Z" fill="url(#wkH)"></path>
+          <path d="M56 100 Q120 82 184 100 Q190 110 176 110 Q120 98 64 110 Q50 110 56 100 Z" fill="{{c.hatLo}}"></path>
+        </sc-if>
+        <sc-if value="{{h.phones}}" hint-placeholder-val="{{ false }}">
+          <path d="M60 132 C54 54 186 54 180 132" stroke="url(#wkH)" stroke-width="10" fill="none" stroke-linecap="round"></path>
+          <rect x="48" y="118" width="24" height="40" rx="12" fill="url(#wkH)"></rect><rect x="168" y="118" width="24" height="40" rx="12" fill="url(#wkH)"></rect>
+        </sc-if>
+        <sc-if value="{{h.crown}}" hint-placeholder-val="{{ false }}">
+          <path d="M84 82 L90 52 L106 70 L120 46 L134 70 L150 52 L156 82 Z" fill="#FFC94A"></path>
+          <rect x="84" y="78" width="72" height="10" rx="4" fill="#E9A21C"></rect>
+          <circle cx="120" cy="64" r="4" fill="#FF4FD8"></circle>
+        </sc-if>
+
+        <sc-if value="{{h.bunny}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="94" cy="50" rx="12" ry="32" fill="url(#wkH)" transform="rotate(-14 94 50)"></ellipse>
+          <ellipse cx="146" cy="50" rx="12" ry="32" fill="url(#wkH)" transform="rotate(14 146 50)"></ellipse>
+          <ellipse cx="94" cy="52" rx="5" ry="22" fill="#FFB8D2" transform="rotate(-14 94 52)"></ellipse>
+          <ellipse cx="146" cy="52" rx="5" ry="22" fill="#FFB8D2" transform="rotate(14 146 52)"></ellipse>
+        </sc-if>
+        <sc-if value="{{h.bow}}" hint-placeholder-val="{{ false }}">
+          <path d="M86 84 L64 70 L66 100 Z" fill="url(#wkH)"></path>
+          <path d="M86 84 L106 66 L108 98 Z" fill="url(#wkH)"></path>
+          <circle cx="86" cy="84" r="7" fill="{{c.hatLo}}"></circle>
+        </sc-if>
+        <sc-if value="{{showFlame}}" hint-placeholder-val="{{ false }}">
+        <g transform="{{flameT}}">
+          <rect x="117" y="52" width="6" height="22" rx="3" fill="#2A1E3A"></rect>
+          <g style="transform-origin: 120px 56px; animation: wkFlame 1.1s ease-in-out infinite">
+            <path d="M120 8 C136 26 140 40 131 52 C127 58 113 58 109 52 C100 40 104 26 120 8 Z" fill="url(#wkF)"></path>
+            <path d="M120 28 C127 36 128 44 124 50 C122 53 118 53 116 50 C112 44 113 36 120 28 Z" fill="#FFFFFF" opacity=".8"></path>
+          </g>
+        </g>
+        </sc-if>
+        </g>
+      </svg>
+    </div>
+    <div style="position: absolute; left: 12px; bottom: 12px; display: flex; gap: 6px">
+      <sc-for list="{{emotes}}" as="e" hint-placeholder-count="4">
+        <button onClick="{{e.pick}}" style="{{e.style}}">{{e.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 18px; border-radius: 28px 28px 0 0; background: rgba(255,255,255,.05); border-top: 1px solid rgba(255,255,255,.12); margin-top: -12px; position: relative">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <span style="font-size: 12px; font-weight: 700; color: #A9A4CC">Vibe</span>
+      <div style="display: flex; flex: 1; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.12)">
+        <sc-for list="{{vibes}}" as="v" hint-placeholder-count="3">
+          <button onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display: flex; gap: 6px; overflow-x: auto">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="7">
+        <button onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+      </sc-for>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{options}}" as="o" hint-placeholder-count="6">
+        <button onClick="{{o.pick}}" style="{{o.style}}">
+          <span style="font-weight: 700; font-size: 12px; color: #F4F2FF">{{o.label}}</span>
+          <span style="{{o.priceStyle}}">{{o.price}}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <sc-for list="{{colors}}" as="c" hint-placeholder-count="10">
+        <button aria-label="{{c.label}}" onClick="{{c.pick}}" style="{{c.style}}"></button>
+      </sc-for>
+    </div>
+    <div style="font-size: 12px; font-weight: 700; color: #A9A4CC; letter-spacing: .06em; text-transform: uppercase; margin-top: 2px">Squad presets</div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+      <sc-for list="{{presets}}" as="p" hint-placeholder-count="5">
+        <button onClick="{{p.pick}}" style="{{p.style}}"><span style="{{p.dot}}"></span>{{p.name}}</button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { vibe: 'all', species: 'bull', tab: 'species', body: 16, pattern: 'solid', pattC: 1, eyes: 'round', mouth: 'smile', top: 'hoodie', topC: 6, bot: 'shorts', botC: 5, hat: 'none', hatC: 2, flame: 0, emote: 'idle', preset: 'Custom' };
+  }
+  shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const t = amt < 0 ? 0 : 255, p = Math.abs(amt);
+    r = Math.round(r + (t - r) * p); g = Math.round(g + (t - g) * p); b = Math.round(b + (t - b) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  renderVals() {
+    const st = this.state, sh = (h, a) => this.shade(h, a);
+    // colors carry a vibe too: soft pastels feel cute, deep and bold colors feel cool
+    const BODY = ['#9B7BFF', '#FF7FB0', '#4FE0B0', '#5AA8FF', '#FFB547', '#FF6B6B', '#C8F25A', '#F4EEE6', '#6B5CA5', '#2E2B44', '#FFC8DD', '#C9B8FF', '#BDE8D8', '#14161F', '#B3242E', '#1E4FD9'];
+    BODY.push('#8A5A3C', '#7A5236', '#8C93A8', '#FF8A3D', '#6FCF6A', '#F2C14E');
+    const BODY_V = ['', 'cute', '', '', '', 'cool', 'cool', 'cute', 'cool', 'cool', 'cute', 'cute', 'cute', 'cool', 'cool', 'cool', '', '', '', '', '', ''];
+    // the crew: bull and bear first, because that's what every trader picks between
+    const SPECIES = [
+      ['bull', 'Bull', 'cool', 16], ['bear', 'Bear', 'cool', 17], ['wolf', 'Wolf', 'cool', 18], ['fox', 'Fox', '', 19],
+      ['frog', 'Frog', '', 20], ['cat', 'Cat', 'cute', 21], ['bunny', 'Bunny', 'cute', 7], ['panda', 'Panda', 'cute', 7],
+    ];
+    const CLOTH = ['#7C5CFF', '#FF5C8A', '#2BB98A', '#3D8BFF', '#F2A541', '#2B2F45', '#F4F2FF', '#B0453A', '#FFE066', '#1FB6C9'];
+    const FLAMES = [['#FF7A1A', '#FFD34D', 'Classic'], ['#7C5CFF', '#FF4FD8', 'Ultraviolet'], ['#14C08A', '#8CFFD9', 'Mint'], ['#E9A21C', '#FFF1A8', 'Gold'], ['#2F7BFF', '#9FE3FF', 'Ice']];
+    const TABS = [['species', 'Animal'], ['body', 'Fur'], ['eyes', 'Eyes'], ['mouth', 'Mouth'], ['top', 'Top'], ['bot', 'Bottom'], ['hat', 'Head']];
+    // [id, name, price, vibe] — vibe '' fits both
+    const OPT = {
+      body: [['solid', 'Solid', '', ''], ['stripes', 'Stripes', '', ''], ['dots', 'Dots', '100', 'cute'], ['hearts', 'Hearts', '300', 'cute'], ['bolts', 'Lightning', '300', 'cool'], ['split', 'Two-tone', '300', 'cool'], ['candles', 'Candles', '500', '']],
+      eyes: [['round', 'Shiny', '', 'cute'], ['happy', 'Happy', '', 'cute'], ['star', 'Starry', '300', 'cute'], ['focus', 'Locked in', '', 'cool'], ['shades', 'Shades', '500', 'cool']],
+      mouth: [['smile', 'Smile', '', ''], ['cat', 'Cheeky', '', 'cute'], ['o', 'Whoa', '100', 'cute'], ['grin', 'Grin', '', 'cool']],
+      top: [['none', 'None', '', ''], ['tee', 'Tee', '', ''], ['hoodie', 'Hoodie', '', 'cool'], ['puffer', 'Puffer', '500', 'cute'], ['varsity', 'Varsity', '800', 'cool']],
+      bot: [['none', 'None', '', ''], ['shorts', 'Shorts', '', ''], ['skirt', 'Skirt', '', 'cute'], ['overalls', 'Overalls', '500', 'cute']],
+      species: SPECIES.map((x) => [x[0], x[1], '', x[2]]),
+      hat: [['none', 'None', '', ''], ['flame', 'Wick flame', '', ''], ['bow', 'Bow', '', 'cute'], ['bucket', 'Bucket hat', '300', 'cute'], ['cap', 'Cap', '', 'cool'], ['beanie', 'Beanie', '300', 'cool'], ['phones', 'Headphones', '', 'cool'], ['crown', 'Crown', 'League', '']],
+
+    };
+    const fits = (v) => st.vibe === 'all' || !v || v === st.vibe;
+    const PAL = { species: ['body', BODY, 'Fur color', BODY_V], body: ['body', BODY, 'Fur color', BODY_V], top: ['topC', CLOTH, 'Top color'], bot: ['botC', CLOTH, 'Bottom color'], hat: ['hatC', CLOTH, 'Head color'] };
+    const body = BODY[st.body], top = CLOTH[st.topC], bot = CLOTH[st.botC], hat = CLOTH[st.hatC], fl = FLAMES[st.flame];
+    const patt = st.pattern === 'split' ? sh(BODY[(st.body + 3) % BODY.length], 0) : sh(body, st.body === 7 ? -0.25 : 0.4);
+    const c = {
+      body, bodyHi: sh(body, 0.35), bodyLo: sh(body, -0.28),
+      top, topHi: sh(top, 0.2), topLo: sh(top, -0.28), bot, botHi: sh(bot, 0.2), botLo: sh(bot, -0.3),
+      belly: st.species === 'panda' || st.species === 'bunny' ? '#FFFFFF' : sh(body, 0.45),
+      hatHi: sh(hat, 0.25), hatLo: sh(hat, -0.3), flameA: fl[0], flameB: fl[1], patt,
+      legs: st.bot === 'none' || st.bot === 'skirt' ? sh(body, -0.15) : sh(bot, -0.1),
+      shoe: '#F4F2FF',
+      arm: st.top === 'none' || st.top === 'tee' ? sh(body, -0.05) : st.top === 'varsity' ? '#E9E6F5' : sh(top, -0.05),
+    };
+    const anim = { idle: 'animation: wkIdle 1.6s ease-in-out infinite', jump: 'animation: wkJump .9s cubic-bezier(.3,.7,.4,1) infinite', dance: 'animation: wkDance .8s ease-in-out infinite', wave: 'animation: wkIdle 1.6s ease-in-out infinite' }[st.emote];
+    const PRESETS = [
+      { name: 'Bull run', vibe: 'cool', dot: '#8A5A3C', s: { species: 'bull', body: 16, pattern: 'candles', eyes: 'focus', mouth: 'grin', top: 'tee', topC: 5, bot: 'shorts', botC: 5, hat: 'cap', hatC: 2 } },
+      { name: 'Bear market', vibe: 'cool', dot: '#7A5236', s: { species: 'bear', body: 17, pattern: 'solid', eyes: 'shades', mouth: 'smile', top: 'hoodie', topC: 5, bot: 'shorts', botC: 5, hat: 'phones', hatC: 9 } },
+      { name: 'Night wolf', vibe: 'cool', dot: '#8C93A8', s: { species: 'wolf', body: 13, pattern: 'bolts', eyes: 'focus', mouth: 'grin', top: 'varsity', topC: 7, bot: 'shorts', botC: 5, hat: 'beanie', hatC: 5 } },
+      { name: 'Sakura bunny', vibe: 'cute', dot: '#FFC8DD', s: { species: 'bunny', body: 10, pattern: 'hearts', eyes: 'happy', mouth: 'cat', top: 'puffer', topC: 6, bot: 'skirt', botC: 1, hat: 'bow', hatC: 1 } },
+      { name: 'Boba panda', vibe: 'cute', dot: '#F4EEE6', s: { species: 'panda', body: 7, pattern: 'solid', eyes: 'round', mouth: 'o', top: 'none', topC: 0, bot: 'overalls', botC: 3, hat: 'none', hatC: 0 } },
+      { name: 'Matcha frog', vibe: 'cute', dot: '#6FCF6A', s: { species: 'frog', body: 20, pattern: 'dots', eyes: 'round', mouth: 'smile', top: 'tee', topC: 6, bot: 'shorts', botC: 2, hat: 'bucket', hatC: 8 } },
+      { name: 'Gold fox', vibe: '', dot: '#FF8A3D', s: { species: 'fox', body: 19, pattern: 'solid', eyes: 'star', mouth: 'cat', top: 'none', topC: 0, bot: 'overalls', botC: 3, hat: 'crown', hatC: 0 } },
+    ];
+    const tabKey = st.tab;
+    const pal = PAL[tabKey];
+    const cur = { species: st.species, body: st.pattern, eyes: st.eyes, mouth: st.mouth, top: st.top, bot: st.bot, hat: st.hat, flame: String(st.flame) }[tabKey];
+    const setKey = { species: 'species', body: 'pattern', eyes: 'eyes', mouth: 'mouth', top: 'top', bot: 'bot', hat: 'hat', flame: 'flame' }[tabKey];
+    const hatOn = ['cap', 'beanie', 'bucket', 'crown'].includes(st.hat);
+    const spc = st.species;
+    const sp = {}; SPECIES.forEach((x) => { sp[x[0]] = spc === x[0]; });
+    const spName = SPECIES.find((x) => x[0] === spc)[1];
+    return {
+      c, anim, sp,
+      title: 'My ' + spName,
+      belly: ['bear', 'wolf', 'cat', 'bunny', 'panda', 'frog'].includes(spc),
+      snout: ['bear', 'wolf', 'panda'].includes(spc),
+      showFlame: st.hat === 'flame',
+      hatT: spc === 'frog' ? 'translate(0 -44)' : 'translate(0 0)',
+      glow: sh(body, -0.1) + '88',
+      waveAnim: st.emote === 'wave' ? 'animation: wkWave .5s ease-in-out infinite' : '',
+      flameT: hatOn ? 'translate(0 -26)' : 'translate(0 0)',
+      presetName: st.preset === 'Custom' ? 'Mix and match every piece' : st.preset + ' squad look',
+      vibes: [['cute', 'Cute'], ['cool', 'Cool'], ['all', 'Both']].map((v) => ({ label: v[1], pick: () => this.setState({ vibe: v[0] }),
+        style: 'flex: 1; min-height: 32px; border-radius: 999px; border: 0; font-weight: 800; font-size: 13px; color: ' + (st.vibe === v[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (st.vibe === v[0] ? (v[0] === 'cute' ? '#FFB8D2' : v[0] === 'cool' ? '#7FE9FF' : '#F4F2FF') : 'transparent') })),
+      p: { hearts: st.pattern === 'hearts', bolts: st.pattern === 'bolts', stripes: st.pattern === 'stripes', dots: st.pattern === 'dots', split: st.pattern === 'split', candles: st.pattern === 'candles' },
+      f: spc === 'frog' && st.eyes !== 'shades' ? {} : { shades: st.eyes === 'shades', round: st.eyes === 'round', happy: st.eyes === 'happy', focus: st.eyes === 'focus', star: st.eyes === 'star' },
+      m: spc === 'bull' ? {} : { smile: st.mouth === 'smile', grin: st.mouth === 'grin', cat: st.mouth === 'cat', o: st.mouth === 'o' },
+      t: { hoodie: st.top === 'hoodie', tee: st.top === 'tee', varsity: st.top === 'varsity', puffer: st.top === 'puffer' },
+      b: { shorts: st.bot === 'shorts', skirt: st.bot === 'skirt', overalls: st.bot === 'overalls' },
+      h: { bunny: st.hat === 'bunny', bow: st.hat === 'bow', cap: st.hat === 'cap', beanie: st.hat === 'beanie', bucket: st.hat === 'bucket', phones: st.hat === 'phones', crown: st.hat === 'crown' },
+      emotes: [['idle', 'Idle'], ['wave', 'Wave'], ['jump', 'Jump'], ['dance', 'Dance']].map((e) => ({ label: e[1], pick: () => this.setState({ emote: e[0] }),
+        style: 'min-height: 34px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 12px; border: 1px solid rgba(255,255,255,.16); color: ' + (st.emote === e[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (st.emote === e[0] ? '#F4F2FF' : 'rgba(11,9,32,.6)') })),
+      tabs: TABS.map((t) => ({ label: t[1], pick: () => this.setState({ tab: t[0] }),
+        style: 'flex: none; min-height: 36px; padding: 0 13px; border-radius: 999px; font-weight: 700; font-size: 13px; border: 1px solid ' + (tabKey === t[0] ? 'transparent' : 'rgba(255,255,255,.14)') + '; color: ' + (tabKey === t[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (tabKey === t[0] ? '#F4F2FF' : 'rgba(255,255,255,.06)') })),
+      options: OPT[tabKey].filter((o) => fits(o[3]) || cur === o[0]).map((o) => {
+        const on = cur === o[0];
+        const gem = o[2] && /^\d+$/.test(o[2]);
+        return { label: o[1], price: setKey === 'species' ? (o[3] === 'cute' ? 'Cute' : o[3] === 'cool' ? 'Cool' : 'Both') : !o[2] ? 'Free' : gem ? o[2] + ' gems' : o[2],
+          priceStyle: 'font-size: 11px; font-weight: 700; color: ' + (!o[2] ? '#A9A4CC' : gem ? '#7FE9FF' : '#FFC94A'),
+          pick: () => this.setState(setKey === 'species' ? { species: o[0], body: SPECIES.find((x) => x[0] === o[0])[3], preset: 'Custom' } : { [setKey]: o[0], preset: 'Custom' }),
+          style: 'min-height: 58px; padding: 6px 4px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; background: ' + (on ? 'rgba(124,92,255,.3)' : 'rgba(255,255,255,.06)') + '; border: 1.5px solid ' + (on ? '#B69CFF' : 'rgba(255,255,255,.1)') };
+      }),
+      colors: pal ? pal[1].map((col, i) => ({ i, col })).filter((x) => !pal[3] || fits(pal[3][x.i]) || st[pal[0]] === x.i).map(({ col, i }) => ({ label: pal[2] + ' ' + (i + 1), pick: () => this.setState({ [pal[0]]: i, preset: 'Custom' }),
+        style: 'width: 30px; height: 30px; border-radius: 50%; padding: 0; background: radial-gradient(circle at 35% 30%, ' + sh(col, .35) + ', ' + col + ' 55%, ' + sh(col, -.25) + '); border: 3px solid ' + (st[pal[0]] === i ? '#FFC94A' : 'rgba(255,255,255,.1)') })) : [],
+      presets: PRESETS.filter((p) => fits(p.vibe)).map((p) => ({ name: p.name, pick: () => this.setState(Object.assign({}, p.s, { preset: p.name })),
+        dot: 'width: 12px; height: 12px; border-radius: 50%; background: ' + p.dot,
+        style: 'display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 12px; color: #F4F2FF; background: ' + (st.preset === p.name ? 'rgba(124,92,255,.3)' : 'rgba(255,255,255,.06)') + '; border: 1px solid ' + (st.preset === p.name ? '#B69CFF' : 'rgba(255,255,255,.12)') })),
+      shuffle: () => {
+        const r = (n) => Math.floor(Math.random() * n);
+        const pool = (k) => OPT[k].filter((o) => fits(o[3]));
+        const pk = (k) => { const a = pool(k); return a[r(a.length)][0]; };
+        const bodies = BODY.map((c, i) => i).filter((i) => fits(BODY_V[i]));
+        const sps = SPECIES.filter((x) => fits(x[2]));
+        const pickSp = sps[r(sps.length)];
+        this.setState({ species: pickSp[0], body: r(3) ? pickSp[3] : bodies[r(bodies.length)], pattern: pk('body'), pattC: 1, eyes: pk('eyes'), mouth: pk('mouth'), top: pk('top'), topC: r(CLOTH.length), bot: pk('bot'), botC: r(CLOTH.length), hat: pk('hat'), hatC: r(CLOTH.length), preset: 'Custom', emote: 'jump' });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

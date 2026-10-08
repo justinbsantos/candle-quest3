@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Make your trader</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: radial-gradient(120% 60% at 20% 0%, #2A1B66 0%, #0B0920 60%); color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; padding: 22px 18px; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <button aria-label="Back" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #F4F2FF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+    <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 20px">Make your trader</div>
+    <div style="width: 44px"></div>
+  </div>
+
+  <div style="position: relative; height: 236px; border-radius: 28px; background: linear-gradient(160deg, rgba(124,92,255,.35), rgba(255,79,216,.18) 55%, rgba(60,255,177,.14)); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: flex-end; justify-content: center; overflow: hidden">
+    <svg width="210" height="226" viewBox="0 0 200 220" aria-label="Your trader preview">
+      <circle cx="100" cy="96" r="80" fill="rgba(255,255,255,.07)"></circle>
+      <sc-if value="{{long}}" hint-placeholder-val="{{ false }}">
+        <path d="M54 92 C50 34 150 34 146 92 L154 176 C130 186 70 186 46 176 Z" fill="{{hairColor}}"></path>
+      </sc-if>
+      <sc-if value="{{braids}}" hint-placeholder-val="{{ false }}">
+        <rect x="52" y="80" width="16" height="100" rx="8" fill="{{hairColor}}"></rect>
+        <rect x="132" y="80" width="16" height="100" rx="8" fill="{{hairColor}}"></rect>
+      </sc-if>
+      <path d="M28 220 C28 166 58 142 100 142 C142 142 172 166 172 220 Z" fill="{{outfitColor}}"></path>
+      <sc-if value="{{varsity}}" hint-placeholder-val="{{ false }}">
+        <path d="M28 220 C28 180 40 160 58 150 L66 220 Z" fill="#F4F2FF"></path>
+        <path d="M172 220 C172 180 160 160 142 150 L134 220 Z" fill="#F4F2FF"></path>
+      </sc-if>
+      <sc-if value="{{cardigan}}" hint-placeholder-val="{{ false }}">
+        <path d="M100 150 L100 220" stroke="rgba(0,0,0,.25)" stroke-width="3"></path>
+        <circle cx="108" cy="176" r="3" fill="#F4F2FF"></circle>
+        <circle cx="108" cy="196" r="3" fill="#F4F2FF"></circle>
+      </sc-if>
+      <sc-if value="{{hoodie}}" hint-placeholder-val="{{ true }}">
+        <path d="M88 152 L86 186 M112 152 L114 186" stroke="#F4F2FF" stroke-width="3" stroke-linecap="round"></path>
+      </sc-if>
+      <rect x="88" y="120" width="24" height="30" rx="10" fill="{{skin}}"></rect>
+      <ellipse cx="100" cy="90" rx="38" ry="44" fill="{{skin}}"></ellipse>
+      <ellipse cx="86" cy="94" rx="4" ry="5" fill="#1B1430"></ellipse>
+      <ellipse cx="114" cy="94" rx="4" ry="5" fill="#1B1430"></ellipse>
+      <path d="M90 110 Q100 118 110 110" stroke="#1B1430" stroke-width="3" fill="none" stroke-linecap="round"></path>
+      <sc-if value="{{buzz}}" hint-placeholder-val="{{ false }}">
+        <path d="M62 84 C60 50 80 42 100 42 C120 42 140 50 138 84 C128 64 72 64 62 84 Z" fill="{{hairColor}}"></path>
+      </sc-if>
+      <sc-if value="{{waves}}" hint-placeholder-val="{{ true }}">
+        <path d="M60 88 C56 44 82 36 100 38 C124 36 146 50 140 88 C136 70 122 60 112 58 C104 70 80 72 60 88 Z" fill="{{hairColor}}"></path>
+      </sc-if>
+      <sc-if value="{{curls}}" hint-placeholder-val="{{ false }}">
+        <circle cx="70" cy="62" r="16" fill="{{hairColor}}"></circle>
+        <circle cx="90" cy="48" r="17" fill="{{hairColor}}"></circle>
+        <circle cx="112" cy="48" r="17" fill="{{hairColor}}"></circle>
+        <circle cx="131" cy="62" r="16" fill="{{hairColor}}"></circle>
+        <circle cx="62" cy="82" r="12" fill="{{hairColor}}"></circle>
+        <circle cx="139" cy="82" r="12" fill="{{hairColor}}"></circle>
+      </sc-if>
+      <sc-if value="{{longTop}}" hint-placeholder-val="{{ false }}">
+        <path d="M60 92 C56 44 82 38 100 40 C122 38 146 48 140 92 C132 64 108 58 100 56 C90 66 74 72 60 92 Z" fill="{{hairColor}}"></path>
+      </sc-if>
+      <sc-if value="{{bun}}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="34" r="16" fill="{{hairColor}}"></circle>
+        <path d="M62 84 C60 50 80 44 100 44 C120 44 140 50 138 84 C128 62 72 62 62 84 Z" fill="{{hairColor}}"></path>
+      </sc-if>
+      <sc-if value="{{headphones}}" hint-placeholder-val="{{ false }}">
+        <path d="M58 92 C56 40 144 40 142 92" stroke="#7C5CFF" stroke-width="7" fill="none" stroke-linecap="round"></path>
+        <rect x="50" y="84" width="16" height="28" rx="8" fill="#FF4FD8"></rect>
+        <rect x="134" y="84" width="16" height="28" rx="8" fill="#FF4FD8"></rect>
+      </sc-if>
+      <sc-if value="{{glasses}}" hint-placeholder-val="{{ false }}">
+        <circle cx="86" cy="94" r="10" stroke="#FFC94A" stroke-width="3" fill="none"></circle>
+        <circle cx="114" cy="94" r="10" stroke="#FFC94A" stroke-width="3" fill="none"></circle>
+        <path d="M96 94 L104 94" stroke="#FFC94A" stroke-width="3"></path>
+      </sc-if>
+      <sc-if value="{{chain}}" hint-placeholder-val="{{ false }}">
+        <path d="M80 150 Q100 172 120 150" stroke="#FFC94A" stroke-width="4" fill="none"></path>
+        <circle cx="100" cy="164" r="5" fill="#FFC94A"></circle>
+      </sc-if>
+    </svg>
+    <div style="position: absolute; top: 12px; left: 14px; display: flex; gap: 6px">
+      <span style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(11,9,32,.6); border: 1px solid rgba(255,255,255,.14)">Lv 7 · Swing trader</span>
+    </div>
+    <button aria-label="Randomize look" onClick="{{shuffle}}" style="position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: rgba(11,9,32,.6); color: #F4F2FF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"></path><path d="M4 20 21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg></button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #A9A4CC">Skin tone</div>
+    <div style="display: flex; gap: 8px">
+      <sc-for list="{{skins}}" as="s" hint-placeholder-count="8">
+        <button aria-label="{{s.label}}" onClick="{{s.pick}}" style="{{s.style}}"></button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #A9A4CC">Hair</div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+      <sc-for list="{{hairs}}" as="h" hint-placeholder-count="7">
+        <button onClick="{{h.pick}}" style="{{h.style}}">{{h.label}}</button>
+      </sc-for>
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 2px">
+      <sc-for list="{{hairColors}}" as="c" hint-placeholder-count="7">
+        <button aria-label="{{c.label}}" onClick="{{c.pick}}" style="{{c.style}}"></button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #A9A4CC">Fit</div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+      <sc-for list="{{outfits}}" as="o" hint-placeholder-count="5">
+        <button onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #A9A4CC">Extras</div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+      <sc-for list="{{extras}}" as="x" hint-placeholder-count="4">
+        <button onClick="{{x.pick}}" style="{{x.style}}">{{x.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 12px; color: #A9A4CC; text-align: center">Mix anything. Every item fits every trader.</div>
+    <button style="min-height: 52px; border-radius: 999px; border: 0; background: linear-gradient(135deg, #7C5CFF, #FF4FD8); color: #fff; font-family: Unbounded, sans-serif; font-weight: 700; font-size: 16px">Save my look</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { skin: 3, hair: 'waves', hc: 0, outfit: 'hoodie', extra: 'headphones' };
+  }
+  renderVals() {
+    const st = this.state;
+    const SK = ['#FBE0CC', '#F2C6A0', '#E0A57A', '#C68457', '#A0643C', '#7A4A2A', '#5A3420', '#3E2416'];
+    const HC = [['#1B1430', 'Black'], ['#5A3420', 'Brown'], ['#C98A3E', 'Honey'], ['#F2D27A', 'Blonde'], ['#FF6FB5', 'Pink'], ['#6FA8FF', 'Blue'], ['#B69CFF', 'Lilac']];
+    const HAIR = [['buzz', 'Buzz'], ['waves', 'Waves'], ['curls', 'Curls'], ['long', 'Long'], ['bun', 'Bun'], ['braids', 'Braids']];
+    const OUT = [['hoodie', 'Hoodie', '#7C5CFF'], ['varsity', 'Varsity', '#2E8B6A'], ['cardigan', 'Cardigan', '#E58FB0'], ['tech', 'Tech jacket', '#2B2F45'], ['tee', 'Oversized tee', '#F2A541']];
+    const EX = [['none', 'None'], ['headphones', 'Headphones'], ['glasses', 'Glasses'], ['chain', 'Chain']];
+    const chip = (on) => 'min-height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 13px; color: #F4F2FF; border: 1px solid ' + (on ? '#FFC94A' : 'rgba(255,255,255,.14)') + '; background: ' + (on ? 'rgba(255,201,74,.16)' : 'rgba(255,255,255,.08)');
+    const dot = (col, on) => 'width: 36px; height: 36px; border-radius: 50%; padding: 0; background: ' + col + '; border: 3px solid ' + (on ? '#FFC94A' : 'rgba(255,255,255,.12)') + '; box-shadow: ' + (on ? '0 0 0 2px #0B0920 inset' : 'none');
+    const h = st.hair;
+    const outfit = OUT.find((o) => o[0] === st.outfit);
+    return {
+      skin: SK[st.skin], hairColor: HC[st.hc][0], outfitColor: outfit[2],
+      buzz: h === 'buzz', waves: h === 'waves', curls: h === 'curls', long: h === 'long', longTop: h === 'long' || h === 'braids', bun: h === 'bun', braids: h === 'braids',
+      hoodie: st.outfit === 'hoodie', varsity: st.outfit === 'varsity', cardigan: st.outfit === 'cardigan',
+      headphones: st.extra === 'headphones', glasses: st.extra === 'glasses', chain: st.extra === 'chain',
+      skins: SK.map((c, i) => ({ label: 'Skin tone ' + (i + 1), style: dot(c, st.skin === i), pick: () => this.setState({ skin: i }) })),
+      hairColors: HC.map((c, i) => ({ label: c[1] + ' hair', style: dot(c[0], st.hc === i), pick: () => this.setState({ hc: i }) })),
+      hairs: HAIR.map((x) => ({ label: x[1], style: chip(h === x[0]), pick: () => this.setState({ hair: x[0] }) })),
+      outfits: OUT.map((x) => ({ label: x[1], style: chip(st.outfit === x[0]), pick: () => this.setState({ outfit: x[0] }) })),
+      extras: EX.map((x) => ({ label: x[1], style: chip(st.extra === x[0]), pick: () => this.setState({ extra: x[0] }) })),
+      shuffle: () => {
+        const r = (n) => Math.floor(Math.random() * n);
+        this.setState({ skin: r(SK.length), hc: r(HC.length), hair: HAIR[r(HAIR.length)][0], outfit: OUT[r(OUT.length)][0], extra: EX[r(EX.length)][0] });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

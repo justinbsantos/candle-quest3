@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Character creator v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0B0920; color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="position: relative; height: 430px; flex: none; background: radial-gradient(60% 55% at 50% 42%, {{stageGlow}} 0%, rgba(11,9,32,0) 70%), linear-gradient(180deg, #1A1240 0%, #0B0920 100%); overflow: hidden">
+    <div style="position: absolute; top: 18px; left: 18px; right: 18px; display: flex; align-items: center; justify-content: space-between">
+      <button aria-label="Back" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #F4F2FF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <div style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); font-family: Unbounded, sans-serif; font-weight: 700; font-size: 15px"><span style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFE69A, #FFC94A 60%, #C98A1A)"></span>4,820</div>
+      <button aria-label="Randomize look" onClick="{{shuffle}}" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #F4F2FF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"></path><path d="M4 20 21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg></button>
+    </div>
+    <div style="position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); width: 230px; height: 40px; border-radius: 50%; background: radial-gradient(closest-side, rgba(182,156,255,.55), rgba(124,92,255,.12) 70%, rgba(0,0,0,0)); border: 1px solid rgba(182,156,255,.3)"></div>
+    <svg style="position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%)" width="252" height="357" viewBox="0 0 240 340" aria-label="Your trader">
+      <defs>
+        <radialGradient id="gSkin" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="{{c.skinHi}}"></stop><stop offset=".55" stop-color="{{c.skin}}"></stop><stop offset="1" stop-color="{{c.skinLo}}"></stop></radialGradient>
+        <radialGradient id="gHair" cx="35%" cy="20%" r="90%"><stop offset="0" stop-color="{{c.hairHi}}"></stop><stop offset=".5" stop-color="{{c.hair}}"></stop><stop offset="1" stop-color="{{c.hairLo}}"></stop></radialGradient>
+        <linearGradient id="gTop" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="{{c.topHi}}"></stop><stop offset=".5" stop-color="{{c.top}}"></stop><stop offset="1" stop-color="{{c.topLo}}"></stop></linearGradient>
+        <linearGradient id="gBot" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="{{c.botHi}}"></stop><stop offset=".5" stop-color="{{c.bot}}"></stop><stop offset="1" stop-color="{{c.botLo}}"></stop></linearGradient>
+        <linearGradient id="gShoe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{c.shoeHi}}"></stop><stop offset="1" stop-color="{{c.shoeLo}}"></stop></linearGradient>
+        <linearGradient id="gAcc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{c.accHi}}"></stop><stop offset="1" stop-color="{{c.accLo}}"></stop></linearGradient>
+      </defs>
+
+      <sc-if value="{{v.hairLongBack}}" hint-placeholder-val="{{ false }}">
+        <path d="M56 100 C50 40 190 40 184 100 L192 214 Q184 232 160 226 L80 226 Q56 232 48 214 Z" fill="url(#gHair)"></path>
+      </sc-if>
+      <sc-if value="{{v.hairBobBack}}" hint-placeholder-val="{{ false }}">
+        <path d="M54 100 C48 44 192 44 186 100 L190 168 Q120 186 50 168 Z" fill="url(#gHair)"></path>
+      </sc-if>
+      <sc-if value="{{v.hairBraids}}" hint-placeholder-val="{{ false }}">
+        <rect x="46" y="110" width="26" height="140" rx="13" fill="url(#gHair)"></rect>
+        <rect x="168" y="110" width="26" height="140" rx="13" fill="url(#gHair)"></rect>
+        <path d="M48 140 H70 M48 168 H70 M48 196 H70 M48 224 H70 M170 140 H192 M170 168 H192 M170 196 H192 M170 224 H192" stroke="{{c.hairLo}}" stroke-width="3" stroke-linecap="round"></path>
+      </sc-if>
+
+      <ellipse cx="120" cy="330" rx="74" ry="9" fill="rgba(0,0,0,.35)"></ellipse>
+
+      <sc-if value="{{v.legsSkin}}" hint-placeholder-val="{{ false }}">
+        <rect x="96" y="250" width="20" height="62" rx="10" fill="url(#gSkin)"></rect>
+        <rect x="124" y="250" width="20" height="62" rx="10" fill="url(#gSkin)"></rect>
+      </sc-if>
+      <sc-if value="{{v.pants}}" hint-placeholder-val="{{ true }}">
+        <rect x="90" y="226" width="30" height="88" rx="14" fill="url(#gBot)"></rect>
+        <rect x="120" y="226" width="30" height="88" rx="14" fill="url(#gBot)"></rect>
+        <path d="M120 232 V300" stroke="{{c.botLo}}" stroke-width="2"></path>
+      </sc-if>
+      <sc-if value="{{v.cargo}}" hint-placeholder-val="{{ false }}">
+        <rect x="88" y="262" width="12" height="20" rx="4" fill="{{c.botLo}}"></rect>
+        <rect x="140" y="262" width="12" height="20" rx="4" fill="{{c.botLo}}"></rect>
+      </sc-if>
+      <sc-if value="{{v.shorts}}" hint-placeholder-val="{{ false }}">
+        <path d="M88 224 H152 L156 262 Q140 268 122 262 L120 250 L118 262 Q100 268 84 262 Z" fill="url(#gBot)"></path>
+      </sc-if>
+      <sc-if value="{{v.skirt}}" hint-placeholder-val="{{ false }}">
+        <path d="M90 222 H150 L166 270 Q120 284 74 270 Z" fill="url(#gBot)"></path>
+        <path d="M104 230 L96 272 M120 230 V276 M136 230 L144 272" stroke="{{c.botLo}}" stroke-width="2"></path>
+      </sc-if>
+
+      <sc-if value="{{v.sneakers}}" hint-placeholder-val="{{ true }}">
+        <path d="M84 318 Q84 300 104 302 Q120 302 124 316 Q124 326 112 326 H90 Q84 326 84 318 Z" fill="url(#gShoe)"></path>
+        <path d="M116 318 Q116 300 136 302 Q152 302 156 316 Q156 326 144 326 H122 Q116 326 116 318 Z" fill="url(#gShoe)"></path>
+        <path d="M86 322 H122 M118 322 H154" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.hightops}}" hint-placeholder-val="{{ false }}">
+        <path d="M92 292 H116 V312 Q128 314 126 322 Q124 328 112 328 H90 Q84 328 86 318 Z" fill="url(#gShoe)"></path>
+        <path d="M124 292 H148 V312 Q160 314 158 322 Q156 328 144 328 H122 Q116 328 118 318 Z" fill="url(#gShoe)"></path>
+        <path d="M88 324 H124 M120 324 H156" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path>
+        <circle cx="104" cy="304" r="4" fill="#FFFFFF"></circle><circle cx="136" cy="304" r="4" fill="#FFFFFF"></circle>
+      </sc-if>
+      <sc-if value="{{v.boots}}" hint-placeholder-val="{{ false }}">
+        <path d="M90 280 H118 V314 Q130 316 128 324 Q126 330 114 330 H88 Q82 330 84 320 Z" fill="url(#gShoe)"></path>
+        <path d="M122 280 H150 V314 Q162 316 160 324 Q158 330 146 330 H120 Q114 330 116 320 Z" fill="url(#gShoe)"></path>
+        <path d="M86 326 H126 M118 326 H158" stroke="{{c.shoeLo}}" stroke-width="5" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.slides}}" hint-placeholder-val="{{ false }}">
+        <rect x="88" y="318" width="34" height="9" rx="4.5" fill="#F4F2FF"></rect>
+        <rect x="118" y="318" width="34" height="9" rx="4.5" fill="#F4F2FF"></rect>
+        <rect x="90" y="308" width="30" height="12" rx="6" fill="url(#gShoe)"></rect>
+        <rect x="120" y="308" width="30" height="12" rx="6" fill="url(#gShoe)"></rect>
+      </sc-if>
+
+      <rect x="62" y="152" width="26" height="78" rx="13" fill="{{c.sleeve}}"></rect>
+      <rect x="152" y="152" width="26" height="78" rx="13" fill="{{c.sleeve}}"></rect>
+      <circle cx="75" cy="234" r="12" fill="url(#gSkin)"></circle>
+      <circle cx="165" cy="234" r="12" fill="url(#gSkin)"></circle>
+
+      <path d="M82 162 Q82 144 102 142 H138 Q158 144 158 162 L162 232 Q120 244 78 232 Z" fill="url(#gTop)"></path>
+      <sc-if value="{{v.hoodie}}" hint-placeholder-val="{{ true }}">
+        <path d="M96 196 H144 L140 222 H100 Z" fill="{{c.topLo}}" opacity=".55"></path>
+        <path d="M110 150 L108 182 M130 150 L132 182" stroke="#F4F2FF" stroke-width="3" stroke-linecap="round"></path>
+        <circle cx="108" cy="184" r="3" fill="#F4F2FF"></circle><circle cx="132" cy="184" r="3" fill="#F4F2FF"></circle>
+      </sc-if>
+      <sc-if value="{{v.puffer}}" hint-placeholder-val="{{ false }}">
+        <path d="M84 168 Q120 176 156 168 M82 190 Q120 198 158 190 M80 212 Q120 220 160 212" stroke="{{c.topLo}}" stroke-width="3" fill="none"></path>
+        <path d="M120 146 V238" stroke="{{c.topLo}}" stroke-width="3"></path>
+        <path d="M96 140 Q120 156 144 140 L144 150 Q120 166 96 150 Z" fill="{{c.topHi}}"></path>
+      </sc-if>
+      <sc-if value="{{v.varsity}}" hint-placeholder-val="{{ false }}">
+        <path d="M120 146 V238" stroke="{{c.topLo}}" stroke-width="2"></path>
+        <circle cx="104" cy="176" r="10" fill="#F4F2FF"></circle>
+        <path d="M99 171 L102 181 L104 175 L106 181 L109 171" stroke="{{c.top}}" stroke-width="2" fill="none" stroke-linejoin="round"></path>
+        <path d="M80 230 Q120 242 160 230" stroke="#F4F2FF" stroke-width="5" fill="none"></path>
+      </sc-if>
+      <sc-if value="{{v.tee}}" hint-placeholder-val="{{ false }}">
+        <path d="M104 144 Q120 158 136 144" stroke="{{c.topLo}}" stroke-width="3" fill="none"></path>
+        <path d="M104 184 L116 196 L136 174" stroke="{{c.topHi}}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </sc-if>
+      <sc-if value="{{v.chain}}" hint-placeholder-val="{{ false }}">
+        <path d="M100 146 Q120 176 140 146" stroke="url(#gAcc)" stroke-width="4" fill="none"></path>
+        <circle cx="120" cy="164" r="6" fill="url(#gAcc)"></circle>
+      </sc-if>
+
+      <rect x="108" y="128" width="24" height="22" rx="10" fill="{{c.skinLo}}"></rect>
+      <circle cx="60" cy="116" r="13" fill="url(#gSkin)"></circle>
+      <circle cx="180" cy="116" r="13" fill="url(#gSkin)"></circle>
+      <circle cx="120" cy="106" r="62" fill="url(#gSkin)"></circle>
+      <ellipse cx="96" cy="74" rx="22" ry="12" fill="#FFFFFF" opacity=".16"></ellipse>
+      <circle cx="90" cy="134" r="9" fill="#FF6F91" opacity=".28"></circle>
+      <circle cx="150" cy="134" r="9" fill="#FF6F91" opacity=".28"></circle>
+
+      <sc-if value="{{v.eyesRound}}" hint-placeholder-val="{{ true }}">
+        <ellipse cx="98" cy="116" rx="8" ry="10" fill="#1B1430"></ellipse>
+        <ellipse cx="142" cy="116" rx="8" ry="10" fill="#1B1430"></ellipse>
+        <circle cx="101" cy="112" r="3" fill="#FFFFFF"></circle>
+        <circle cx="145" cy="112" r="3" fill="#FFFFFF"></circle>
+      </sc-if>
+      <sc-if value="{{v.eyesHappy}}" hint-placeholder-val="{{ false }}">
+        <path d="M89 118 Q98 106 107 118 M133 118 Q142 106 151 118" stroke="#1B1430" stroke-width="4.5" fill="none" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.eyesChill}}" hint-placeholder-val="{{ false }}">
+        <path d="M89 116 H107 M133 116 H151" stroke="#1B1430" stroke-width="4.5" stroke-linecap="round"></path>
+        <ellipse cx="98" cy="120" rx="6" ry="4" fill="#1B1430"></ellipse>
+        <ellipse cx="142" cy="120" rx="6" ry="4" fill="#1B1430"></ellipse>
+      </sc-if>
+      <sc-if value="{{v.eyesWink}}" hint-placeholder-val="{{ false }}">
+        <ellipse cx="98" cy="116" rx="8" ry="10" fill="#1B1430"></ellipse>
+        <circle cx="101" cy="112" r="3" fill="#FFFFFF"></circle>
+        <path d="M133 118 Q142 108 151 118" stroke="#1B1430" stroke-width="4.5" fill="none" stroke-linecap="round"></path>
+      </sc-if>
+      <path d="M88 98 Q98 92 106 97 M134 97 Q142 92 152 98" stroke="{{c.hairLo}}" stroke-width="4" fill="none" stroke-linecap="round"></path>
+      <sc-if value="{{v.mouthSmile}}" hint-placeholder-val="{{ true }}">
+        <path d="M108 140 Q120 150 132 140" stroke="#1B1430" stroke-width="4" fill="none" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.mouthGrin}}" hint-placeholder-val="{{ false }}">
+        <path d="M106 138 Q120 158 134 138 Z" fill="#3A1426"></path>
+        <path d="M110 140 H130" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.mouthSmirk}}" hint-placeholder-val="{{ false }}">
+        <path d="M110 144 Q124 146 132 136" stroke="#1B1430" stroke-width="4" fill="none" stroke-linecap="round"></path>
+      </sc-if>
+
+      <sc-if value="{{v.hairBuzz}}" hint-placeholder-val="{{ false }}">
+        <path d="M60 104 C58 58 88 42 120 42 C152 42 182 58 180 104 C170 76 70 76 60 104 Z" fill="url(#gHair)"></path>
+      </sc-if>
+      <sc-if value="{{v.hairSwoop}}" hint-placeholder-val="{{ true }}">
+        <path d="M56 110 C48 50 92 34 126 38 C168 40 190 70 182 110 C178 90 166 80 150 74 C128 94 90 98 56 110 Z" fill="url(#gHair)"></path>
+        <path d="M84 60 Q116 44 150 56" stroke="#FFFFFF" stroke-width="5" opacity=".22" fill="none" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.hairCurls}}" hint-placeholder-val="{{ false }}">
+        <circle cx="66" cy="84" r="20" fill="url(#gHair)"></circle><circle cx="80" cy="58" r="22" fill="url(#gHair)"></circle><circle cx="106" cy="42" r="23" fill="url(#gHair)"></circle><circle cx="134" cy="42" r="23" fill="url(#gHair)"></circle><circle cx="160" cy="58" r="22" fill="url(#gHair)"></circle><circle cx="174" cy="84" r="20" fill="url(#gHair)"></circle><circle cx="58" cy="108" r="14" fill="url(#gHair)"></circle><circle cx="182" cy="108" r="14" fill="url(#gHair)"></circle>
+      </sc-if>
+      <sc-if value="{{v.hairFringe}}" hint-placeholder-val="{{ false }}">
+        <path d="M58 112 C54 56 90 40 120 40 C150 40 186 56 182 112 C174 84 150 68 122 68 C104 84 80 94 58 112 Z" fill="url(#gHair)"></path>
+        <path d="M86 56 Q118 42 152 54" stroke="#FFFFFF" stroke-width="5" opacity=".22" fill="none" stroke-linecap="round"></path>
+      </sc-if>
+      <sc-if value="{{v.hairBangs}}" hint-placeholder-val="{{ false }}">
+        <path d="M58 104 C56 54 184 54 182 104 L182 100 Q176 92 168 98 Q160 90 150 98 Q140 90 130 98 Q120 90 110 98 Q100 90 90 98 Q80 90 72 98 Q64 92 58 104 Z" fill="url(#gHair)"></path>
+      </sc-if>
+      <sc-if value="{{v.hairBuns}}" hint-placeholder-val="{{ false }}">
+        <circle cx="70" cy="50" r="24" fill="url(#gHair)"></circle>
+        <circle cx="170" cy="50" r="24" fill="url(#gHair)"></circle>
+        <path d="M60 104 C58 60 88 46 120 46 C152 46 182 60 180 104 C170 78 70 78 60 104 Z" fill="url(#gHair)"></path>
+      </sc-if>
+
+      <sc-if value="{{v.cap}}" hint-placeholder-val="{{ false }}">
+        <path d="M58 92 C58 40 182 40 182 92 Z" fill="url(#gAcc)"></path>
+        <path d="M58 90 Q120 80 200 96 Q206 104 192 104 Q120 96 58 100 Z" fill="{{c.accLo}}"></path>
+        <circle cx="120" cy="46" r="5" fill="{{c.accLo}}"></circle>
+      </sc-if>
+      <sc-if value="{{v.beanie}}" hint-placeholder-val="{{ false }}">
+        <path d="M58 92 C56 34 184 34 182 92 Z" fill="url(#gAcc)"></path>
+        <rect x="54" y="80" width="132" height="22" rx="11" fill="{{c.accLo}}"></rect>
+        <circle cx="120" cy="30" r="13" fill="{{c.accHi}}"></circle>
+      </sc-if>
+      <sc-if value="{{v.headphones}}" hint-placeholder-val="{{ false }}">
+        <path d="M52 112 C48 34 192 34 188 112" stroke="url(#gAcc)" stroke-width="10" fill="none" stroke-linecap="round"></path>
+        <rect x="42" y="98" width="24" height="40" rx="12" fill="url(#gAcc)"></rect>
+        <rect x="174" y="98" width="24" height="40" rx="12" fill="url(#gAcc)"></rect>
+      </sc-if>
+      <sc-if value="{{v.glasses}}" hint-placeholder-val="{{ false }}">
+        <rect x="82" y="104" width="32" height="24" rx="10" fill="rgba(255,255,255,.12)" stroke="url(#gAcc)" stroke-width="4"></rect>
+        <rect x="126" y="104" width="32" height="24" rx="10" fill="rgba(255,255,255,.12)" stroke="url(#gAcc)" stroke-width="4"></rect>
+        <path d="M114 114 H126" stroke="url(#gAcc)" stroke-width="4"></path>
+      </sc-if>
+    </svg>
+    <div style="position: absolute; left: 18px; bottom: 18px; padding: 5px 12px; border-radius: 999px; background: rgba(11,9,32,.65); border: 1px solid rgba(255,255,255,.14); font-size: 12px; font-weight: 700">{{equipped}}</div>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 14px 18px 18px; border-radius: 28px 28px 0 0; background: rgba(255,255,255,.05); border-top: 1px solid rgba(255,255,255,.12); margin-top: -18px; position: relative">
+    <div style="display: flex; gap: 6px; overflow-x: auto">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="6">
+        <button onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+      </sc-for>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{options}}" as="o" hint-placeholder-count="8">
+        <button onClick="{{o.pick}}" style="{{o.style}}">
+          <span style="font-weight: 700; font-size: 12px; color: #F4F2FF">{{o.label}}</span>
+          <span style="{{o.priceStyle}}">{{o.price}}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <sc-for list="{{colors}}" as="c" hint-placeholder-count="8">
+        <button aria-label="{{c.label}}" onClick="{{c.pick}}" style="{{c.style}}"></button>
+      </sc-for>
+    </div>
+    <div style="margin-top: auto; display: grid; grid-template-columns: 1fr 2fr; gap: 8px">
+      <button style="min-height: 50px; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #F4F2FF; font-weight: 700; font-size: 14px">Outfits</button>
+      <button style="min-height: 50px; border-radius: 999px; border: 0; background: linear-gradient(135deg, #7C5CFF, #FF4FD8); color: #fff; font-family: Unbounded, sans-serif; font-weight: 700; font-size: 15px">Save look</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { tab: 'hair', face: 'smile', skin: 3, hair: 'swoop', hairC: 0, top: 'hoodie', topC: 0, bot: 'pants', botC: 1, shoe: 'sneakers', shoeC: 0, acc: 'none', accC: 0 };
+  }
+  shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const t = amt < 0 ? 0 : 255, p = Math.abs(amt);
+    r = Math.round(r + (t - r) * p); g = Math.round(g + (t - g) * p); b = Math.round(b + (t - b) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  renderVals() {
+    const st = this.state;
+    const SKIN = ['#FCE3D0', '#F5CBA7', '#E8AE84', '#CF8E62', '#AE6E44', '#8A5332', '#6B3E24', '#4A2A18'];
+    const HAIR = ['#2A1E3A', '#5A3420', '#9A6234', '#E2B865', '#F2E3B8', '#FF7FB8', '#6FA8FF', '#B69CFF', '#3CE0A0'];
+    const CLOTH = ['#7C5CFF', '#FF5C8A', '#2BB98A', '#3D8BFF', '#F2A541', '#2B2F45', '#F4F2FF', '#B0453A', '#E9D6C0'];
+    const ACC = ['#2B2F45', '#F4F2FF', '#FF4FD8', '#FFC94A', '#3CFFB1', '#3D8BFF'];
+    const TABS = [['face', 'Face'], ['hair', 'Hair'], ['top', 'Top'], ['bot', 'Bottoms'], ['shoe', 'Shoes'], ['acc', 'Extras']];
+    const OPT = {
+      face: [['smile', 'Smile', ''], ['hype', 'Hype', ''], ['chill', 'Chill', ''], ['happy', 'Happy', ''], ['wink', 'Wink', '150']],
+      hair: [['buzz', 'Buzz', ''], ['swoop', 'Swoop', ''], ['curls', 'Curls', ''], ['long', 'Long', ''], ['bob', 'Bob', ''], ['buns', 'Space buns', '200'], ['braids', 'Braids', ''], ['afro', 'Big curls', '200']],
+      top: [['hoodie', 'Hoodie', ''], ['tee', 'Tee', ''], ['puffer', 'Puffer', '400'], ['varsity', 'Varsity', '600']],
+      bot: [['pants', 'Joggers', ''], ['cargo', 'Cargos', '250'], ['shorts', 'Shorts', ''], ['skirt', 'Pleated skirt', '250']],
+      shoe: [['sneakers', 'Runners', ''], ['hightops', 'High-tops', '300'], ['boots', 'Boots', '300'], ['slides', 'Slides', '']],
+      acc: [['none', 'None', ''], ['headphones', 'Headphones', ''], ['cap', 'Cap', '150'], ['beanie', 'Beanie', '150'], ['glasses', 'Glasses', ''], ['chain', 'Chain', '500']],
+    };
+    const PAL = { face: ['skin', SKIN, 'Skin tone'], hair: ['hairC', HAIR, 'Hair color'], top: ['topC', CLOTH, 'Top color'], bot: ['botC', CLOTH, 'Bottoms color'], shoe: ['shoeC', CLOTH, 'Shoe color'], acc: ['accC', ACC, 'Extra color'] };
+    const sh = (h, a) => this.shade(h, a);
+    const skin = SKIN[st.skin], hair = HAIR[st.hairC], top = CLOTH[st.topC], bot = CLOTH[st.botC], shoe = CLOTH[st.shoeC], acc = ACC[st.accC];
+    const c = {
+      skin, skinHi: sh(skin, 0.25), skinLo: sh(skin, -0.22),
+      hair, hairHi: sh(hair, 0.3), hairLo: sh(hair, -0.35),
+      top, topHi: sh(top, 0.25), topLo: sh(top, -0.3),
+      bot, botHi: sh(bot, 0.2), botLo: sh(bot, -0.3),
+      shoeHi: sh(shoe, 0.2), shoeLo: sh(shoe, -0.3),
+      accHi: sh(acc, 0.3), accLo: sh(acc, -0.3),
+      sleeve: st.top === 'varsity' ? '#E9E6F5' : sh(top, -0.12),
+    };
+    const f = st.face, h = st.hair, a = st.acc;
+    const v = {
+      eyesRound: f === 'smile' || f === 'hype', eyesHappy: f === 'happy', eyesChill: f === 'chill', eyesWink: f === 'wink',
+      mouthSmile: f === 'smile' || f === 'happy' || f === 'wink', mouthGrin: f === 'hype', mouthSmirk: f === 'chill',
+      hairBuzz: h === 'buzz', hairSwoop: h === 'swoop', hairCurls: h === 'curls' || h === 'afro', hairFringe: h === 'long' || h === 'braids', hairBangs: h === 'bob', hairBuns: h === 'buns',
+      hairLongBack: h === 'long' || h === 'afro', hairBobBack: h === 'bob', hairBraids: h === 'braids',
+      hoodie: st.top === 'hoodie', tee: st.top === 'tee', puffer: st.top === 'puffer', varsity: st.top === 'varsity',
+      pants: st.bot === 'pants' || st.bot === 'cargo', cargo: st.bot === 'cargo', shorts: st.bot === 'shorts', skirt: st.bot === 'skirt', legsSkin: st.bot === 'shorts' || st.bot === 'skirt',
+      sneakers: st.shoe === 'sneakers', hightops: st.shoe === 'hightops', boots: st.shoe === 'boots', slides: st.shoe === 'slides',
+      headphones: a === 'headphones', cap: a === 'cap', beanie: a === 'beanie', glasses: a === 'glasses', chain: a === 'chain',
+    };
+    const tabKey = st.tab, styleKey = { face: 'face', hair: 'hair', top: 'top', bot: 'bot', shoe: 'shoe', acc: 'acc' }[tabKey];
+    const [palKey, palList, palLabel] = PAL[tabKey];
+    const name = (k) => OPT[k].find((o) => o[0] === st[k])[1];
+    return {
+      c, v,
+      stageGlow: 'rgba(124,92,255,.55)',
+      equipped: name('hair') + ' · ' + name('top') + ' · ' + name('shoe'),
+      tabs: TABS.map((t) => ({ label: t[1], pick: () => this.setState({ tab: t[0] }),
+        style: 'flex: none; min-height: 38px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 13px; border: 1px solid ' + (tabKey === t[0] ? 'transparent' : 'rgba(255,255,255,.14)') + '; color: ' + (tabKey === t[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (tabKey === t[0] ? '#F4F2FF' : 'rgba(255,255,255,.06)') })),
+      options: OPT[tabKey].map((o) => {
+        const on = st[styleKey] === o[0];
+        return { label: o[1], price: o[2] ? o[2] + ' coins' : 'Free',
+          priceStyle: 'font-size: 11px; font-weight: 700; color: ' + (o[2] ? '#FFC94A' : '#A9A4CC'),
+          pick: () => this.setState({ [styleKey]: o[0] }),
+          style: 'min-height: 64px; padding: 8px 4px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-align: center; background: ' + (on ? 'rgba(124,92,255,.3)' : 'rgba(255,255,255,.06)') + '; border: 1.5px solid ' + (on ? '#B69CFF' : 'rgba(255,255,255,.1)') };
+      }),
+      colors: palList.map((col, i) => ({ label: palLabel + ' ' + (i + 1), pick: () => this.setState({ [palKey]: i }),
+        style: 'width: 34px; height: 34px; border-radius: 50%; padding: 0; background: radial-gradient(circle at 35% 30%, ' + sh(col, 0.3) + ', ' + col + ' 55%, ' + sh(col, -0.25) + '); border: 3px solid ' + (st[palKey] === i ? '#FFC94A' : 'rgba(255,255,255,.1)') })),
+      shuffle: () => {
+        const r = (n) => Math.floor(Math.random() * n);
+        const pickOpt = (k) => OPT[k][r(OPT[k].length)][0];
+        this.setState({ face: pickOpt('face'), hair: pickOpt('hair'), top: pickOpt('top'), bot: pickOpt('bot'), shoe: pickOpt('shoe'), acc: pickOpt('acc'), skin: r(SKIN.length), hairC: r(HAIR.length), topC: r(CLOTH.length), botC: r(CLOTH.length), shoeC: r(CLOTH.length), accC: r(ACC.length) });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

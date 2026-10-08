@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dream board and pets</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: radial-gradient(120% 60% at 50% 0%, #3A1F5C 0%, #0B0920 60%); color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; padding: 22px 18px; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 20px">My dream board</div>
+    <div style="font-size: 13px; color: #A9A4CC">Pin what you're trading toward. Your Pro Account grows it.</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+    <div style="border-radius: 22px; padding: 12px; min-height: 128px; box-sizing: border-box; background: linear-gradient(160deg, #FF8A5C, #FF4F8B); display: flex; flex-direction: column; justify-content: space-between">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l9-3 3-9 2 1-1 7 6-1 1 2-7 3-3 6-2-1 1-5z"></path></svg>
+      <div><div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 14px">Trip to Tokyo</div><div style="font-size: 12px; opacity: .9">$4,000 · 62%</div></div>
+      <div style="height: 6px; border-radius: 999px; background: rgba(255,255,255,.3)"><div style="width: 62%; height: 100%; border-radius: 999px; background: #fff"></div></div>
+    </div>
+    <div style="border-radius: 22px; padding: 12px; min-height: 128px; box-sizing: border-box; background: linear-gradient(160deg, #3D8BFF, #7C5CFF); display: flex; flex-direction: column; justify-content: space-between">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l2-6h14l2 6v3H3z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>
+      <div><div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 14px">First car</div><div style="font-size: 12px; opacity: .9">$12,000 · 21%</div></div>
+      <div style="height: 6px; border-radius: 999px; background: rgba(255,255,255,.3)"><div style="width: 21%; height: 100%; border-radius: 999px; background: #fff"></div></div>
+    </div>
+    <div style="border-radius: 22px; padding: 12px; min-height: 128px; box-sizing: border-box; background: linear-gradient(160deg, #2BB98A, #1C7F8C); display: flex; flex-direction: column; justify-content: space-between">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"></path><path d="M9 21v-6h6v6"></path></svg>
+      <div><div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 14px">Start my brand</div><div style="font-size: 12px; opacity: .9">$25,000 · 9%</div></div>
+      <div style="height: 6px; border-radius: 999px; background: rgba(255,255,255,.3)"><div style="width: 9%; height: 100%; border-radius: 999px; background: #fff"></div></div>
+    </div>
+    <button style="border-radius: 22px; min-height: 128px; border: 2px dashed rgba(255,255,255,.25); background: rgba(255,255,255,.04); color: #A9A4CC; font-weight: 700; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+      Add a dream
+    </button>
+  </div>
+
+  <div style="display: flex; align-items: baseline; justify-content: space-between">
+    <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 16px">Pets · 4 of 12</div>
+    <div style="font-size: 12px; color: #A9A4CC">Dress them up</div>
+  </div>
+  <div style="display: flex; gap: 10px">
+    <div style="flex: 1; border-radius: 20px; background: rgba(255,255,255,.06); border: 1px solid #FFC94A; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+      <svg width="54" height="50" viewBox="0 0 60 56"><path d="M12 22 L14 6 L24 16 Z" fill="#F2A541"></path><path d="M48 22 L46 6 L36 16 Z" fill="#F2A541"></path><ellipse cx="30" cy="32" rx="20" ry="18" fill="#F2A541"></ellipse><circle cx="23" cy="30" r="2.5" fill="#1B1430"></circle><circle cx="37" cy="30" r="2.5" fill="#1B1430"></circle><path d="M27 37 Q30 40 33 37" stroke="#1B1430" stroke-width="2" fill="none"></path><path d="M18 46 Q30 54 42 46" stroke="#FF6FB5" stroke-width="5" fill="none" stroke-linecap="round"></path></svg>
+      <div style="font-size: 12px; font-weight: 700">Mochi</div>
+    </div>
+    <div style="flex: 1; border-radius: 20px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+      <svg width="54" height="50" viewBox="0 0 60 56"><ellipse cx="12" cy="24" rx="7" ry="13" fill="#8C6A4F"></ellipse><ellipse cx="48" cy="24" rx="7" ry="13" fill="#8C6A4F"></ellipse><ellipse cx="30" cy="30" rx="18" ry="18" fill="#C69C72"></ellipse><circle cx="23" cy="28" r="2.5" fill="#1B1430"></circle><circle cx="37" cy="28" r="2.5" fill="#1B1430"></circle><ellipse cx="30" cy="36" rx="4" ry="3" fill="#1B1430"></ellipse><path d="M14 12 L46 12 L42 4 L18 4 Z" fill="#3D8BFF"></path></svg>
+      <div style="font-size: 12px; font-weight: 700">Biscuit</div>
+    </div>
+    <div style="flex: 1; border-radius: 20px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+      <svg width="54" height="50" viewBox="0 0 60 56"><rect x="12" y="14" width="36" height="30" rx="10" fill="#9AA3C7"></rect><rect x="18" y="22" width="24" height="12" rx="6" fill="#0B0920"></rect><circle cx="25" cy="28" r="3" fill="#3CFFB1"></circle><circle cx="35" cy="28" r="3" fill="#3CFFB1"></circle><path d="M30 14 L30 6" stroke="#9AA3C7" stroke-width="3"></path><circle cx="30" cy="5" r="3" fill="#FF4FD8"></circle></svg>
+      <div style="font-size: 12px; font-weight: 700">Byte</div>
+    </div>
+    <div style="flex: 1; border-radius: 20px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.18); padding: 10px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #A9A4CC">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+      <div style="font-size: 11px; font-weight: 700; text-align: center">Phoenix<br>Moon base</div>
+    </div>
+  </div>
+
+  <div style="border-radius: 24px; padding: 14px; background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(255,79,216,.25)); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; gap: 12px">
+    <div style="width: 56px; height: 56px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #3CFFB1, #7C5CFF); flex: none"><div style="width: 100%; height: 100%; border-radius: 50%; background: #0B0920; display: flex; align-items: center; justify-content: center; font-family: Unbounded, sans-serif; font-weight: 700">J</div></div>
+    <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+      <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 14px">My trader card</div>
+      <div style="font-size: 12px; color: #D8D3F5">Gold league · 58% win rate · 1:2.4 avg R:R</div>
+    </div>
+    <button aria-label="Share trader card" style="margin-left: auto; width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; background: #F4F2FF; color: #0B0920; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"></path><path d="M7 8l5-5 5 5"></path><path d="M5 14v5h14v-5"></path></svg></button>
+  </div>
+
+  <div style="border-radius: 22px; padding: 12px 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); display: flex; flex-direction: column; gap: 8px">
+    <div style="font-weight: 700; font-size: 14px">Friends visited your room</div>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #D8D3F5">
+      <div style="display: flex"><span style="width: 28px; height: 28px; border-radius: 50%; background: #FF8A5C; border: 2px solid #0B0920"></span><span style="width: 28px; height: 28px; border-radius: 50%; background: #3D8BFF; border: 2px solid #0B0920; margin-left: -8px"></span><span style="width: 28px; height: 28px; border-radius: 50%; background: #2BB98A; border: 2px solid #0B0920; margin-left: -8px"></span></div>
+      Ari, Dev and Sofia left 7 reactions
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

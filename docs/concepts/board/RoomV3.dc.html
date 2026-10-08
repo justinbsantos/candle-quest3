@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Diorama trading room</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B69CFF}a:hover{color:#fff}
+button{font-family:inherit;cursor:pointer}
+@keyframes rmBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0B0920; color: #F4F2FF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="position: relative; height: 470px; flex: none; background: {{stageBg}}; overflow: hidden">
+    <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; z-index: 2">
+      <div style="display: flex; flex-direction: column">
+        <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 18px">My setup</div>
+        <div style="font-size: 12px; color: #D8D3F5">{{homeName}} · setup score {{score}}</div>
+      </div>
+      <div style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(11,9,32,.6); border: 1px solid rgba(255,255,255,.14)">
+        <sc-for list="{{themes}}" as="m" hint-placeholder-count="3">
+          <button onClick="{{m.pick}}" style="{{m.style}}">{{m.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+    <svg style="position: absolute; left: 0; top: 66px" width="390" height="374" viewBox="0 -14 360 345" aria-label="Your trading room">
+      <defs>
+        <filter id="rmGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4"></feGaussianBlur></filter>
+        <filter id="rmSoft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"></feGaussianBlur></filter>
+        <radialGradient id="rmLamp" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".75"></stop><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="rmBag" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="{{bagHi}}"></stop><stop offset=".6" stop-color="{{bag}}"></stop><stop offset="1" stop-color="{{bagLo}}"></stop></radialGradient>
+        <radialGradient id="rmBean" cx="34%" cy="24%" r="85%"><stop offset="0" stop-color="#C9B8FF"></stop><stop offset=".55" stop-color="#9B7BFF"></stop><stop offset="1" stop-color="#6E55C8"></stop></radialGradient>
+        <linearGradient id="rmFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF7A1A"></stop><stop offset="1" stop-color="#FFD34D"></stop></linearGradient>
+      </defs>
+      <sc-for list="{{shapes}}" as="f" hint-placeholder-count="80">
+        <sc-if value="{{f.isPoly}}" hint-placeholder-val="{{ true }}">
+          <polygon points="{{f.pts}}" fill="{{f.fill}}" stroke="{{f.stroke}}" stroke-width="{{f.sw}}" stroke-linejoin="round" opacity="{{f.op}}" filter="{{f.filter}}"></polygon>
+        </sc-if>
+        <sc-if value="{{f.isLine}}" hint-placeholder-val="{{ false }}">
+          <polyline points="{{f.pts}}" stroke="{{f.col}}" stroke-width="{{f.w}}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="{{f.op}}" filter="{{f.filter}}"></polyline>
+        </sc-if>
+        <sc-if value="{{f.isGlow}}" hint-placeholder-val="{{ false }}">
+          <ellipse cx="{{f.x}}" cy="{{f.y}}" rx="{{f.rx}}" ry="{{f.ry}}" fill="{{f.fill}}" opacity="{{f.op}}"></ellipse>
+        </sc-if>
+      </sc-for>
+      <sc-for list="{{bags}}" as="b" hint-placeholder-count="2">
+        <ellipse cx="{{b.x}}" cy="{{b.sy}}" rx="{{b.rx}}" ry="{{b.sry}}" fill="#000000" opacity=".28"></ellipse>
+        <path d="{{b.d}}" fill="url(#rmBag)"></path>
+        <ellipse cx="{{b.hx}}" cy="{{b.hy}}" rx="{{b.hrx}}" ry="{{b.hry}}" fill="#FFFFFF" opacity=".16"></ellipse>
+      </sc-for>
+      <g style="animation: rmBob 1.8s ease-in-out infinite">
+        <ellipse cx="{{bean.x}}" cy="{{bean.sy}}" rx="13" ry="4" fill="#000000" opacity=".3"></ellipse>
+        <rect x="{{bean.bx}}" y="{{bean.by}}" width="24" height="40" rx="12" fill="url(#rmBean)"></rect>
+        <rect x="{{bean.tx}}" y="{{bean.ty}}" width="24" height="12" fill="#2B2F45" opacity=".9"></rect>
+        <ellipse cx="{{bean.e1}}" cy="{{bean.ey}}" rx="2.4" ry="3" fill="#1B1430"></ellipse>
+        <ellipse cx="{{bean.e2}}" cy="{{bean.ey}}" rx="2.4" ry="3" fill="#1B1430"></ellipse>
+        <rect x="{{bean.wx}}" y="{{bean.wy}}" width="2" height="5" fill="#2A1E3A"></rect>
+        <path d="{{bean.flame}}" fill="url(#rmFlame)"></path>
+      </g>
+    </svg>
+    <div style="position: absolute; left: 16px; bottom: 14px; padding: 6px 12px; border-radius: 999px; background: rgba(60,255,177,.16); border: 1px solid rgba(60,255,177,.4); color: #3CFFB1; font-size: 12px; font-weight: 700">+{{tpBonus}}% coins per take profit</div>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 18px; border-radius: 28px 28px 0 0; background: rgba(255,255,255,.05); border-top: 1px solid rgba(255,255,255,.12); margin-top: -10px; position: relative">
+    <div style="display: flex; align-items: baseline; justify-content: space-between">
+      <div style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 15px">Upgrade your setup</div>
+      <div style="font-size: 12px; color: #A9A4CC">{{hint}}</div>
+    </div>
+    <sc-for list="{{slots}}" as="s" hint-placeholder-count="5">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 16px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1)">
+        <div style="{{s.iconStyle}}">{{s.lv}}</div>
+        <div style="display: flex; flex-direction: column; min-width: 0; flex: 1">
+          <div style="font-weight: 700; font-size: 13px">{{s.name}} <span style="color: #A9A4CC; font-weight: 600">· {{s.item}}</span></div>
+          <div style="font-size: 11px; color: #3CFFB1">{{s.perk}}</div>
+        </div>
+        <button onClick="{{s.up}}" style="{{s.btnStyle}}">{{s.cost}}</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { home: 0, screens: 0, light: 0, seats: 0, media: 0, theme: 'midnight' }; }
+  shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const t = amt < 0 ? 0 : 255, p = Math.abs(amt);
+    r = Math.round(r + (t - r) * p); g = Math.round(g + (t - g) * p); b = Math.round(b + (t - b) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  renderVals() {
+    const st = this.state, sh = (h, a) => this.shade(h, a);
+    const HOMES = [{ name: 'Tiny room', N: 6, W: 7 }, { name: 'Bedroom', N: 8, W: 8 }, { name: 'Studio apartment', N: 10, W: 9 }];
+    const H = HOMES[st.home], N = H.N, W = H.W;
+    const TH = {
+      midnight: { wallL: '#8C99AE', wallR: '#66748C', rim: '#DCE3EA', floor: '#4B5A76', plank: '#3F4D68', rug: '#7B88A1', slab: '#2C3446', wood: '#8A6A4A', dark: '#2A2F3D', led: '#3FF2FF', bag: '#2E3240', bg: 'radial-gradient(80% 70% at 50% 45%, #8A5A2E 0%, #3A2410 45%, #0B0920 100%)' },
+      cozy: { wallL: '#C9A7B9', wallR: '#A9879E', rim: '#F4E6EC', floor: '#9C7356', plank: '#8A6349', rug: '#E9C6D2', slab: '#5E4234', wood: '#B98A62', dark: '#4A3A44', led: '#FFB3D9', bag: '#D98BA8', bg: 'radial-gradient(80% 70% at 50% 45%, #B7708E 0%, #4A2338 45%, #0B0920 100%)' },
+      clean: { wallL: '#E7E4DE', wallR: '#CFCBC3', rim: '#FFFFFF', floor: '#C7B49A', plank: '#B8A588', rug: '#EFEAE2', slab: '#8F806C', wood: '#D7C3A4', dark: '#3A3F4D', led: '#9FD8FF', bag: '#8FA6B8', bg: 'radial-gradient(80% 70% at 50% 45%, #7FA0B8 0%, #2C3E52 45%, #0B0920 100%)' },
+    };
+    // the tiny room starts shabby: plain grey paint and a bare concrete floor, whatever theme is picked
+    const T0 = TH[st.theme];
+    const T = st.home === 0 ? Object.assign({}, T0, { wallL: '#8E8F96', wallR: '#74757D', rim: '#C9CBD1', floor: '#6A6B70', plank: '#606166', bg: 'radial-gradient(80% 70% at 50% 45%, #4A4038 0%, #1E1914 45%, #0B0920 100%)' }) : T0;
+    const yoff = (10 - N) * 6;
+    const P = (gx, gy, z) => (180 + (gx - gy) * 16).toFixed(1) + ',' + (150 + yoff + (gx + gy) * 8 - z * 16).toFixed(1);
+    const Pn = (gx, gy, z) => [180 + (gx - gy) * 16, 150 + yoff + (gx + gy) * 8 - z * 16];
+    // everything goes into ONE list in painter's order, so walls and floor lines stay behind furniture
+    const shapes = [];
+    const dim = st.light === 0 ? -0.32 : 0;
+    const D = (c) => (dim && typeof c === 'string' && c[0] === '#' ? sh(c, dim) : c);
+    const faces = { push: (f) => shapes.push(Object.assign({ isPoly: true }, f, { fill: D(f.fill), stroke: f.stroke === 'none' ? 'none' : D(f.stroke) })) };
+    const lines = { push: (...ls) => ls.forEach((l) => shapes.push(Object.assign({ isLine: true }, l, { col: D(l.col) }))) };
+    const glows = { push: (...gs) => gs.forEach((g) => shapes.push(Object.assign({ isGlow: true }, g))) };
+    const poly = (pts, fill, o) => { o = o || {}; faces.push({ pts: pts.join(' '), fill, stroke: o.stroke || fill, sw: o.sw == null ? 1 : o.sw, op: o.op == null ? 1 : o.op, filter: o.filter || '' }); };
+    const box = (gx, gy, w, d, h, z, col) => {
+      poly([P(gx + w, gy, z), P(gx + w, gy + d, z), P(gx + w, gy + d, z + h), P(gx + w, gy, z + h)], sh(col, -0.3));
+      poly([P(gx, gy + d, z), P(gx + w, gy + d, z), P(gx + w, gy + d, z + h), P(gx, gy + d, z + h)], sh(col, -0.12));
+      poly([P(gx, gy, z + h), P(gx + w, gy, z + h), P(gx + w, gy + d, z + h), P(gx, gy + d, z + h)], sh(col, 0.12));
+    };
+    const line = (pts, col, w, o) => { o = o || {}; lines.push({ pts: pts.join(' '), col, w, op: o.op == null ? 1 : o.op, filter: o.filter || '' }); };
+    const shadow = (gx, gy, w, d) => poly([P(gx + .15, gy + .15, 0), P(gx + w + .35, gy + .15, 0), P(gx + w + .35, gy + d + .35, 0), P(gx + .15, gy + d + .35, 0)], '#000000', { op: .22, sw: 0, filter: 'url(#rmSoft)' });
+
+    // slab, floor, walls
+    const S = 0.7, t = 0.45;
+    poly([P(0, N, 0), P(N, N, 0), P(N, N, -S), P(0, N, -S)], sh(T.slab, 0.1));
+    poly([P(N, -t, 0), P(N, N, 0), P(N, N, -S), P(N, -t, -S)], T.slab);
+    poly([P(-t, N, 0), P(0, N, 0), P(0, N, -S), P(-t, N, -S)], sh(T.slab, 0.1));
+    poly([P(0, 0, 0), P(N, 0, 0), P(N, N, 0), P(0, N, 0)], T.floor);
+    if (st.home > 0) for (let i = 1; i < N; i++) line([P(i, 0, 0.01), P(i, N, 0.01)], T.plank, 1.2, { op: .8 });
+    else { line([P(1.2, 2.5, .01), P(2.4, 3.1, .01), P(2.9, 4.4, .01)], '#55565B', 1.2); line([P(4.2, 4.4, .01), P(5.1, 5.2, .01)], '#55565B', 1.2); }
+    poly([P(0, 0, 0), P(0, N, 0), P(0, N, W), P(0, 0, W)], T.wallL);
+    poly([P(0, 0, 0), P(N, 0, 0), P(N, 0, W), P(0, 0, W)], T.wallR);
+    poly([P(-t, -t, W), P(-t, N, W), P(0, N, W), P(0, 0, W), P(N, 0, W), P(N, -t, W)], T.rim);
+    poly([P(-t, N, -S), P(0, N, -S), P(0, N, W), P(-t, N, W)], sh(T.rim, -0.08));
+    poly([P(N, -t, -S), P(N, 0, -S), P(N, 0, W), P(N, -t, W)], sh(T.rim, -0.18));
+    line([P(0, 0, .25), P(0, N, .25)], sh(T.wallL, -0.2), 2.5);
+    line([P(0, 0, .25), P(N, 0, .25)], sh(T.wallR, -0.2), 2.5);
+
+    if (st.home === 0) {
+      // water stain + a crooked taped-up poster: you're just getting started
+      const c = Pn(0, 4.6, 5.6);
+      glows.push({ x: c[0].toFixed(1), y: c[1].toFixed(1), rx: 16, ry: 22, fill: '#5E5B52', op: .35 });
+      poly([P(1.6, 0.02, 3.6), P(2.9, 0.02, 3.9), P(2.8, 0.02, 5.4), P(1.5, 0.02, 5.1)], '#E8E2D2');
+      line([P(1.8, 0.03, 4.0), P(2.2, 0.03, 4.6), P(2.6, 0.03, 4.3)], '#B0453A', 1.6);
+      line([P(1.45, 0.03, 5.05), P(1.75, 0.03, 5.2)], '#E9D9A8', 3); line([P(2.75, 0.03, 5.35), P(3.0, 0.03, 5.2)], '#E9D9A8', 3);
+    } else {
+      // framed chart posters
+      const px = N * 0.46;
+      poly([P(px, 0.02, W - 3.8), P(px + 1.5, 0.02, W - 3.8), P(px + 1.5, 0.02, W - 1.6), P(px, 0.02, W - 1.6)], '#1C2130', { stroke: '#F4F2FF', sw: 2 });
+      line([P(px + .2, 0.03, W - 3.4), P(px + .6, 0.03, W - 2.8), P(px + .9, 0.03, W - 3.1), P(px + 1.3, 0.03, W - 2.0)], '#F4F2FF', 1.6);
+      if (st.home >= 2) { poly([P(6.6, 0.02, 4.8), P(7.8, 0.02, 4.8), P(7.8, 0.02, 6.6), P(6.6, 0.02, 6.6)], '#E9EEF5', { stroke: '#1C2130', sw: 2 }); for (let k = 0; k < 5; k++) line([P(6.85 + k * 0.2, 0.03, 5.2 + (k % 2) * .2), P(6.85 + k * 0.2, 0.03, 6.0 + (k % 3) * .15)], k % 2 ? '#FF4D6D' : '#2BB98A', 2.2); }
+    }
+
+    // hex LEDs on the right wall
+    if (st.light >= 2) {
+      const hex = (cx, cz, r, col, blur) => { const pts = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; pts.push(P(cx + r * Math.cos(a), 0.03, cz + r * Math.sin(a))); } poly(pts, col, { sw: 0, filter: blur ? 'url(#rmGlow)' : '', op: blur ? .9 : 1 }); };
+      const hx = N - 0.8;
+      [[W - 1.8], [W - 2.8], [W - 3.8], [W - 4.8]].forEach(([z], i) => { const xx = hx + (i % 2 ? .3 : -.05); hex(xx, z, .5, T.led, true); hex(xx, z, .4, sh(T.led, 0.35), false); });
+    }
+
+    // bed: mattress on the floor, then a real bed
+    const bedY = N - 3.4;
+    if (st.home <= 1) {
+      box(0, bedY, 2.2, 3.2, .45, 0, '#D9D4C7');
+      box(0.15, bedY + .15, .9, .9, .2, .45, '#F4F2EE');
+      box(0.1, bedY + 1.3, 2.0, 1.8, .08, .45, st.home === 0 ? '#7E8796' : '#7C5CFF');
+    }
+
+    // media wall (needs the bedroom)
+    if (st.media >= 1) {
+      const m0 = 1.2, m1 = N >= 10 ? 7 : N - 3.8;
+      box(0, m0, 1.4, m1 - m0, 1.4, 0, T.dark);
+      box(0, m0, 1.5, m1 - m0, .12, 1.4, T.wood);
+      poly([P(0.05, m0 + .4, 2.4), P(0.05, m1 - .4, 2.4), P(0.05, m1 - .4, 4.8), P(0.05, m0 + .4, 4.8)], '#12151E', { stroke: '#2A2F3D', sw: 2 });
+      poly([P(0.06, m0 + .55, 2.55), P(0.06, m1 - .55, 2.55), P(0.06, m1 - .55, 4.65), P(0.06, m0 + .55, 4.65)], st.media >= 2 ? '#1D3550' : '#161A24');
+      if (st.media >= 2) {
+        line([P(0.07, m0 + .8, 3.1), P(0.07, m0 + 1.8, 3.6), P(0.07, m1 - 1.6, 3.3), P(0.07, m1 - .8, 4.3)], '#3CFFB1', 2);
+        box(0, m0, 0.9, m1 - m0, .16, W - 1.6, '#F1F3F6');
+        box(0.15, m0 + .5, .5, .4, .7, W - 1.44, '#2BB98A'); box(0.15, m0 + 1.8, .5, .5, .55, W - 1.44, '#FF8A5C'); box(0.15, m1 - 1.2, .5, .6, .4, W - 1.44, '#3D8BFF');
+        if (N >= 10) { box(0.2, 0.2, .8, .8, 4.4, 0, T.dark); box(0.2, 7.2, .8, .8, 4.4, 0, T.dark); }
+      }
+    }
+
+    // rug once you have something to sit on
+    if (st.seats >= 1) poly([P(N * .3, N * .38, .03), P(N * .86, N * .38, .03), P(N * .86, N * .92, .03), P(N * .3, N * .92, .03)], T.rug, { op: .95 });
+
+    // trading desk along the right wall
+    const dX = N >= 10 ? 3.4 : N >= 8 ? 2.6 : 2.0;
+    if (st.screens === 0) {
+      // cardboard box + old laptop
+      shadow(dX + .3, .1, 1.8, 1.5);
+      box(dX + .3, .1, 1.8, 1.5, 1.6, 0, '#C9A26B');
+      line([P(dX + .3, .85, 1.61), P(dX + 2.1, .85, 1.61)], '#E9D9A8', 3);
+      box(dX + .6, .45, 1.1, .75, .06, 1.6, '#7A7F8C');
+      poly([P(dX + .6, .45, 1.66), P(dX + 1.7, .45, 1.66), P(dX + 1.7, .4, 2.5), P(dX + .6, .4, 2.5)], '#3A3F4D');
+      poly([P(dX + .68, .47, 1.74), P(dX + 1.62, .47, 1.74), P(dX + 1.62, .43, 2.42), P(dX + .68, .43, 2.42)], '#1B2E4A');
+      line([P(dX + .75, .48, 1.9), P(dX + 1.0, .48, 2.15), P(dX + 1.25, .48, 2.0), P(dX + 1.55, .48, 2.3)], '#3CFFB1', 1.4);
+    } else {
+      const Dw = Math.min(5.4, N - 1.6 - dX);
+      const deskC = st.screens >= 3 ? '#1E2230' : st.screens === 1 ? '#B8BCC6' : T.wood;
+      shadow(dX, 0, Dw, 2.4);
+      box(dX + .2, 0.2, .2, 2, 2.6, 0, sh(deskC, -0.1));
+      box(dX + Dw - .4, 0.2, .2, 2, 2.6, 0, sh(deskC, -0.1));
+      if (st.screens >= 2) {
+        box(dX + .6, 0.4, .9, 1.5, 2.0, 0, '#1A1D27');
+        const f1 = Pn(dX + 1.5, 1.0, 1.4), f2 = Pn(dX + 1.5, 1.0, .7);
+        glows.push({ x: f1[0].toFixed(1), y: f1[1].toFixed(1), rx: 5, ry: 6, fill: '#FF4D6D', op: .9 }, { x: f2[0].toFixed(1), y: f2[1].toFixed(1), rx: 5, ry: 6, fill: '#FF4D6D', op: .9 });
+      }
+      box(dX, 0, Dw, 2.4, .22, 2.6, deskC);
+      if (st.screens >= 3) line([P(dX, 2.4, 2.62), P(dX + Dw, 2.4, 2.62)], '#FF4D6D', 2.2);
+      const n = st.screens;
+      const mw = n === 1 ? Math.min(2.2, Dw - .6) : n === 2 ? (Dw - .7) / 2 : (Dw - .5) / 3;
+      const gap = n === 3 ? .1 : .3;
+      const start = dX + (Dw - (n * mw + (n - 1) * gap)) / 2;
+      for (let i = 0; i < n; i++) {
+        const x = start + i * (mw + gap), y = n === 3 && i !== 1 ? 0.5 : 0.32;
+        box(x + mw / 2 - .12, .45, .24, .24, .5, 2.82, '#2B2F45');
+        box(x, y, mw, .16, 1.3, 3.2, '#14171F');
+        poly([P(x + .08, y + .17, 3.28), P(x + mw - .08, y + .17, 3.28), P(x + mw - .08, y + .17, 4.42), P(x + .08, y + .17, 4.42)], '#0E1A33');
+        const pts = []; for (let k = 0; k < 7; k++) pts.push(P(x + .15 + k * (mw - .3) / 6, y + .18, 3.45 + [.2, .45, .3, .6, .5, .8, .7][k] * .85));
+        line(pts, i === 1 ? '#FF4D6D' : '#3CFFB1', 1.6);
+      }
+      box(dX + Dw / 2 - .9, 1.3, 1.8, .55, .08, 2.82, '#F2D9A8');
+    }
+
+    // nightstand (bedroom and up)
+    if (st.home >= 1) { box(N - 1.1, 0.15, .95, 1.2, 1.4, 0, T.dark); box(N - 1.1, 0.15, .95, 1.2, .1, 1.4, T.wood); }
+
+    // lighting: bare bulb, desk lamp, LEDs, neon
+    if (st.light === 0) {
+      const top = Pn(N / 2, N / 2, W), bulb = Pn(N / 2, N / 2, W - 2.2);
+      line([top[0] + ',' + top[1], bulb[0] + ',' + bulb[1]], '#1A1A1F', 1.2);
+      glows.push({ x: bulb[0].toFixed(1), y: (bulb[1] + 3).toFixed(1), rx: 40, ry: 34, fill: 'url(#rmLamp)', op: .7 }, { x: bulb[0].toFixed(1), y: (bulb[1] + 3).toFixed(1), rx: 4, ry: 5, fill: '#FFE9B8', op: 1 });
+    } else {
+      const lp = Pn(dX + 2, 1.2, 3.4);
+      glows.push({ x: lp[0].toFixed(1), y: lp[1].toFixed(1), rx: 70, ry: 44, fill: 'url(#rmLamp)', op: 1 });
+    }
+    if (st.light >= 3) {
+      line([P(0.1, 0.1, W - .4), P(N - .2, 0.1, W - .4)], '#FF4FD8', 7, { filter: 'url(#rmGlow)', op: .9 });
+      line([P(0.1, 0.1, W - .4), P(N - .2, 0.1, W - .4)], '#FFC2F2', 2);
+      line([P(0.1, 0.1, W - .4), P(0.1, N - .2, W - .4)], '#7C5CFF', 7, { filter: 'url(#rmGlow)', op: .9 });
+      line([P(0.1, 0.1, W - .4), P(0.1, N - .2, W - .4)], '#D5C8FF', 2);
+    }
+
+    // seating
+    const bags = [];
+    const bag = (gx, gy, s) => {
+      const [x, y] = Pn(gx, gy, 0);
+      const rx = 26 * s, ry = 20 * s;
+      bags.push({ x: x.toFixed(1), sy: (y + 2).toFixed(1), rx: (rx * 1.1).toFixed(1), sry: (ry * .45).toFixed(1),
+        d: 'M' + (x - rx) + ' ' + y + ' C' + (x - rx * 1.05) + ' ' + (y - ry * 1.6) + ' ' + (x - rx * .2) + ' ' + (y - ry * 2.3) + ' ' + (x + rx * .25) + ' ' + (y - ry * 1.9) + ' C' + (x + rx * .9) + ' ' + (y - ry * 1.4) + ' ' + (x + rx * 1.1) + ' ' + (y - ry * .6) + ' ' + (x + rx) + ' ' + y + ' Q' + x + ' ' + (y + ry * .5) + ' ' + (x - rx) + ' ' + y + ' Z',
+        hx: (x - rx * .35).toFixed(1), hy: (y - ry * 1.5).toFixed(1), hrx: (rx * .35).toFixed(1), hry: (ry * .25).toFixed(1) });
+    };
+    const cX = dX + 1.4;
+    if (st.seats === 0) {
+      // milk crate stool
+      box(cX, 2.6, .9, .9, .9, 0, '#3D7BD9');
+      for (let k = 1; k < 3; k++) line([P(cX + k * .3, 3.5, .1), P(cX + k * .3, 3.5, .8)], '#2A5AA8', 1.4);
+    } else if (st.seats === 1) {
+      bag(N * .55, N * .62, .9);
+      if (N >= 8) bag(N * .42, N * .84, .8);
+    } else {
+      box(cX, 2.9, 1.2, 1.2, .3, 1.2, '#C94A3A'); box(cX + .45, 3.35, .3, .3, 1.2, 0, '#2B2F45'); box(cX, 3.95, 1.2, .26, 2.1, 1.4, '#C94A3A');
+      if (st.seats >= 3) bag(N * .42, N * .82, .9);
+    }
+
+    const [bx, by] = Pn(N * .7, N * .74, 0);
+    const bean = { x: bx.toFixed(1), sy: (by + 1).toFixed(1), bx: (bx - 12).toFixed(1), by: (by - 42).toFixed(1), tx: (bx - 12).toFixed(1), ty: (by - 22).toFixed(1), e1: (bx - 5).toFixed(1), e2: (bx + 5).toFixed(1), ey: (by - 32).toFixed(1), wx: (bx - 1).toFixed(1), wy: (by - 47).toFixed(1),
+      flame: 'M' + bx + ' ' + (by - 62) + ' C' + (bx + 6) + ' ' + (by - 55) + ' ' + (bx + 6) + ' ' + (by - 50) + ' ' + bx + ' ' + (by - 46) + ' C' + (bx - 6) + ' ' + (by - 50) + ' ' + (bx - 6) + ' ' + (by - 55) + ' ' + bx + ' ' + (by - 62) + ' Z' };
+
+    const NAMES = {
+      screens: ['Old laptop on a box', '1 monitor + folding desk', 'Dual screens + gaming PC', 'Triple curved + RGB desk'],
+      light: ['Bare bulb', 'Desk lamp', 'Lamp + hex LEDs', 'Full neon'],
+      seats: ['Milk crate', 'Bean bags', 'Gaming chair', 'Chair + bean bag'],
+      media: ['Nothing yet', 'Media console + TV', 'TV wall + shelves'],
+    };
+    const MAX = { screens: 3, light: 3, seats: 3, media: 2 };
+    const cap = (k) => Math.min(MAX[k], st.home + (k === 'media' ? 0 : 1));
+    const cost = (k, base) => st[k] >= MAX[k] ? 'Maxed' : st[k] >= cap(k) ? 'Move up first' : Math.round(base * Math.pow(1.85, st[k])).toLocaleString();
+    const icon = (col) => 'width: 34px; height: 34px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: Unbounded, sans-serif; font-weight: 700; font-size: 12px; color: #0B0920; background: linear-gradient(145deg, ' + sh(col, .25) + ', ' + col + ' 55%, ' + sh(col, -.25) + ')';
+    const up = (k) => () => { if (st[k] < cap(k)) this.setState({ [k]: st[k] + 1 }); };
+    const btn = (label) => 'min-height: 36px; padding: 0 12px; border-radius: 999px; border: 0; font-weight: 800; font-size: 12px; white-space: nowrap; ' + (/^[\d,]+$/.test(label) ? 'background: #FFC94A; color: #2A1A00' : 'background: rgba(255,255,255,.1); color: #A9A4CC');
+    const slot = (k, name, perk, base, col) => { const c = cost(k, base); return { name, item: NAMES[k][st[k]], perk, lv: 'L' + st[k], cost: c, btnStyle: btn(c), up: up(k), iconStyle: icon(col) }; };
+    const homeCost = st.home >= 2 ? 'Start over' : ['800', '2,500'][st.home];
+    return {
+      shapes, bags, bean,
+      bag: T.bag, bagHi: sh(T.bag, .3), bagLo: sh(T.bag, -.35),
+      stageBg: T.bg, homeName: H.name,
+      hint: st.home === 0 ? 'Everyone starts here' : 'Bigger home, bigger setup',
+      score: (st.home * 2 + st.screens + st.light + st.seats + st.media) * 10,
+      tpBonus: st.screens * 5,
+      themes: [['midnight', 'Midnight'], ['cozy', 'Cozy'], ['clean', 'Clean']].map((m) => ({ label: m[1], pick: () => this.setState({ theme: m[0] }),
+        style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; border: 0; font-weight: 700; font-size: 11px; color: ' + (st.theme === m[0] ? '#0B0920' : '#F4F2FF') + '; background: ' + (st.theme === m[0] ? '#F4F2FF' : 'transparent') })),
+      slots: [
+        { name: 'Home', item: H.name, perk: st.home >= 2 ? 'Next: loft, house, villa, penthouse' : 'Move to the ' + HOMES[st.home + 1].name.toLowerCase() + ': more space, higher upgrade levels', lv: 'H' + (st.home + 1), cost: homeCost, btnStyle: 'min-height: 36px; padding: 0 12px; border-radius: 999px; border: 0; font-weight: 800; font-size: 12px; white-space: nowrap; background: linear-gradient(135deg, #7C5CFF, #FF4FD8); color: #fff',
+          up: () => { if (st.home >= 2) this.setState({ home: 0, screens: 0, light: 0, seats: 0, media: 0 }); else this.setState({ home: st.home + 1 }); }, iconStyle: icon('#B69CFF') },
+        slot('screens', 'Screens', st.screens ? '+' + st.screens * 5 + '% coins on every take profit' : 'No bonus yet', 300, '#3CFFB1'),
+        slot('light', 'Lighting', st.light >= 2 ? '+10% coins in kill zones' : 'Style only', 250, '#3FF2FF'),
+        slot('seats', 'Seating', st.seats >= 2 ? '+1 streak freeze slot' : 'Style only', 250, '#FF8FB8'),
+        slot('media', 'Media wall', st.media === 0 ? 'Needs the bedroom' : st.media >= 2 ? 'Watch replays of your best trades' : 'Style only', 400, '#FFC94A'),
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
