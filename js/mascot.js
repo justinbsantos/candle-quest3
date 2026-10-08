@@ -4,12 +4,12 @@
 
   // Flairs are the avatar ring styles players unlock in the shop.
   const FLAIR_COLORS = {
-    none: ['#7C5CFF', '#FF4FD8'],
+    none: ['#2A9DA0', '#F26A2E'],
     mint: ['#3CFFB1', '#3DB8FF'],
     sunset: ['#FFB23E', '#FF4F7B'],
     ice: ['#B9F3FF', '#6C8CFF'],
     gold: ['#FFE08A', '#E9A21C'],
-    holo: ['#3CFFB1', '#FF4FD8'],
+    holo: ['#3CFFB1', '#F26A2E'],
   };
   const flair = (id) => FLAIR_COLORS[id] || FLAIR_COLORS.none;
 
@@ -17,7 +17,7 @@
   // Pip: a glossy orb with a flame inside. Mood shifts its colors.
   function coachSVG(mood, cls) {
     const id = 'pip' + (++uid);
-    const c = mood === 'wow' ? ['#3CFFB1', '#3DB8FF'] : mood === 'sad' ? ['#6C6A8F', '#3B3760'] : ['#7C5CFF', '#FF4FD8'];
+    const c = mood === 'wow' ? ['#3CFFB1', '#3DB8FF'] : mood === 'sad' ? ['#6C6A8F', '#3B3760'] : ['#2A9DA0', '#F26A2E'];
     return `<svg class="${cls || 'owl'}" viewBox="0 0 64 64" aria-label="Pip, your coach">
       <defs><radialGradient id="${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".35" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></radialGradient></defs>
       <circle cx="32" cy="32" r="28" fill="url(#${id})"/>
@@ -31,6 +31,7 @@
   function owlSVG(hat, mood, cls) { return coachSVG(mood, cls); }
 
   function avatarSVG(name, flairId, cls) {
+    if (G.CQCrew && G.CQStore && G.CQCrew.picked()) return G.CQCrew.avatar(flairId, cls);
     if (G.CQAvatar && G.CQStore) return G.CQAvatar.avatar(flairId, cls);
     const id = 'av' + (++uid);
     const [a, b] = flair(flairId);

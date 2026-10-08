@@ -79,7 +79,7 @@
     },
     {
       id: 'w6', name: 'Kill Zone Volcano', emoji: '🌋', color: '#f97316',
-      blurb: 'Put it ALL together and take real (pretend) trades like an ICT pro.',
+      blurb: 'Put it ALL together and take real (pretend) trades like a pro.',
       lesson: [
         { title: 'The full model', text: '1️⃣ Price sweeps liquidity 🧹  2️⃣ A big candle breaks structure ⚡ and leaves a gap 🕳️  3️⃣ Price comes back into the gap — that is the ENTRY.', demo: 'trade' },
         { title: 'Stop & target', text: 'The STOP 🛑 goes past the sweep. The TARGET 🎯 is the liquidity on the other side. Pros ALWAYS use a stop.', demo: 'trade' },
@@ -122,7 +122,7 @@
     { id: 'w3', emoji: '💧', name: 'Liquidity Hunter', desc: 'Finish Liquidity Lagoon' },
     { id: 'w4', emoji: '🕳️', name: 'Gap Master', desc: 'Finish Gap Canyon' },
     { id: 'w5', emoji: '🧱', name: 'Block Builder', desc: 'Finish Block Fortress' },
-    { id: 'w6', emoji: '👑', name: 'ICT Grand Master', desc: 'Beat Kill Zone Volcano' },
+    { id: 'w6', emoji: '👑', name: 'Grand Master', desc: 'Beat Kill Zone Volcano' },
     { id: 'streak3', emoji: '🔥', name: 'On Fire', desc: 'Claim the daily treasure 3 days in a row' },
     { id: 'streak7', emoji: '📅', name: 'Every Day', desc: '7-day treasure streak' },
     { id: 'practice10', emoji: '🎯', name: 'Sharp Eye', desc: '10 in a row in Practice Arena' },
@@ -132,7 +132,7 @@
     { id: 'shopper', emoji: '🛍️', name: 'Style Star', desc: 'Buy something in the shop' },
     { id: 'win5', emoji: '📈', name: 'Winning Trader', desc: 'Win 5 boss trades in Trading School' },
     { id: 'tp1', emoji: '🎯', name: 'First Take Profit', desc: 'Hit your first TP in the live market' },
-    { id: 'sniper', emoji: '🌟', name: 'Gap Sniper', desc: 'Win a trade with a perfect ICT entry' },
+    { id: 'sniper', emoji: '🌟', name: 'Gap Sniper', desc: 'Win a trade with a perfect entry' },
     { id: 'tp25', emoji: '💎', name: 'Profit Machine', desc: 'Hit 25 Take Profits' },
     { id: 'm9', emoji: '🌋', name: 'Kill Zone Master', desc: 'Complete every live mission' },
     { id: 'room1', emoji: '🛋️', name: 'Home Upgrade', desc: 'Buy your first room upgrade' },

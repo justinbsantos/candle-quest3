@@ -1,6 +1,6 @@
-# Character & home concepts (TBA)
+# Character & home concepts (archived)
 
-The final character and room are not decided yet. These are the concepts on the table.
+The app now uses Justin's Wickd crew (Bull, Bear, Fox, Wolf) and the woods-to-skyline camp. These earlier concepts are kept for reference.
 
 - `animal-crew.png`: the leading character direction, with 8 animals and 7 preset looks.
 - `room-progression.png`: the leading room direction. It starts in a tiny run-down room and upgrades through Bedroom and Studio apartment.

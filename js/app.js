@@ -101,7 +101,7 @@
   }
 
   // Bottom tab bar for the five main areas.
-  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['league', 'League', 'trophy'], ['room', 'My room', 'homeUp'], ['me', 'Me', 'user']];
+  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['league', 'League', 'trophy'], ['room', 'Camp', 'homeUp'], ['me', 'Me', 'user']];
   function nav(active) {
     const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), league: () => go(window.CQMeta.leagueScreen), room: () => go(window.CQRoom.roomScreen), me: () => go(profile) };
     const bar = el(`<nav class="tabbar" aria-label="Main">${TABS.map(([id, label, icon]) => `<button class="tab-item ${id === active ? 'on' : ''}" data-id="${id}" ${id === active ? 'aria-current="page"' : ''}><span class="tab-ic">${ic(icon)}</span>${label}</button>`).join('')}</nav>`);
@@ -112,7 +112,7 @@
 
   // ---------- HOME ----------
   function home() {
-    if (!S.name) return go(welcome);
+    if (!S.name || !window.CQCrew.picked()) return go(window.CQCrew.chooser);
     const M = window.CQMeta, P = window.CQPro;
     const li = Store.levelInfo(S.xp);
     const greet = pick([
@@ -129,7 +129,7 @@
     const atRisk = Store.dailyAvailable() && Store.streakAtRisk();
     const pa = P.account();
     const scr = el(`<main class="screen home">
-      <div class="greet"><button class="greet-owl" aria-label="Edit my look">${avatarSVG(S.name, S.hat)}</button><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><p class="greet-sub">${esc(greet)}</p></div>
+      <div class="greet"><button class="greet-owl" aria-label="Edit my look">${avatarSVG(S.name, S.hat)}</button><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><span class="greet-crew">${esc(window.CQCrew.displayName())} · ${esc(window.CQCrew.char().title)}</span><p class="greet-sub">${esc(greet)}</p></div>
         <span class="streak-pill" title="Daily streak">${ic('flame')}${S.streak || 0}</span></div>
       ${cards.zoneCard}
       <section class="hero-card">
@@ -153,7 +153,7 @@
       </section>
     </main>`);
     app.append(hud(null), scr, nav('home'));
-    on(scr, '.greet-owl', () => go(window.CQAvatar.creator, { back: () => go(home) }));
+    on(scr, '.greet-owl', () => go(window.CQCrew.editor, { back: () => go(home) }));
     window.CQLive.homeTicker($('.home-chart', scr));
     window.CQRoom.mountRoom($('.room-mini', scr));
     on(scr, '.room-card', () => go(window.CQRoom.roomScreen));
@@ -188,15 +188,15 @@
     const li = Store.levelInfo(S.xp);
     const scr = el(`<main class="screen profile">
       <section class="profile-card">
-        <button class="pc-fig" aria-label="Edit my look">${window.CQAvatar.svg(null, { cls: 'trader' })}</button>
-        <div><h2>${esc(S.name)}</h2><p class="tiny">Level ${li.lvl} · ${li.toNext} XP to level ${li.lvl + 1}</p><div class="xp-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div></div>
+        <button class="pc-fig crew-pc" aria-label="Edit my trader">${window.CQCrew.svg(null, { cls: 'crew-svg' })}</button>
+        <div><h2>${esc(S.name)}</h2><p class="pc-crew">${esc(window.CQCrew.displayName())} · ${esc(window.CQCrew.char().title)}</p><p class="tiny">Level ${li.lvl} · ${li.toNext} XP to level ${li.lvl + 1}</p><div class="xp-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div></div>
       </section>
       <section class="stats-row">
         <div class="stat"><b>${S.tpTotal || 0}</b><span>Take profits</span></div>
         <div class="stat"><b>${S.totalCoins}</b><span>Coins earned</span></div>
         <div class="stat"><b>${S.practiceBest}</b><span>Best streak</span></div>
       </section>
-      <div class="me-actions"><button class="btn me-look">Edit my look</button><button class="btn btn-ghost me-gems">${window.CQGems.icon()}Gem shop</button></div>
+      <div class="me-actions three"><button class="btn me-look">Customize</button><button class="btn btn-ghost me-switch">Switch trader</button><button class="btn btn-ghost me-gems">${window.CQGems.icon()}Gems</button></div>
       <h2 class="section-title">Badges <span class="tiny">${S.badges.length} of ${BADGES.length}</span></h2>
       <div class="badge-grid"></div>
       <div class="settings">
@@ -211,8 +211,9 @@
     });
     app.append(hud(null, 'Me'), scr, nav('me'));
     on(scr, '.sound', () => { S.sound = !S.sound; Store.save(); go(profile); });
-    on(scr, '.pc-fig', () => go(window.CQAvatar.creator, { back: () => go(profile) }));
-    on(scr, '.me-look', () => go(window.CQAvatar.creator, { back: () => go(profile) }));
+    on(scr, '.pc-fig', () => go(window.CQCrew.editor, { back: () => go(profile) }));
+    on(scr, '.me-look', () => go(window.CQCrew.editor, { back: () => go(profile) }));
+    on(scr, '.me-switch', () => go(window.CQCrew.chooser, { back: () => go(profile) }));
     on(scr, '.me-gems', () => go(window.CQGems.shop, { back: () => go(profile) }));
     on(scr, '.grownups', () => grownups());
   }
@@ -241,7 +242,7 @@
 
   function grownups() {
     const m = modal(`<h2>For grown-ups</h2>
-      <p><b>Wickd</b> teaches chart reading using concepts from the ICT ("Inner Circle Trader") method: candles, swing points, liquidity, fair value gaps, order blocks and market structure.</p>
+      <p><b>Wickd</b> teaches chart reading with price-action concepts: candles, swing points, liquidity, fair value gaps, order blocks and market structure.</p>
       <ul>
         <li>All charts — including the live market — are computer-generated practice markets, not real market data.</li>
         <li>Coins are play money only. There are no ads, no purchases and no chat.</li>
@@ -650,7 +651,7 @@
     if (n > 0 && why !== 'purchase') setTimeout(() => toast(`+${n} gems · ${why}`, '💎'), 900);
   });
   window.CQGems.clubDaily();
-  go(home);
+  window.CQCrew.ready.then(() => go(home));
   if ('serviceWorker' in navigator && location.protocol === 'https:' && !window.CQ_SINGLE_FILE) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }

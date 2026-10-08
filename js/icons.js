@@ -50,21 +50,21 @@
     </svg>`;
   }
 
-  // The logo mark: the "i" of wickd — a candle-wick stem with a flame for a dot.
+  // The logo mark (the app icon): an orange flame over a teal wick on night navy.
+  const FLAME_PATH = 'M22.6 7.2C27.5 10.6 30.6 16.4 27.8 23.6C29.6 22.6 30.6 21.2 30.5 19.6C33.4 23.4 34.6 30.6 30.4 34.6C29.4 35.6 28.2 36.4 26.8 36.9C28.6 34 27.6 31.6 25.4 29.4C24.4 28.4 24 27.2 24.2 26.2C21.6 28.2 19.4 32.6 21.9 36.9C17.6 35.4 14.6 31.4 15.2 26.4C15.8 19.8 21.4 17 22.8 12.6C23.2 10.8 23 9 22.6 7.2Z';
+  const WICK_PATH = 'M24 34.4C24.4 36.8 24.3 39.2 23.6 41.4';
   let mk = 0;
   function mark(cls) {
-    const id = 'wkg' + (++mk);
     return `<svg class="mark ${cls || ''}" viewBox="0 0 48 48" aria-hidden="true">
-      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF4FD8"/></linearGradient></defs>
-      <rect width="48" height="48" rx="14" fill="url(#${id})"/>
-      <rect x="20" y="22" width="8" height="17" rx="4" fill="#fff"/>
-      <path d="M24 6.5c4.6 4.1 6 7.8 4.2 11.1-.9 1.7-2.4 2.6-4.2 2.6s-3.3-.9-4.2-2.6C18 14.3 19.4 10.6 24 6.5z" fill="#fff"/>
+      <rect width="48" height="48" rx="11" fill="#081425"/>
+      <path d="${FLAME_PATH}" fill="#FF6411"/>
+      <path d="${WICK_PATH}" stroke="#29A19F" stroke-width="1.7" stroke-linecap="round" fill="none"/>
     </svg>`;
   }
 
+  // The flame alone (the dot on the "i" of the wordmark).
   function flameSVG(cls) {
-    const id = 'wkf' + (++mk);
-    return `<svg class="${cls || ''}" viewBox="0 0 12 16" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF4FD8"/><stop offset="1" stop-color="#FFB23E"/></linearGradient></defs><path d="M6 0c4 3.6 5.2 6.8 3.6 9.7C8.8 11.2 7.5 12 6 12s-2.8-.8-3.6-2.3C.8 6.8 2 3.6 6 0z" fill="url(#${id})"/></svg>`;
+    return `<svg class="${cls || ''}" viewBox="14 6.5 21.5 31" aria-hidden="true"><path d="${FLAME_PATH}" fill="#FF6411"/></svg>`;
   }
 
   // Wordmark: "wickd" in lowercase with the flame as the dot on the i.
@@ -72,5 +72,5 @@
     return `<span class="wordmark" aria-label="Wickd"><span class="wm">w<span class="wm-i"><i class="wm-stem"></i>${flameSVG('wm-flame')}</span>ckd</span></span>`;
   }
 
-  G.CQIcons = { ic, coin, mark, wordmark };
+  G.CQIcons = { ic, coin, mark, wordmark, FLAME_PATH, WICK_PATH };
 })(window);

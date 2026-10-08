@@ -79,3 +79,6 @@ Tap BUY or SELL to open a ticket: choose Market or Limit, drag the gold entry, r
 - **Two currencies.** Coins are earned only and pay for trading and setup upgrades. Gems are the premium currency for cosmetics only: they never convert to coins, can't be staked on trades, can't be cashed out, and nothing is random.
 - **Earning gems free:** level up (+25), new badge (+10), every 7-day streak (+30), league promotion (+50).
 - **Gem shop (tap the gem counter):** featured items that rotate daily, a one-time $2.99 starter pack, Wickd Club ($4.99/mo, $39.99/yr, $59.99/yr family), Season 1 pass (coming soon) and gem packs from $0.99 to $49.99 with every price shown in dollars. Purchases require a parent's approval. Checkout is not connected yet; a clearly labeled test mode adds gems without paying.
+
+## The crew and the camp
+Pick your trader from the Wickd crew (Bull, Bear, Fox or Wolf), then customize their crew color, eyewear, neck and pin, and give them a nickname. You start in the woods with a tent and a phone hotspot, and trading coins upgrade your camp all the way to a skyline penthouse. The crew art lives in `assets/crew/`; run `node scripts/build-assets.js` after changing it.

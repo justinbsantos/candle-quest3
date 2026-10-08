@@ -443,8 +443,8 @@
       annBefore: bear ? flipAnn(annB) : annB,
       ann: [{ t: 'mark', i: ans, label: 'MSS ⚡', pos: bear ? 'below' : 'above', color: 'gold' }],
       explain: bear
-        ? 'When price closes below the last swing low, the trend may be changing from UP to DOWN. ICT traders call this a Market Structure Shift.'
-        : 'When price closes above the last swing high, the trend may be changing from DOWN to UP. ICT traders call this a Market Structure Shift.',
+        ? 'When price closes below the last swing low, the trend may be changing from UP to DOWN. Traders call this a Market Structure Shift.'
+        : 'When price closes above the last swing high, the trend may be changing from DOWN to UP. Traders call this a Market Structure Shift.',
     };
   };
 
@@ -539,7 +539,7 @@
     ];
     const f = (a) => (bear ? flipAnn(a) : a);
     return {
-      kind: 'trade', concept: 'ICT trade setup',
+      kind: 'trade', concept: 'Full trade setup',
       prompt: bear
         ? 'BOSS SETUP! Price swept the highs 🧹, crashed down breaking structure ⚡, left a Fair Value Gap, and came back up into it. The 💰 equal lows below are the target. Buy or Sell?'
         : 'BOSS SETUP! Price swept the lows 🧹, shot up breaking structure ⚡, left a Fair Value Gap, and came back down into it. The 💰 equal highs above are the target. Buy or Sell?',
@@ -552,8 +552,8 @@
         ? { dir: 'sell', entry: fy(entry), stop: fy(stop), target: fy(target) }
         : { dir: 'buy', entry, stop, target },
       explain: bear
-        ? 'Sweep the highs ➜ break down ➜ come back into the gap ➜ SELL, with a stop above the sweep and a target at the equal lows. That is the ICT model!'
-        : 'Sweep the lows ➜ break up ➜ come back into the gap ➜ BUY, with a stop below the sweep and a target at the equal highs. That is the ICT model!',
+        ? 'Sweep the highs ➜ break down ➜ come back into the gap ➜ SELL, with a stop above the sweep and a target at the equal lows. That is the full setup!'
+        : 'Sweep the lows ➜ break up ➜ come back into the gap ➜ BUY, with a stop below the sweep and a target at the equal highs. That is the full setup!',
     };
   };
 

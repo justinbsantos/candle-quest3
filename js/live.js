@@ -1,5 +1,5 @@
 /* Wickd — LIVE trading: a moving market, BUY/SELL, draggable TP/SL,
- * coins for take-profits, bonus coins for clean ICT entries, coach Pip.
+ * coins for take-profits, bonus coins for clean entries, coach Pip.
  */
 (function () {
   'use strict';
@@ -28,7 +28,7 @@
     { id: 'm6', name: 'Speed Round', icon: '⚡', goal: { tp: 2 }, hints: 1, speed: 750, candles: 120, fail: 0.15, text: 'The market moves FAST. Hit 2 Take Profits.' },
     { id: 'm7', name: 'No Training Wheels', icon: '🚲', goal: { tp: 2 }, hints: 0, speed: 1000, candles: 120, fail: 0.15, text: 'No hints at all. Spot the setups yourself and hit 2 TPs.' },
     { id: 'm8', name: 'High Roller', icon: '💎', goal: { coins: 120 }, hints: 0, speed: 900, candles: 130, fail: 0.15, stakes: [10, 25], text: 'Bigger risk, bigger rewards. Finish +120 coins up.' },
-    { id: 'm9', name: 'Kill Zone Master', icon: '🌋', goal: { perfect: 3 }, hints: 0, speed: 800, candles: 150, fail: 0.2, text: 'The final test: 3 perfect ICT entries that hit TP. No hints.' },
+    { id: 'm9', name: 'Kill Zone Master', icon: '🌋', goal: { perfect: 3 }, hints: 0, speed: 800, candles: 150, fail: 0.2, text: 'The final test: 3 perfect entries that hit TP. No hints.' },
   ];
 
   const fmt = (p) => p.toFixed(2);
@@ -560,7 +560,7 @@
           if (s.hints >= 1) coach('🛑 That setup failed — it happens to every trader! A stop loss keeps the loss small.', 'sad');
         } else if (hitT) {
           st.state = 'done'; st.resolvedAt = i;
-          if (s.hints >= 1) coach(`🎯 Price ran all the way to the liquidity! That's the ICT model in action.`, 'wow');
+          if (s.hints >= 1) coach(`🎯 Price ran all the way to the liquidity! That's the full setup in action.`, 'wow');
         } else if (i > st.entry + 14) { st.state = 'done'; st.resolvedAt = i; }
       }
     }
@@ -966,7 +966,7 @@
       const root = U.el(`<main class="screen result">
         <div class="hero-owl">${owlSVG(S.hat, passed && st.net >= 0 ? 'wow' : 'sad')}</div>
         <h2>${m ? (passed ? (stars === 3 ? 'Perfect mission!' : 'Mission complete') : 'Not quite yet') : 'Market closed'}</h2>
-        ${m ? `${starRow(stars, 'big-stars')}<p class="tiny">Stars: reach the goal · finish up with at most 1 stop loss · win a perfect ICT entry</p>` : ''}
+        ${m ? `${starRow(stars, 'big-stars')}<p class="tiny">Stars: reach the goal · finish up with at most 1 stop loss · win a perfect entry</p>` : ''}
         <div class="earn"><div><b>${st.tp}</b><span>take profits</span></div><div><b class="${st.net >= 0 ? 'up' : 'down'}">${st.net >= 0 ? '+' : ''}${st.net}</b><span>trading coins</span></div><div><b>+${bonus}</b><span>mission bonus</span></div></div>
         <ul class="trade-list">${rows}</ul>
         <div class="result-actions">

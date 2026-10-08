@@ -160,7 +160,7 @@
       for (let t = 0; t <= 200; t += 5) { mine.push(project(START, r, w, rr, t)); safe.push(project(START, 1, w, rr, t)); wild.push(project(START, 25, w, rr, t)); }
       const end = mine[mine.length - 1];
       drawEquity(cv, mine, { h: 170, log: true, base: START, series: [
-        { data: wild, color: '#FF4D6D', label: '25% risk' }, { data: safe, color: '#9B85FF', label: '1% risk' }, { data: mine, color: '#3CFFB1', label: 'You', fill: true }] });
+        { data: wild, color: '#FF4D6D', label: '25% risk' }, { data: safe, color: '#5CC6C2', label: '1% risk' }, { data: mine, color: '#3CFFB1', label: 'You', fill: true }] });
       const g = growthPerTrade(r, w, rr);
       const edge = w * rr - (1 - w);
       const L = expectedStreak(w, 200), dd = streakDrawdown(r, L) * 100;

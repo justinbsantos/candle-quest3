@@ -53,8 +53,8 @@
     { name: 'Silver', colors: ['#E3E8F2', '#8E99AE'] },
     { name: 'Gold', colors: ['#FFE08A', '#E9A21C'] },
     { name: 'Platinum', colors: ['#B9F3FF', '#4FA8FF'] },
-    { name: 'Diamond', colors: ['#C9B6FF', '#7C5CFF'] },
-    { name: 'Legend', colors: ['#FFB23E', '#FF4FD8'] },
+    { name: 'Diamond', colors: ['#C9B6FF', '#2A9DA0'] },
+    { name: 'Legend', colors: ['#FFB23E', '#F26A2E'] },
   ];
   const LEAGUE_SIZE = 20, PROMOTE = 5, DEMOTE = 5;
   const A = ['Pixel', 'Nova', 'Lunar', 'Ghost', 'Turbo', 'Neon', 'Frost', 'Echo', 'Blaze', 'Comet', 'Zen', 'Vibe', 'Atlas', 'Rogue', 'Drift', 'Sol', 'Jade', 'Onyx', 'Volt', 'Kai'];
