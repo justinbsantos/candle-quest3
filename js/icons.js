@@ -32,6 +32,7 @@
     up: '<path d="M12 5 5 13h4.5v6h5v-6H19z" fill="currentColor" stroke="none"/>',
     down: '<path d="M12 19 5 11h4.5V5h5v6H19z" fill="currentColor" stroke="none"/>',
     hand: '<path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5a1.5 1.5 0 0 1 3 0V11m0-4a1.5 1.5 0 0 1 3 0v6.5A6.5 6.5 0 0 1 10.5 20 5.5 5.5 0 0 1 5.6 17L3.8 13.6a1.5 1.5 0 0 1 2.5-1.6L8 14"/>',
+    homeUp: '<path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><rect x="8.5" y="12.5" width="7" height="4.5" rx="1"/><path d="M12 17v3"/>',
     owl: '<path d="M6 8 5 4l3.5 2.5h7L19 4l-1 4c1 1.3 1.5 2.9 1.5 4.6 0 4.4-3.4 7.4-7.5 7.4s-7.5-3-7.5-7.4C4.5 10.9 5 9.3 6 8z"/><circle cx="9.3" cy="11.5" r="1.6"/><circle cx="14.7" cy="11.5" r="1.6"/><path d="M11 14.5h2l-1 1.3z"/>',
   };
 

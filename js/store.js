@@ -12,6 +12,7 @@
     badges: [], practiceBest: 0, tradesWon: 0,
     sound: true, seenLessons: {},
     missionStars: {}, tpTotal: 0, freeHints: 2,
+    room: null,
   };
 
   function load() {

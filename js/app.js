@@ -89,9 +89,9 @@
   }
 
   // Bottom tab bar for the five main areas.
-  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['school', 'School', 'school'], ['shop', 'Shop', 'shop'], ['me', 'Me', 'owl']];
+  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['room', 'My room', 'homeUp'], ['school', 'School', 'school'], ['me', 'Me', 'owl']];
   function nav(active) {
-    const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), school: () => go(map), shop: () => go(shop), me: () => go(profile) };
+    const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), room: () => go(window.CQRoom.roomScreen), school: () => go(map), me: () => go(profile) };
     const bar = el(`<nav class="tabbar" aria-label="Main">${TABS.map(([id, label, icon]) => `<button class="tab-item ${id === active ? 'on' : ''}" data-id="${id}" ${id === active ? 'aria-current="page"' : ''}><span class="tab-ic">${ic(icon)}</span>${label}</button>`).join('')}</nav>`);
     bar.querySelectorAll('.tab-item').forEach((b) => b.addEventListener('click', () => { if (b.dataset.id !== active) { Store.sfx.tap(); routes[b.dataset.id](); } }));
     app.classList.remove('no-tabs');
@@ -122,6 +122,11 @@
       ${Store.dailyAvailable()
         ? `<button class="daily card-pop"><span class="daily-ic">${ic('gift')}</span><span><b>Daily chest is ready</b><small>Open it every day to grow your streak</small></span><span class="daily-go">Open</span></button>`
         : `<div class="daily claimed"><span class="daily-ic">${ic('flame')}</span><span><b>${S.streak}-day streak</b><small>Next chest tomorrow</small></span></div>`}
+      <button class="room-card">
+        <div class="room-mini"></div>
+        <div class="rc-body"><b>My room</b><small>${roomLine()}</small></div>
+        <span class="rc-go">${ic('back', 'flip')}</span>
+      </button>
       <div class="grid2">
         <button class="tile t-free"><span class="tile-ic mint">${ic('trade')}</span><b>Free market</b><small>Trade as long as you like</small></button>
         <button class="tile t-school"><span class="tile-ic violet">${ic('school')}</span><b>Trading school</b><small>Learn each setup step by step</small></button>
@@ -134,6 +139,8 @@
     </main>`);
     app.append(hud(null), scr, nav('home'));
     window.CQLive.homeTicker($('.home-chart', scr));
+    window.CQRoom.mountRoom($('.room-mini', scr));
+    on(scr, '.room-card', () => go(window.CQRoom.roomScreen));
     on(scr, '.play-live', () => go(window.CQLive.liveScreen, next));
     on(scr, '.t-free', () => go(window.CQLive.liveScreen, null));
     on(scr, '.t-school', () => go(map));
@@ -145,6 +152,13 @@
         setTimeout(() => go(home), 900);
       }
     });
+  }
+
+  function roomLine() {
+    const R = window.CQRoom, r = R.room(), p = R.pending();
+    const where = R.TIERS[r.tier].name;
+    if (p > 0) return `${where} · your bot earned ${p} coins, tap to collect`;
+    return `${where} · spend coins to upgrade your trading room`;
   }
 
   function profile() {
@@ -590,7 +604,7 @@
       });
       grid.appendChild(card);
     });
-    app.append(hud(null, 'Shop'), scr, nav('shop'));
+    app.append(hud(() => go(window.CQRoom.roomScreen), 'Style shop'), scr, nav('room'));
     scr.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => go(shop, b.dataset.t)));
   }
 
@@ -598,7 +612,7 @@
 
   // ---------- shared UI for live.js ----------
   window.CQUI = {
-    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home,
+    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home, shop,
     refreshCoins: () => { const c = $('.hud-coins b'); if (c) c.textContent = S.coins; },
   };
 

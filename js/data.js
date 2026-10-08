@@ -134,6 +134,8 @@
     { id: 'sniper', emoji: '🌟', name: 'Gap Sniper', desc: 'Win a trade with a perfect ICT entry' },
     { id: 'tp25', emoji: '💎', name: 'Profit Machine', desc: 'Hit 25 Take Profits' },
     { id: 'm9', emoji: '🌋', name: 'Kill Zone Master', desc: 'Complete every live mission' },
+    { id: 'room1', emoji: '🛋️', name: 'Home Upgrade', desc: 'Buy your first room upgrade' },
+    { id: 'tycoon', emoji: '🏙️', name: 'Tycoon', desc: 'Move into the penthouse' },
   ];
 
   const PRAISE = ['Nice! 🎉', 'Awesome! ⭐', 'You got it! 🙌', 'Sharp eyes! 👀', 'Pro move! 💪', 'Boom! 💥', 'Chart wizard! 🧙'];

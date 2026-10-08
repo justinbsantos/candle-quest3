@@ -473,6 +473,8 @@
     s.position = null;
     let coins = coinsFor(pos, exit);
     if (reason === 'sl') coins = -pos.stake;
+    const boost = window.CQRoom ? window.CQRoom.tpBonus() : 1;
+    if (coins > 0 && boost > 1) coins = Math.round(coins * boost);
     if (coins > 0) UI().giveCoins(coins);
     else if (coins < 0) { S.coins = Math.max(0, S.coins + coins); Store.save(); UI().refreshCoins(); }
     s.stats.net += coins;
@@ -487,7 +489,7 @@
     s.stats.trades.push({ dir: pos.dir, reason, coins, perfect: pos.perfect, entry: pos.entry, exit, sl: pos.sl, tp: pos.tp, setup: pos.setup });
     s.marks.push({ i: s.market.candles.length, label: reason === 'tp' ? '🎯' : reason === 'sl' ? '🛑' : '✋', above: true, color: coins >= 0 ? C.up : C.down });
 
-    const msg = reason === 'tp' ? `Take profit! +${coins}` : reason === 'sl' ? `Stopped out ${coins}` : `Closed ${coins >= 0 ? '+' : ''}${coins}`;
+    const msg = reason === 'tp' ? `Take profit! +${coins}${boost > 1 ? ' (screens +' + Math.round((boost - 1) * 100) + '%)' : ''}` : reason === 'sl' ? `Stopped out ${coins}` : `Closed ${coins >= 0 ? '+' : ''}${coins}`;
     popup(msg, coins >= 0 ? 'win' : 'loss');
     if (reason === 'tp') {
       Store.sfx.win(); UI().confetti(pos.perfect ? 70 : 35);
