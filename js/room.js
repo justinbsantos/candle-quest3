@@ -112,17 +112,31 @@
     // wall + floor
     ctx.fillStyle = P.wall; ctx.fillRect(0, 0, 400, 214);
     ctx.fillStyle = P.wall2;
-    if (tier === 1) { for (let y = 10; y < 214; y += 18) for (let x = (y / 18) % 2 ? 0 : 20; x < 400; x += 40) ctx.fillRect(x, y, 38, 16); }
+    if (tier === 0) {
+      const wg = ctx.createLinearGradient(0, 0, 0, 214); wg.addColorStop(0, '#2A2258'); wg.addColorStop(1, '#3A2C6E');
+      ctx.fillStyle = wg; ctx.fillRect(0, 0, 400, 214);
+      ctx.fillStyle = 'rgba(255,255,255,.035)';
+      for (let y = 8; y < 200; y += 16) for (let x = (y / 16) % 2 ? 8 : 0; x < 400; x += 16) { ctx.beginPath(); ctx.arc(x, y, 1.6, 0, 7); ctx.fill(); }
+    } else if (tier === 1) { for (let y = 10; y < 214; y += 18) for (let x = (y / 18) % 2 ? 0 : 20; x < 400; x += 40) ctx.fillRect(x, y, 38, 16); }
     else if (tier === 5) { for (let x = 0; x < 400; x += 50) ctx.fillRect(x, 0, 2, 214); ctx.fillRect(0, 100, 400, 2); }
     else { for (let x = 0; x < 400; x += 26) ctx.fillRect(x, 0, 12, 214); }
     ctx.fillStyle = P.trim; ctx.fillRect(0, 208, 400, 8);
     ctx.fillStyle = P.floor; ctx.fillRect(0, 216, 400, 64);
     ctx.fillStyle = P.floor2;
-    if (tier === 0) for (let y = 222; y < 280; y += 12) ctx.fillRect(0, y, 400, 1.5);
+    if (tier === 0) {
+      const fg = ctx.createLinearGradient(0, 216, 0, 280); fg.addColorStop(0, '#7A5238'); fg.addColorStop(1, '#5A3A26');
+      ctx.fillStyle = fg; ctx.fillRect(0, 216, 400, 64);
+      for (let row = 0; row < 6; row++) {
+        const y = 216 + row * 11;
+        ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0, y, 400, 1.2);
+        for (let x = (row % 2) * 45; x < 400; x += 90) { ctx.fillRect(x, y, 1.2, 11); ctx.fillStyle = row % 3 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.06)'; ctx.fillRect(x + 2, y + 2, 86, 8); ctx.fillStyle = 'rgba(0,0,0,.22)'; }
+      }
+    }
     else if (tier === 4) { ctx.globalAlpha = .4; for (let x = -40; x < 400; x += 70) { ctx.beginPath(); ctx.moveTo(x, 216); ctx.lineTo(x + 50, 280); ctx.lineWidth = 1; ctx.strokeStyle = '#fff'; ctx.stroke(); } ctx.globalAlpha = 1; }
     else for (let x = 0; x < 400; x += 40) ctx.fillRect(x, 216, 1.5, 64);
 
     drawWindow(ctx, tier, t);
+    if (tier === 0) drawBedroomExtras(ctx, t);
 
     // lights
     const li = L('light');
@@ -149,13 +163,7 @@
     // rug
     if (tier >= 1) { ctx.fillStyle = tier >= 4 ? '#B4325E' : '#5B3FA8'; ctx.beginPath(); ctx.ellipse(190, 258, 120, 16, 0, 0, 7); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(190, 258, 108, 12, 0, 0, 7); ctx.stroke(); }
 
-    // bed (bedroom only)
-    if (tier === 0) {
-      ctx.fillStyle = '#2A1D52'; rr(ctx, 6, 164, 92, 58, 6); ctx.fill();
-      ctx.fillStyle = '#FF9F43'; rr(ctx, 6, 176, 92, 40, 6); ctx.fill();
-      ctx.fillStyle = '#FFE8C4'; rr(ctx, 10, 168, 30, 14, 6); ctx.fill();
-      ctx.fillStyle = '#E9772B'; ctx.fillRect(40, 190, 58, 4);
-    }
+    if (tier === 0) drawBed(ctx);
 
     drawDesk(ctx, L('desk'), L('monitors'), L('pet') === 1, t);
     drawComputer(ctx, L('computer'), t);
@@ -166,7 +174,76 @@
     drawPlayer(ctx, L('chair'));
     drawPip(ctx, t);
 
+    // ambient light: monitor glow + soft vignette for depth
+    const glow = ctx.createRadialGradient(185, 160, 10, 185, 160, 160);
+    glow.addColorStop(0, 'rgba(124,92,255,.16)'); glow.addColorStop(1, 'rgba(124,92,255,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, 400, 280);
+    const vig = ctx.createRadialGradient(200, 140, 120, 200, 140, 300);
+    vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(5,3,20,.45)');
+    ctx.fillStyle = vig; ctx.fillRect(0, 0, 400, 280);
+
     ctx.restore();
+  }
+
+  // Bedroom details: curtains, fairy lights, shelf, sneakers.
+  function drawBedroomExtras(ctx, t) {
+    // curtains around the window (window is x 244..376, y 26..130)
+    const cur = (x, flip) => {
+      const g = ctx.createLinearGradient(x, 0, x + 22, 0); g.addColorStop(0, '#5B3FA8'); g.addColorStop(1, '#7C5CFF');
+      ctx.fillStyle = g; ctx.beginPath();
+      ctx.moveTo(x, 18); ctx.lineTo(x + 22, 18); ctx.quadraticCurveTo(x + (flip ? 8 : 14), 90, x + (flip ? 2 : 20), 150); ctx.lineTo(x + (flip ? -4 : 0), 150); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1;
+      for (let k = 6; k < 20; k += 6) { ctx.beginPath(); ctx.moveTo(x + k, 20); ctx.quadraticCurveTo(x + k - 2, 90, x + k + (flip ? -6 : 2), 148); ctx.stroke(); }
+    };
+    ctx.fillStyle = '#16122E'; ctx.fillRect(232, 14, 156, 4);
+    cur(232, false); cur(366, true);
+    // fairy lights
+    ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 8);
+    for (let x = 0; x <= 230; x += 23) ctx.quadraticCurveTo(x + 11.5, 18, x + 23, 8);
+    ctx.stroke();
+    const cols = ['#FFD36B', '#FF7AB6', '#7CFFCB', '#9CC6FF'];
+    for (let k = 0; k < 20; k++) {
+      const x = 6 + k * 11.5, y = 10 + Math.sin((k / 20) * Math.PI * 20) * 2 + 3, on = 0.55 + 0.45 * Math.sin(t / 380 + k * 1.7);
+      ctx.save(); ctx.globalAlpha = on; ctx.shadowColor = cols[k % 4]; ctx.shadowBlur = 8; ctx.fillStyle = cols[k % 4];
+      ctx.beginPath(); ctx.arc(x, y, 2.2, 0, 7); ctx.fill(); ctx.restore();
+    }
+    // wall shelf above the bed with books, a mini trophy and a plant
+    ctx.fillStyle = '#5A3A26'; rr(ctx, 8, 128, 92, 5, 2); ctx.fill();
+    const books = [['#FF4F8B', 16], ['#3CFFB1', 14], ['#FFC94A', 18], ['#7C5CFF', 15], ['#4FA8FF', 13]];
+    let bx = 14;
+    books.forEach(([c, hgt], i) => { ctx.fillStyle = c; ctx.fillRect(bx, 128 - hgt, 6, hgt); ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(bx + 1, 128 - hgt + 3, 4, 1); bx += i === 2 ? 9 : 7; });
+    ctx.fillStyle = '#FFC94A'; ctx.fillRect(62, 118, 8, 10); ctx.beginPath(); ctx.arc(66, 116, 6, 0, Math.PI); ctx.fill();
+    ctx.fillStyle = '#B4532F'; ctx.fillRect(80, 120, 12, 8);
+    ctx.fillStyle = '#3FD18B'; for (let k = -1; k <= 1; k++) { ctx.beginPath(); ctx.ellipse(86 + k * 4, 114, 3, 7, k * .5, 0, 7); ctx.fill(); }
+    // round shaggy rug
+    ctx.fillStyle = '#C24B8F'; ctx.beginPath(); ctx.ellipse(196, 262, 92, 13, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1.5;
+    for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.ellipse(196, 262, 80 - k * 22, 10 - k * 3, 0, 0, 7); ctx.stroke(); }
+    // sneakers by the bed
+    const shoe = (x) => { ctx.fillStyle = '#F2EEFF'; rr(ctx, x, 252, 18, 7, 3); ctx.fill(); ctx.fillStyle = '#FF4F8B'; ctx.fillRect(x + 2, 252, 9, 3); ctx.fillStyle = '#2A2258'; ctx.fillRect(x, 258, 18, 1.5); };
+    shoe(60); shoe(80);
+  }
+
+  function drawBed(ctx) {
+    // headboard
+    ctx.fillStyle = '#2A1B4F'; rr(ctx, 4, 150, 104, 40, 10); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.06)'; rr(ctx, 10, 156, 92, 6, 3); ctx.fill();
+    // frame + legs
+    ctx.fillStyle = '#3B2A6B'; rr(ctx, 4, 196, 104, 22, 4); ctx.fill();
+    ctx.fillStyle = '#1E1440'; ctx.fillRect(8, 216, 6, 12); ctx.fillRect(98, 216, 6, 12);
+    // mattress
+    ctx.fillStyle = '#EDE6FF'; rr(ctx, 6, 182, 100, 18, 5); ctx.fill();
+    // pillows
+    ctx.fillStyle = '#FFFFFF'; rr(ctx, 10, 170, 30, 16, 7); ctx.fill();
+    ctx.fillStyle = '#FFD1E6'; rr(ctx, 26, 172, 26, 14, 7); ctx.fill();
+    // duvet with gradient and stitching
+    const g = ctx.createLinearGradient(40, 180, 106, 214); g.addColorStop(0, '#7C5CFF'); g.addColorStop(1, '#FF4FD8');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(44, 182); ctx.quadraticCurveTo(70, 176, 108, 184); ctx.lineTo(108, 212); ctx.quadraticCurveTo(76, 216, 40, 212); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    for (let x = 58; x < 108; x += 16) { ctx.beginPath(); ctx.moveTo(x, 182); ctx.lineTo(x - 2, 212); ctx.stroke(); }
+    ctx.setLineDash([]);
+    // folded blanket stripe
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(44, 186, 64, 3);
   }
 
   function drawWindow(ctx, tier, t) {
@@ -405,7 +482,7 @@
         S.coins -= cost; r.spent += cost;
         if (it.id === 'computer' && l === 0) r.lastCollect = Date.now();
         r.items[it.id] = l + 1;
-        Store.save(); Store.sfx.win(); Store.badge('room1');
+        Store.save(); Store.sfx.win(); Store.badge('room1'); if (window.CQMeta) window.CQMeta.track('roomUp');
         U.toast(`New: ${it.levels[l + 1]}!`, '✨');
         U.go(roomScreen);
       });

@@ -136,6 +136,13 @@
     { id: 'm9', emoji: '🌋', name: 'Kill Zone Master', desc: 'Complete every live mission' },
     { id: 'room1', emoji: '🛋️', name: 'Home Upgrade', desc: 'Buy your first room upgrade' },
     { id: 'tycoon', emoji: '🏙️', name: 'Tycoon', desc: 'Move into the penthouse' },
+    { id: 'promoted', emoji: '🛡️', name: 'Moving Up', desc: 'Get promoted to a higher league' },
+    { id: 'quests', emoji: '✅', name: 'Daily Grinder', desc: 'Finish all 3 daily quests' },
+    { id: 'killzone', emoji: '⏰', name: 'Kill Zone Sniper', desc: 'Take profit during a kill zone' },
+    { id: 'streak5', emoji: '🔥', name: 'Heater', desc: 'Win 5 trades in a row' },
+    { id: 'pro10k', emoji: '📈', name: 'Five Figures', desc: 'Grow your Pro Account to $10,000' },
+    { id: 'whale', emoji: '🐋', name: 'Whale', desc: 'Grow your Pro Account to $1,000,000' },
+    { id: 'blown', emoji: '💥', name: 'Lesson Learned', desc: 'Blow up a Pro Account (it happens)' },
   ];
 
   const PRAISE = ['Nice! 🎉', 'Awesome! ⭐', 'You got it! 🙌', 'Sharp eyes! 👀', 'Pro move! 💪', 'Boom! 💥', 'Chart wizard! 🧙'];

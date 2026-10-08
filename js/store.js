@@ -13,6 +13,9 @@
     sound: true, seenLessons: {},
     missionStars: {}, tpTotal: 0, freeHints: 2,
     room: null,
+    weekKey: null, weekXP: 0, league: 0, leagueResult: null,
+    quests: null, freezes: 0, bestWinStreak: 0,
+    pro: null,
   };
 
   function load() {
@@ -46,8 +49,11 @@
   const listeners = [];
   function onBadge(fn) { listeners.push(fn); }
 
+  const earnHooks = [];
+  function onEarn(fn) { earnHooks.push(fn); }
   function addCoins(n) {
     const before = levelInfo(state.xp).lvl;
+    earnHooks.forEach((fn) => fn(n));
     state.coins += n;
     state.totalCoins += n;
     state.xp += n;
@@ -66,10 +72,24 @@
 
   const dayStr = (d) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
   function dailyAvailable() { return state.lastDaily !== dayStr(new Date()); }
+  // Days between the last claim and today (1 = yesterday).
+  function daysSinceClaim() {
+    if (!state.lastDaily) return Infinity;
+    const [yy, mm, dd] = state.lastDaily.split('-').map(Number);
+    const last = new Date(yy, mm - 1, dd), now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((today - last) / 86400000);
+  }
+  // Streak freezes cover missed days automatically.
+  function streakAtRisk() { const d = daysSinceClaim(); return d !== Infinity && d > 1 && state.streak > 0; }
   function claimDaily() {
     if (!dailyAvailable()) return 0;
-    const y = new Date(); y.setDate(y.getDate() - 1);
-    state.streak = state.lastDaily === dayStr(y) ? state.streak + 1 : 1;
+    const gap = daysSinceClaim();
+    let usedFreeze = 0;
+    if (gap === 1) state.streak += 1;
+    else if (gap !== Infinity && gap - 1 <= state.freezes && state.streak > 0) { usedFreeze = gap - 1; state.freezes -= usedFreeze; state.streak += 1; }
+    else state.streak = 1;
+    state.lastFreezeUsed = usedFreeze;
     state.lastDaily = dayStr(new Date());
     const reward = 20 + 10 * Math.min(state.streak, 7);
     addCoins(reward);
@@ -107,5 +127,7 @@
     win: () => tone([523, 659, 784, 1047, 1319], 0.12),
   };
 
-  G.CQStore = { state, save, reset, levelInfo, addCoins, badge, onBadge, dailyAvailable, claimDaily, sfx };
+  function buzz(pattern) { try { if (state.sound && navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* no haptics */ } }
+
+  G.CQStore = { state, save, reset, levelInfo, addCoins, onEarn, badge, onBadge, dailyAvailable, claimDaily, streakAtRisk, daysSinceClaim, sfx, buzz };
 })(window);

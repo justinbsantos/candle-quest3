@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "npx --yes http-server -c-1 -p 8080 .",
-    "test": "node tests/scenarios.test.js && node tests/market.test.js",
+    "test": "node tests/scenarios.test.js && node tests/market.test.js && node tests/meta.test.js",
     "build:single": "node scripts/build-single.js"
   },
   "license": "UNLICENSED"

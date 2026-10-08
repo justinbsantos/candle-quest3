@@ -89,9 +89,9 @@
   }
 
   // Bottom tab bar for the five main areas.
-  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['room', 'My room', 'homeUp'], ['school', 'School', 'school'], ['me', 'Me', 'user']];
+  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['league', 'League', 'trophy'], ['room', 'My room', 'homeUp'], ['me', 'Me', 'user']];
   function nav(active) {
-    const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), room: () => go(window.CQRoom.roomScreen), school: () => go(map), me: () => go(profile) };
+    const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), league: () => go(window.CQMeta.leagueScreen), room: () => go(window.CQRoom.roomScreen), me: () => go(profile) };
     const bar = el(`<nav class="tabbar" aria-label="Main">${TABS.map(([id, label, icon]) => `<button class="tab-item ${id === active ? 'on' : ''}" data-id="${id}" ${id === active ? 'aria-current="page"' : ''}><span class="tab-ic">${ic(icon)}</span>${label}</button>`).join('')}</nav>`);
     bar.querySelectorAll('.tab-item').forEach((b) => b.addEventListener('click', () => { if (b.dataset.id !== active) { Store.sfx.tap(); routes[b.dataset.id](); } }));
     app.classList.remove('no-tabs');
@@ -101,6 +101,7 @@
   // ---------- HOME ----------
   function home() {
     if (!S.name) return go(welcome);
+    const M = window.CQMeta, P = window.CQPro;
     const li = Store.levelInfo(S.xp);
     const greet = pick([
       'Market\'s open. Go catch some take profits.',
@@ -112,29 +113,31 @@
     const ms = S.missionStars || {};
     const next = MS.find((m) => !ms[m.id]) || MS[MS.length - 1];
     const nextNo = MS.indexOf(next) + 1;
+    const cards = M.homeCards();
+    const atRisk = Store.dailyAvailable() && Store.streakAtRisk();
+    const pa = P.account();
     const scr = el(`<main class="screen home">
-      <div class="greet"><div class="greet-owl">${avatarSVG(S.name, S.hat)}</div><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><p class="greet-sub">${esc(greet)}</p></div></div>
+      <div class="greet"><div class="greet-owl">${avatarSVG(S.name, S.hat)}</div><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><p class="greet-sub">${esc(greet)}</p></div>
+        <span class="streak-pill" title="Daily streak">${ic('flame')}${S.streak || 0}</span></div>
+      ${cards.zoneCard}
       <section class="hero-card">
         <div class="hc-head"><span class="live-badge"><span class="live-dot"></span>LIVE</span><b>Practice market</b></div>
         <div class="home-chart"></div>
         <div class="hc-cta"><button class="btn btn-play play-live"><span>Trade live</span><small>Mission ${nextNo} of ${MS.length}: ${esc(next.name)}</small></button></div>
       </section>
+      ${cards.quests}
+      ${cards.league}
       ${Store.dailyAvailable()
-        ? `<button class="daily card-pop"><span class="daily-ic">${ic('gift')}</span><span><b>Daily chest is ready</b><small>Open it every day to grow your streak</small></span><span class="daily-go">Open</span></button>`
-        : `<div class="daily claimed"><span class="daily-ic">${ic('flame')}</span><span><b>${S.streak}-day streak</b><small>Next chest tomorrow</small></span></div>`}
-      <button class="room-card">
-        <div class="room-mini"></div>
-        <div class="rc-body"><b>My room</b><small>${roomLine()}</small></div>
-        <span class="rc-go">${ic('back', 'flip')}</span>
-      </button>
+        ? `<button class="daily card-pop"><span class="daily-ic">${ic('gift')}</span><span><b>Daily chest is ready</b><small>${atRisk ? (S.freezes ? `Your ${S.streak}-day streak is safe: a streak freeze covers the missed day.` : `You missed a day, so your ${S.streak}-day streak restarts.`) : 'Open it every day to grow your streak'}</small></span><span class="daily-go">Open</span></button>`
+        : `<div class="daily claimed"><span class="daily-ic">${ic('flame')}</span><span><b>${S.streak}-day streak</b><small>Next chest tomorrow · ${S.freezes || 0} streak freeze${S.freezes === 1 ? '' : 's'}</small></span>${(S.freezes || 0) < 2 ? `<button class="btn small buy freeze-buy">${coin()}150 freeze</button>` : ''}</div>`}
       <div class="grid2">
-        <button class="tile t-free"><span class="tile-ic mint">${ic('trade')}</span><b>Free market</b><small>Trade as long as you like</small></button>
-        <button class="tile t-school"><span class="tile-ic violet">${ic('school')}</span><b>Trading school</b><small>Learn each setup step by step</small></button>
+        <button class="tile t-pro"><span class="tile-ic mint">${ic('trade')}</span><b>Pro Account</b><small>${P.money(pa.balance)} · real risk</small></button>
+        <button class="room-card mini-room"><div class="room-mini"></div><b>My room</b><small>${roomLine()}</small></button>
       </div>
       <section class="stats-row">
         <div class="stat"><b>${li.lvl}</b><span>Level</span></div>
         <div class="stat"><b>${S.tpTotal || 0}</b><span>Take profits</span></div>
-        <div class="stat"><b>${S.badges.length}</b><span>Badges</span></div>
+        <div class="stat"><b>${S.bestWinStreak || 0}</b><span>Best streak</span></div>
       </section>
     </main>`);
     app.append(hud(null), scr, nav('home'));
@@ -142,23 +145,30 @@
     window.CQRoom.mountRoom($('.room-mini', scr));
     on(scr, '.room-card', () => go(window.CQRoom.roomScreen));
     on(scr, '.play-live', () => go(window.CQLive.liveScreen, next));
-    on(scr, '.t-free', () => go(window.CQLive.liveScreen, null));
-    on(scr, '.t-school', () => go(map));
+    on(scr, '.t-pro', () => go(P.hub));
+    on(scr, '.league-card', () => go(M.leagueScreen));
+    on(scr, '.kz-card', () => M.explainKillZones());
+    on(scr, '.freeze-buy', () => {
+      if (S.coins < 150) { Store.sfx.bad(); toast(`You need ${150 - S.coins} more coins for a streak freeze.`, '🧊'); return; }
+      S.coins -= 150; S.freezes = (S.freezes || 0) + 1; Store.save(); Store.sfx.win();
+      toast('Streak freeze ready. It protects your streak if you miss a day.', '🧊'); go(home);
+    });
     on(scr, 'button.daily', () => {
       const r = Store.claimDaily();
       if (r) {
         Store.sfx.win(); confetti(40);
-        toast(`+${r} coins · ${S.streak}-day streak`, '🎁');
+        toast(S.lastFreezeUsed ? `+${r} coins · a streak freeze saved your ${S.streak}-day streak` : `+${r} coins · ${S.streak}-day streak`, '🎁');
         setTimeout(() => go(home), 900);
       }
     });
+    setTimeout(() => M.maybeShowResult(), 400);
   }
 
   function roomLine() {
     const R = window.CQRoom, r = R.room(), p = R.pending();
     const where = R.TIERS[r.tier].name;
-    if (p > 0) return `${where} · your bot earned ${p} coins, tap to collect`;
-    return `${where} · spend coins to upgrade your trading room`;
+    if (p > 0) return `Bot earned ${p} coins`;
+    return `${where}`;
   }
 
   function profile() {
@@ -272,7 +282,7 @@
       if (open) on(card, '.lesson-btn', () => go(lesson, { w: wi }));
       scr.appendChild(card);
     });
-    app.append(hud(null, 'Trading school'), scr, nav('school'));
+    app.append(hud(() => go(window.CQLive.missions), 'Trading school'), scr, nav('trade'));
     // scroll to the newest open world
     let target = scrollTo;
     if (target == null) { target = 0; WORLDS.forEach((_, wi) => { if (worldOpen(wi)) target = wi; }); }
@@ -522,6 +532,7 @@
       Store.save();
       giveCoins(bonus);
       Store.badge('first');
+      if (window.CQMeta) window.CQMeta.track('school');
       if (stars === 3) Store.badge('perfect');
       if (worldDone(g.w)) Store.badge(WORLDS[g.w].id);
     }
@@ -612,7 +623,7 @@
 
   // ---------- shared UI for live.js ----------
   window.CQUI = {
-    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home, shop,
+    app, go, el, esc, hud, nav, toast, confetti, giveCoins, theme, home, shop, map,
     refreshCoins: () => { const c = $('.hud-coins b'); if (c) c.textContent = S.coins; },
   };
 

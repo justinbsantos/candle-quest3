@@ -176,8 +176,9 @@
 
       if (pos) {
         const coins = potential(pos);
-        gutterTag(ctx, g, this.Y(pos.tp), '🎯 +' + coins.tp, C.up, this.drag === 'tp');
-        gutterTag(ctx, g, this.Y(pos.sl), '🛑 −' + coins.sl, C.down, this.drag === 'sl');
+        const fmtTag = (v) => (pos.pro ? '$' + Math.round(v).toLocaleString() : v);
+        gutterTag(ctx, g, this.Y(pos.tp), '🎯 +' + fmtTag(coins.tp), C.up, this.drag === 'tp');
+        gutterTag(ctx, g, this.Y(pos.sl), '🛑 −' + fmtTag(coins.sl), C.down, this.drag === 'sl');
       }
       gutterTag(ctx, g, py, fmt(s.price), pc, false, true);
     }
@@ -253,8 +254,10 @@
     const move = pos.dir === 'buy' ? exit - pos.entry : pos.entry - exit;
     return Math.max(-1, Math.min(5, move / risk));
   }
+  const money = (v) => (v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   function coinsFor(pos, exit) {
     const R = rMultiple(pos, exit);
+    if (pos.pro) return Math.round(pos.stake * R * 100) / 100;
     let c = Math.round(pos.stake * R);
     if (c > 0 && pos.perfect) c = Math.round(c * 1.5);
     return c;
@@ -287,19 +290,21 @@
     if (important) b.classList.add('important'); else b.classList.remove('important');
   }
 
-  function startSession(mission) {
+  function startSession(arg) {
     const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-    const m = mission || null;
-    const market = new Market(seed, { failRate: m ? m.fail : 0.15, setupRate: 0.8 });
+    const pro = !!(arg && arg.pro);
+    const m = pro ? null : (arg || null);
+    const market = new Market(seed, { failRate: pro ? 0.25 : m ? m.fail : 0.15, setupRate: pro ? 0.65 : 0.8 });
     market.warmUp(VIEW + 4);
     // skip ahead so the first setup starts soon after the session begins
     sess = {
       mission: m, market, rng: RNG(seed ^ 0x9e3779b9),
       asset: ASSETS[seed % ASSETS.length],
       candleMs: m ? m.speed : 1150, speedMult: 1, paused: false, alive: true,
-      hints: m ? m.hints : (S.freeHints != null ? S.freeHints : 2),
-      stakes: m ? (m.stakes || [10]) : [10, 25, 50],
-      stake: 10, position: null, marks: [],
+      pro, startBalance: pro ? window.CQPro.account().balance : 0,
+      hints: pro ? 0 : m ? m.hints : (S.freeHints != null ? S.freeHints : 2),
+      stakes: pro ? [0.5, 1, 2, 5, 10] : m ? (m.stakes || [10]) : [10, 25, 50],
+      stake: pro ? window.CQPro.account().risk : 10, position: null, marks: [], winStreak: 0,
       stats: { trades: [], tp: 0, sl: 0, net: 0, perfectWins: 0 },
       candlesLeft: m ? m.candles : Infinity, done: false, loaned: false, goalShown: false,
       acc: 0, tickIdx: 0, lastTs: 0,
@@ -420,7 +425,7 @@
   function openTrade(dir) {
     const s = sess;
     if (!s || s.position || s.done) return;
-    if (S.coins < s.stake) {
+    if (!s.pro && S.coins < s.stake) {
       if (!s.loaned) {
         s.loaned = true;
         S.coins += 50; Store.save();
@@ -450,10 +455,13 @@
       sl = buy ? entry - risk : entry + risk;
       tp = buy ? entry + 2 * risk : entry - 2 * risk;
     }
-    s.position = { dir, entry, sl, tp, stake: s.stake, openIdx: s.market.candles.length, perfect, against: !!(st && !match), setup: st ? st.id : null };
+    const stake = s.pro ? Math.max(0.01, Math.round(window.CQPro.account().balance * s.stake) / 100) : s.stake;
+    s.position = { dir, entry, sl, tp, stake, pro: s.pro, openIdx: s.market.candles.length, perfect, against: !!(st && !match), setup: st ? st.id : null };
     s.marks.push({ i: s.market.candles.length, label: buy ? '▲ BUY' : '▼ SELL', above: !buy, color: buy ? C.up : C.down });
     Store.sfx.good();
-    if (perfect) coach('🌟 PERFECT ICT entry! In the gap, after the sweep and MSS. Win this one for 1.5× coins!', 'wow');
+    Store.buzz(12);
+    if (s.pro) coach(s.stake >= 10 ? `Risking ${s.stake}% of your account on one trade. Two losses like this and you're down almost 20%.` : s.stake >= 5 ? `${s.stake}% risk is aggressive. Pros usually risk 0.5–2%.` : `Risking ${money(stake)} (${s.stake}% of your account). Let it play out.`, s.stake >= 5 ? 'sad' : 'happy');
+    else if (perfect) coach('🌟 PERFECT ICT entry! In the gap, after the sweep and MSS. Win this one for 1.5× coins!', 'wow');
     else if (st && !match && s.hints >= 1) coach(`😬 Careful — the setup is pointing ${st.dir === 'buy' ? 'UP' : 'DOWN'}. ${buy ? 'Buying' : 'Selling'} here goes against it.`, 'sad');
     else if (s.hints === 2) coach('Trade open! 🎯 is your Take Profit, 🛑 is your Stop Loss. Drag them on the chart to move them.');
     renderControls();
@@ -472,43 +480,103 @@
     const pos = s.position;
     if (!pos) return;
     s.position = null;
+    if (pos.pro) return closeProTrade(pos, exit, reason);
     let coins = coinsFor(pos, exit);
     if (reason === 'sl') coins = -pos.stake;
-    const boost = window.CQRoom ? window.CQRoom.tpBonus() : 1;
-    if (coins > 0 && boost > 1) coins = Math.round(coins * boost);
+    const tags = [];
+    if (coins > 0) {
+      const room = window.CQRoom ? window.CQRoom.tpBonus() : 1;
+      const kz = window.CQMeta ? window.CQMeta.multiplier() : 1;
+      const streak = reason === 'tp' ? 1 + 0.1 * Math.min(5, s.winStreak) : 1;
+      if (room > 1) tags.push(`screens +${Math.round((room - 1) * 100)}%`);
+      if (streak > 1) tags.push(`streak +${Math.round((streak - 1) * 100)}%`);
+      if (kz > 1) tags.push('kill zone 2×');
+      coins = Math.round(coins * room * streak * kz);
+    }
     if (coins > 0) UI().giveCoins(coins);
     else if (coins < 0) { S.coins = Math.max(0, S.coins + coins); Store.save(); UI().refreshCoins(); }
     s.stats.net += coins;
+    const M = window.CQMeta;
     if (reason === 'tp') {
-      s.stats.tp++;
-      S.tpTotal = (S.tpTotal || 0) + 1; Store.save();
+      s.stats.tp++; s.winStreak++;
+      S.tpTotal = (S.tpTotal || 0) + 1;
+      if (s.winStreak > (S.bestWinStreak || 0)) S.bestWinStreak = s.winStreak;
+      Store.save();
       Store.badge('tp1');
       if (S.tpTotal >= 25) Store.badge('tp25');
+      if (s.winStreak >= 5) Store.badge('streak5');
       if (pos.perfect) { s.stats.perfectWins++; Store.badge('sniper'); }
-    }
-    if (reason === 'sl') s.stats.sl++;
+      if (M) {
+        M.track('tp'); M.track('winstreak', s.winStreak);
+        if (pos.perfect) M.track('perfect');
+        if (M.multiplier() > 1) { M.track('kztp'); Store.badge('killzone'); }
+      }
+    } else if (reason === 'sl') { s.stats.sl++; s.winStreak = 0; }
+    if (coins > 0 && M) M.track('tradeCoins', coins);
     s.stats.trades.push({ dir: pos.dir, reason, coins, perfect: pos.perfect, entry: pos.entry, exit, sl: pos.sl, tp: pos.tp, setup: pos.setup });
     s.marks.push({ i: s.market.candles.length, label: reason === 'tp' ? '🎯' : reason === 'sl' ? '🛑' : '✋', above: true, color: coins >= 0 ? C.up : C.down });
 
-    const msg = reason === 'tp' ? `Take profit! +${coins}${boost > 1 ? ' (screens +' + Math.round((boost - 1) * 100) + '%)' : ''}` : reason === 'sl' ? `Stopped out ${coins}` : `Closed ${coins >= 0 ? '+' : ''}${coins}`;
-    popup(msg, coins >= 0 ? 'win' : 'loss');
+    const msg = reason === 'tp' ? `Take profit! +${coins}` : reason === 'sl' ? `Stopped out ${coins}` : `Closed ${coins >= 0 ? '+' : ''}${coins}`;
+    popup(msg, coins >= 0 ? 'win' : 'loss', tags);
     if (reason === 'tp') {
-      Store.sfx.win(); UI().confetti(pos.perfect ? 70 : 35);
-      coach(pos.perfect ? '🌟 Perfect entry AND take profit! That is how the pros do it!' : pick(['Cha-ching! 💰 Profit locked in!', 'Nice trade! Your TP got hit! 🎯', 'Winner winner! 🏆']), 'wow');
+      Store.sfx.win(); Store.buzz([18, 40, 18]); coinShower(Math.min(24, 8 + Math.round(coins / 4)));
+      if (pos.perfect) UI().confetti(60);
+      coach(pos.perfect ? '🌟 Perfect entry AND take profit. That is how the pros do it.' : s.winStreak >= 3 ? `🔥 ${s.winStreak} wins in a row. Streak bonus +${Math.round(Math.min(5, s.winStreak) * 10)}% on the next one.` : pick(['Profit locked in.', 'Clean. Your TP got hit.', 'That\'s a winner.']), 'wow');
     } else if (reason === 'sl') {
-      Store.sfx.bad();
-      coach(pos.perfect ? 'Great entry — the market just said no this time. Your stop kept the loss small. 💪' : 'Stopped out. Losses are part of trading — wait for the next clean setup!', 'sad');
+      Store.sfx.bad(); Store.buzz(70); shake();
+      coach(pos.perfect ? 'Great entry. The market just said no this time, and your stop kept the loss small.' : 'Stopped out. Losses are part of trading. Wait for the next clean setup.', 'sad');
     }
     renderControls();
     checkGoal();
   }
+
+  // Pro Account: real risk. Dollars in, dollars out, no bonuses.
+  function closeProTrade(pos, exit, reason) {
+    const s = sess, P = window.CQPro;
+    let pnl = reason === 'sl' ? -pos.stake : coinsFor(pos, exit);
+    pnl = Math.round(pnl * 100) / 100;
+    const acct = P.record(pnl);
+    s.stats.net = Math.round((s.stats.net + pnl) * 100) / 100;
+    if (pnl > 0) { s.stats.tp++; s.winStreak++; if (window.CQMeta) window.CQMeta.track('pro'); } else if (pnl < 0) { s.stats.sl++; s.winStreak = 0; }
+    s.stats.trades.push({ dir: pos.dir, reason, coins: pnl, pro: true });
+    s.marks.push({ i: s.market.candles.length, label: reason === 'tp' ? '🎯' : reason === 'sl' ? '🛑' : '✋', above: true, color: pnl >= 0 ? C.up : C.down });
+    popup(`${reason === 'tp' ? 'Take profit' : reason === 'sl' ? 'Stopped out' : 'Closed'} ${pnl >= 0 ? '+' : ''}${money(pnl)}`, pnl >= 0 ? 'win' : 'loss', [`${pnl >= 0 ? '+' : ''}${(pnl / (acct.balance - pnl) * 100).toFixed(1)}% account`]);
+    if (pnl > 0) { Store.sfx.win(); Store.buzz([18, 40, 18]); } else if (pnl < 0) { Store.sfx.bad(); Store.buzz(70); shake(); }
+    if (acct.blown) { coach('Account blown. That\'s what over-risking does.', 'sad'); setTimeout(() => endSession(), 1400); }
+    else if (acct.newMilestone) coach(`Milestone: ${money(acct.newMilestone)}! Compounding is working.`, 'wow');
+    else if (pnl < 0 && s.stake >= 5) coach(`That loss cost ${Math.abs(pnl / (acct.balance - pnl) * 100).toFixed(1)}% of your account. Smaller risk means you survive losing streaks.`, 'sad');
+    renderControls();
+  }
+
+  function coinShower(n) {
+    const wrap = sess.ui.root.querySelector('.chart-wrap');
+    const target = document.querySelector('.hud-coins');
+    if (!wrap || !target) return;
+    const a = wrap.getBoundingClientRect(), b = target.getBoundingClientRect();
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement('span');
+      c.className = 'fly-coin';
+      c.innerHTML = coin();
+      const x0 = a.left + a.width * (0.3 + Math.random() * 0.4), y0 = a.top + a.height * (0.35 + Math.random() * 0.3);
+      c.style.left = x0 + 'px'; c.style.top = y0 + 'px';
+      document.body.appendChild(c);
+      const dx = b.left + 14 - x0, dy = b.top + 14 - y0;
+      c.animate([{ transform: 'translate(0,0) scale(.6)', opacity: 0 }, { transform: `translate(${(Math.random() - .5) * 60}px, ${-40 - Math.random() * 40}px) scale(1)`, opacity: 1, offset: 0.3 }, { transform: `translate(${dx}px, ${dy}px) scale(.5)`, opacity: .9 }],
+        { duration: 700 + Math.random() * 300, delay: i * 35, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' }).onfinish = () => c.remove();
+    }
+  }
+  function shake() {
+    const w = sess.ui.root.querySelector('.chart-wrap');
+    if (w && w.animate) w.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }], { duration: 320 });
+  }
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
 
-  function popup(text, kind) {
+  function popup(text, kind, tags) {
     const wrap = sess.ui.root.querySelector('.chart-wrap');
     const p = document.createElement('div');
     p.className = 'live-pop ' + kind;
     p.textContent = text;
+    if (tags && tags.length) { const t = document.createElement('small'); t.textContent = tags.join(' · '); p.appendChild(t); }
     wrap.appendChild(p);
     setTimeout(() => p.remove(), 1800);
   }
@@ -549,11 +617,18 @@
     const ch = s.price - s.market.candles[s.market.candles.length - 1].c;
     ui.ticker.innerHTML = `<b>${s.asset}</b><span class="${s.price >= s.live.o ? 'up' : 'down'}">${fmt(s.price)}${ic(s.price >= s.live.o ? 'up' : 'down')}</span>`;
     void ch;
-    if (s.mission) ui.goal.textContent = `${goalText(s.mission)}  ·  ${s.candlesLeft} candles left`;
+    if (s.pro) { const a = window.CQPro.account(); ui.goal.textContent = `Balance ${money(a.balance)}  ·  risk ${s.stake}% = ${money(a.balance * s.stake / 100)}  ·  session ${s.stats.net >= 0 ? '+' : ''}${money(s.stats.net)}`; }
+    else if (s.mission) ui.goal.textContent = `${goalText(s.mission)}  ·  ${s.candlesLeft} candles left`;
     else ui.goal.textContent = `${s.stats.tp} take profits  ·  ${s.stats.net >= 0 ? '+' : ''}${s.stats.net} coins this session`;
+    if (ui.kz) {
+      const kz = window.CQMeta.killZoneAt();
+      ui.kz.hidden = !kz.active;
+      if (kz.active) ui.kz.textContent = `${kz.zone.name} kill zone · 2× coins · ${window.CQMeta.fmtLeft(kz.endsAt - Date.now())} left`;
+    }
+    if (ui.streak) { ui.streak.hidden = s.winStreak < 2; ui.streak.textContent = `🔥 ${s.winStreak} win streak · +${Math.min(5, s.winStreak) * 10}%`; }
     if (s.position) {
       const c = coinsFor(s.position, s.price);
-      ui.pnl.firstChild.textContent = `${c >= 0 ? '+' : ''}${c}`;
+      ui.pnl.firstChild.textContent = s.pro ? `${c >= 0 ? '+' : ''}${money(c)}` : `${c >= 0 ? '+' : ''}${c}`;
       ui.pnl.className = 'pnl ' + (c >= 0 ? 'up' : 'down');
     }
   }
@@ -563,7 +638,7 @@
     if (s.position) {
       const p = s.position;
       box.innerHTML = `<div class="pos-panel ${p.dir}">
-        <div class="pos-top"><span class="pos-dir">${ic(p.dir === 'buy' ? 'up' : 'down')}${p.dir === 'buy' ? 'Buying' : 'Selling'} · risking ${p.stake}${p.perfect ? ' <span class="pill">Perfect entry</span>' : ''}</span><span class="pnl"><span>0</span>${coin()}</span></div>
+        <div class="pos-top"><span class="pos-dir">${ic(p.dir === 'buy' ? 'up' : 'down')}${p.dir === 'buy' ? 'Buying' : 'Selling'} · risking ${p.pro ? money(p.stake) : p.stake}${p.perfect && !p.pro ? ' <span class="pill">Perfect entry</span>' : ''}</span><span class="pnl"><span>0</span>${p.pro ? '' : coin()}</span></div>
         <p class="pos-hint">Drag the take-profit and stop-loss tags on the right edge of the chart to move them.</p>
         <button class="btn btn-ghost close-trade">Close trade now</button>
       </div>`;
@@ -574,10 +649,10 @@
           <button class="trade-btn trade-buy"><b>${ic('up')}BUY</b><small>price goes up</small></button>
           <button class="trade-btn trade-sell"><b>${ic('down')}SELL</b><small>price goes down</small></button>
         </div>
-        <div class="stake-row"><span>Risk per trade</span>${s.stakes.map((v) => `<button class="stake ${v === s.stake ? 'on' : ''}" data-v="${v}">${coin()}${v}</button>`).join('')}</div>`;
+        <div class="stake-row"><span>${s.pro ? 'Risk % of account' : 'Risk per trade'}</span>${s.stakes.map((v) => `<button class="stake ${v === s.stake ? 'on' : ''} ${s.pro && v >= 5 ? 'hot' : ''}" data-v="${v}">${s.pro ? v + '%' : coin() + v}</button>`).join('')}</div>`;
       box.querySelector('.trade-buy').addEventListener('click', () => openTrade('buy'));
       box.querySelector('.trade-sell').addEventListener('click', () => openTrade('sell'));
-      box.querySelectorAll('.stake').forEach((b) => b.addEventListener('click', () => { s.stake = +b.dataset.v; Store.sfx.tap(); renderControls(); }));
+      box.querySelectorAll('.stake').forEach((b) => b.addEventListener('click', () => { s.stake = +b.dataset.v; if (s.pro) window.CQPro.setRisk(s.stake); Store.sfx.tap(); renderControls(); }));
     }
   }
 
@@ -595,25 +670,28 @@
           <button class="chip pause-btn" aria-label="Pause">${ic('pause')}</button>
         </div>
       </div>
-      <div class="goal-row">${ic(mission ? 'target' : 'trade')}<span class="goal"></span></div>
+      <div class="goal-row">${ic(mission && !mission.pro ? 'target' : 'trade')}<span class="goal"></span></div>
+      <div class="live-flags"><span class="kz-flag" hidden></span><span class="streak-flag" hidden></span></div>
       <div class="goal-done" hidden><span>Mission complete!</span><button class="btn small finish">Finish</button></div>
       <div class="coach"><div class="mini-owl"></div><p></p></div>
       <div class="chart-wrap"><div class="chart-host live-chart"></div></div>
       <div class="controls"></div>
     </main>`);
-    U.app.append(U.hud(() => leave(), mission ? mission.name : 'Free Market'), root);
+    U.app.append(U.hud(() => leave(), s.pro ? 'Pro Account' : mission ? mission.name : 'Free Market'), root);
     s.ui = {
       root, ticker: root.querySelector('.ticker'), goal: root.querySelector('.goal'),
+      kz: s.pro ? null : root.querySelector('.kz-flag'), streak: s.pro ? null : root.querySelector('.streak-flag'),
       coach: root.querySelector('.coach'), controls: root.querySelector('.controls'),
       chart: new LiveChart(root.querySelector('.live-chart')),
     };
-    coach(mission ? `${mission.icon} ${mission.text}` + (s.hints === 2 ? ' Watch the chart — I\'ll tell you when a setup shows up!' : '') : 'Free market! Trade as much as you like. Every Take Profit = coins.', 'happy');
+    coach(s.pro ? 'Pro Account: real risk, no hints, no bonuses. Your balance grows or shrinks with every trade.' : mission ? `${mission.icon} ${mission.text}` + (s.hints === 2 ? ' Watch the chart — I\'ll tell you when a setup shows up!' : '') : 'Free market! Trade as much as you like. Every Take Profit = coins.', 'happy');
     const sp = root.querySelector('.speed-btn');
     sp.addEventListener('click', () => { s.speedMult = s.speedMult === 1 ? 2 : s.speedMult === 2 ? 0.5 : 1; sp.textContent = s.speedMult === 0.5 ? '½×' : s.speedMult + '×'; Store.sfx.tap(); });
     const pb = root.querySelector('.pause-btn');
     pb.addEventListener('click', () => { s.paused = !s.paused; pb.innerHTML = ic(s.paused ? 'play' : 'pause'); Store.sfx.tap(); });
     const hb = root.querySelector('.hints-btn');
-    if (hb) {
+    if (hb && s.pro) hb.remove();
+    else if (hb) {
       const lab = () => { hb.innerHTML = ic(['eyeOff', 'eye', 'owl'][s.hints]) + ['No hints', 'Some hints', 'Full hints'][s.hints]; };
       lab();
       hb.addEventListener('click', () => { s.hints = (s.hints + 2) % 3; S.freeHints = s.hints; Store.save(); lab(); coach(hintsLabel[s.hints], 'happy'); });
@@ -626,6 +704,7 @@
   function leave() {
     const s = sess;
     if (!s) return UI().go(UI().home);
+    if (s.pro) { endSession(); return; }
     if (s.mission) {
       stop();
       UI().go(missions);
@@ -645,6 +724,7 @@
     if (s.position) closeTrade(s.price, 'end');
     s.done = true;
     stop();
+    if (s.pro) { UI().go(window.CQPro.hub, { session: s.stats, start: s.startBalance }); return; }
     const m = s.mission;
     let stars = 0, bonus = 0, first = false;
     if (m) {
@@ -659,6 +739,7 @@
         bonus = 20 * stars + (first ? 30 : 0);
         UI().giveCoins(bonus);
         if (MISSIONS.every((x) => (S.missionStars[x.id] || 0) > 0)) Store.badge('m9');
+        if (window.CQMeta) window.CQMeta.track('mission');
       }
     }
     const U = UI();
@@ -693,7 +774,12 @@
     const U = UI();
     const ms = S.missionStars || {};
     const root = U.el(`<main class="screen missions">
-      <p class="lead">Tap buy or sell, set your take profit and stop loss, and earn coins every time price hits your target.</p>
+      <div class="mode-grid">
+        <button class="mode-card pro-card"><span class="mc-k">Pro Account</span><b class="mc-bal">${window.CQPro.money(window.CQPro.account().balance)}</b><small>Real risk. Grow ${'$'}1k into ${'$'}1M with compounding.</small></button>
+        <button class="mode-card free-card"><span class="mc-k">Free market</span><b>Play for coins</b><small>Endless market, hints your way.</small></button>
+      </div>
+      <button class="tile school-link"><span class="tile-ic violet">${ic('school')}</span><b>Trading school</b><small>Learn each setup, step by step</small></button>
+      <h2 class="section-title">Missions</h2>
       <div class="mission-list"></div>
     </main>`);
     const list = root.querySelector('.mission-list');
@@ -710,7 +796,10 @@
       if (open) card.addEventListener('click', () => { Store.sfx.tap(); U.go(liveScreen, m); });
       list.appendChild(card);
     });
-    U.app.append(U.hud(null, 'Trade live'), root, U.nav('trade'));
+    U.app.append(U.hud(null, 'Trade'), root, U.nav('trade'));
+    root.querySelector('.pro-card').addEventListener('click', () => { Store.sfx.tap(); U.go(window.CQPro.hub); });
+    root.querySelector('.free-card').addEventListener('click', () => { Store.sfx.tap(); U.go(liveScreen, null); });
+    root.querySelector('.school-link').addEventListener('click', () => { Store.sfx.tap(); U.go(U.map); });
   }
 
   // Small always-moving chart for the home screen.
