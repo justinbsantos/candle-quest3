@@ -654,3 +654,44 @@ h1, h2, h3 { font-weight: 600; letter-spacing: -.01em; line-height: 1.1; }
 .calc-out p b { font: inherit; font-weight: 700; }
 .pos-panel .pnl { font-size: 1.4rem; }
 .pos-top { flex-wrap: wrap; }
+
+/* ---------- order ticket ---------- */
+.ticket { background: var(--night-2); border: 1px solid var(--edge); border-radius: var(--r-md); padding: 12px; display: grid; gap: 10px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+.tk-row { display: flex; gap: 8px; }
+.seg { display: flex; flex: 1; background: rgba(0,0,0,.25); border: 1px solid var(--edge); border-radius: 999px; padding: 3px; }
+.seg button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; border-radius: 999px; padding: 7px 6px; font: 600 .82rem var(--display); color: var(--mute); background: none; border: 0; }
+.seg button .ic { width: 15px; height: 15px; }
+.seg button.on { background: var(--night-3); color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge); }
+.seg button.on.buy { background: rgba(60,255,177,.18); color: var(--mint); }
+.seg button.on.sell { background: rgba(255,77,109,.2); color: #FF8DA2; }
+.tk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.tk-stat { background: rgba(0,0,0,.22); border-radius: 14px; padding: 7px 8px; display: grid; gap: 1px; min-width: 0; }
+.tk-stat small { color: var(--mute); font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.tk-stat b { font: 600 1rem var(--display); display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.tk-stat b .coin, .tk-stat b svg { width: 15px; height: 15px; }
+.tk-stat em { font-style: normal; color: var(--mute); font-size: .72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tk-stat.down b { color: #FF8DA2; }
+.tk-stat.up b { color: var(--mint); }
+.tk-rr.good { color: var(--mint); } .tk-rr.ok { color: var(--gold); } .tk-rr.bad { color: var(--coral); }
+.tk-quick { display: flex; align-items: center; gap: 6px; color: var(--mute); font-size: .82rem; flex-wrap: wrap; }
+.tk-quick button { display: inline-flex; align-items: center; gap: 4px; background: var(--night-3); border: 1px solid var(--edge); border-radius: 999px; padding: 5px 11px; font: 600 .8rem var(--display); color: var(--ink); }
+.tk-quick button .ic { width: 14px; height: 14px; }
+.tk-hint { color: var(--mute); font-size: .82rem; line-height: 1.35; margin: 0; min-height: 2.2em; }
+.tk-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.tk-place.buy { background: linear-gradient(135deg, #3CFFB1, #15B57C); color: #04261A; }
+.tk-place.sell { background: linear-gradient(135deg, #FF6F8A, #D6264A); color: #fff; }
+.pos-panel.pending::before { background: var(--gold); }
+.pos-panel.pending .pos-dir .ic { color: var(--gold); }
+.onetap { justify-self: start; display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; color: var(--mute); font: 600 .82rem var(--body); padding: 2px 0; }
+.onetap .knob { width: 32px; height: 18px; border-radius: 999px; background: var(--night-3); border: 1px solid var(--edge); position: relative; transition: background .2s; }
+.onetap .knob::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--mute); transition: transform .2s, background .2s; }
+.onetap.on { color: var(--ink); }
+.onetap.on .knob { background: rgba(124,92,255,.5); }
+.onetap.on .knob::after { transform: translateX(14px); background: #fff; }
+.live.planning .live-chart { height: min(36vh, 320px); min-height: 220px; }
+.live.planning .goal-row, .live.planning .live-flags { display: none; }
+.ticket { gap: 8px; padding: 10px; }
+.tk-stakes .stake-row { flex-wrap: nowrap; overflow-x: auto; font-size: .8rem; scrollbar-width: none; }
+.tk-stakes .stake { padding: 3px 10px 3px 5px; font-size: .85rem; }
+.tk-hint { min-height: 0; font-size: .78rem; }
+.tk-actions .btn { min-height: 46px; padding: 10px; }

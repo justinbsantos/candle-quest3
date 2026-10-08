@@ -82,6 +82,8 @@
       lo = Math.min(lo, s.live.l); hi = Math.max(hi, s.live.h);
       const pos = s.position;
       if (pos) { lo = Math.min(lo, pos.tp, pos.sl); hi = Math.max(hi, pos.tp, pos.sl); }
+      const pl = s.plan;
+      if (pl && !pos) { lo = Math.min(lo, pl.tp, pl.sl, pl.entry); hi = Math.max(hi, pl.tp, pl.sl, pl.entry); }
       for (const st of s.market.setups) {
         if (!st.show || st.resolvedAt != null && st.resolvedAt < g.start) continue;
         if (st.show.liq) { lo = Math.min(lo, st.target); hi = Math.max(hi, st.target); }
@@ -138,6 +140,19 @@
         hline(ctx, x0, w, yt, C.up, false, 2.5);
         hline(ctx, x0, w, ys, C.down, false, 2.5);
       }
+      const plan = !pos && s.plan;
+      if (plan) {
+        const x0 = Math.max(g.padL, g.x(g.now) - g.slot * 1.5);
+        const ye = this.Y(plan.entry), yt = this.Y(plan.tp), ys = this.Y(plan.sl);
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = C.up; ctx.fillRect(x0, Math.min(ye, yt), g.right - x0, Math.abs(yt - ye));
+        ctx.fillStyle = C.down; ctx.fillRect(x0, Math.min(ye, ys), g.right - x0, Math.abs(ys - ye));
+        ctx.globalAlpha = 1;
+        hline(ctx, plan.type === 'limit' ? g.padL : x0, w, ye, C.gold, true, plan.type === 'limit' ? 2 : 1.5);
+        hline(ctx, x0, w, yt, C.up, true, 2);
+        hline(ctx, x0, w, ys, C.down, true, 2);
+        if (plan.type === 'limit') tag(ctx, orderName(plan, s.price) + (plan.placed ? ' · waiting' : ''), g.padL + 4, ye - 3, C.gold, 'left', 'bottom', 11);
+      }
 
       // candles
       const bw = Math.max(3, Math.min(18, g.slot * 0.66));
@@ -180,7 +195,14 @@
         gutterTag(ctx, g, this.Y(pos.tp), '🎯 +' + fmtTag(coins.tp), C.up, this.drag === 'tp');
         gutterTag(ctx, g, this.Y(pos.sl), '🛑 −' + fmtTag(coins.sl), C.down, this.drag === 'sl');
       }
+      if (plan) {
+        const pp = planPos(plan);
+        const fmtTag = (v) => (pp.pro ? '$' + Math.round(v).toLocaleString() : v);
+        gutterTag(ctx, g, this.Y(plan.tp), '🎯 +' + fmtTag(coinsFor(pp, plan.tp)), C.up, this.drag === 'tp');
+        gutterTag(ctx, g, this.Y(plan.sl), '🛑 −' + fmtTag(pp.stake), C.down, this.drag === 'sl');
+      }
       gutterTag(ctx, g, py, fmt(s.price), pc, false, true);
+      if (plan && plan.type === 'limit') gutterTag(ctx, g, this.Y(plan.entry), 'Entry', C.gold, this.drag === 'entry');
     }
 
     _hit(e) {
@@ -188,20 +210,25 @@
       return { x: e.clientX - r.left, y: e.clientY - r.top };
     }
     _down(e) {
-      if (!sess || !sess.position || !this.g) return;
+      if (!sess || !this.g) return;
+      const lv = sess.position || sess.plan;
+      if (!lv) return;
       const { y } = this._hit(e);
-      const pos = sess.position;
-      const dt = Math.abs(y - this.Y(pos.tp)), ds = Math.abs(y - this.Y(pos.sl));
-      const best = dt <= ds ? 'tp' : 'sl';
-      if (Math.min(dt, ds) > 26) return;
+      const cand = [['tp', lv.tp], ['sl', lv.sl]];
+      if (!sess.position && lv.type === 'limit') cand.push(['entry', lv.entry]);
+      let best = null, bd = 26;
+      for (const [k, v] of cand) { const d = Math.abs(y - this.Y(v)); if (d <= bd) { bd = d; best = k; } }
+      if (!best) return;
       this.drag = best;
+      if (sess.plan && !sess.position) this.grab = y - this.Y(lv[best]);
+      else this.grab = 0;
       this.cv.setPointerCapture(e.pointerId);
       e.preventDefault();
     }
     _move(e) {
-      if (!this.drag || !sess || !sess.position) return;
+      if (!this.drag || !sess || !(sess.position || sess.plan)) return;
       const { y } = this._hit(e);
-      setLevel(this.drag, this.P(y));
+      setLevel(this.drag, this.P(y - (this.grab || 0)));
     }
     _up() { if (this.drag) { this.drag = null; Store.sfx.tap(); } }
   }
@@ -266,10 +293,142 @@
 
   function setLevel(which, v) {
     const pos = sess.position;
+    if (!pos) return setPlanLevel(which, v);
     const p = sess.price, buy = pos.dir === 'buy';
     if (which === 'tp') pos.tp = buy ? Math.max(v, Math.max(p, pos.entry) + 0.1) : Math.min(v, Math.min(p, pos.entry) - 0.1);
     else pos.sl = buy ? Math.min(v, p - 0.1) : Math.max(v, p + 0.1);
     pos.moved = true;
+  }
+
+  // ---------------------------------------------------------------- order ticket
+  const GAP = 0.15;
+  function stakeFor(s) { return s.pro ? Math.max(0.01, Math.round(window.CQPro.account().balance * s.stake) / 100) : s.stake; }
+  function planPos(plan) {
+    return { dir: plan.dir, entry: plan.entry, sl: plan.sl, tp: plan.tp, pro: sess.pro, stake: stakeFor(sess), perfect: !sess.pro && perfectAt(plan.dir, plan.entry) };
+  }
+  // buy below price = limit, above = stop (and the reverse for sells)
+  function orderName(plan, price) {
+    const below = plan.entry < price;
+    const kind = plan.dir === 'buy' ? (below ? 'limit' : 'stop') : (below ? 'stop' : 'limit');
+    return (plan.dir === 'buy' ? 'Buy ' : 'Sell ') + kind;
+  }
+  function setPlanLevel(which, v) {
+    const p = sess.plan;
+    if (!p) return;
+    const buy = p.dir === 'buy';
+    if (which === 'entry') { if (p.type !== 'limit') return; const d = v - p.entry; p.entry += d; p.sl += d; p.tp += d; }
+    else if (which === 'tp') p.tp = buy ? Math.max(v, p.entry + GAP) : Math.min(v, p.entry - GAP);
+    else p.sl = buy ? Math.min(v, p.entry - GAP) : Math.max(v, p.entry + GAP);
+    p.custom = true;
+  }
+  function perfectAt(dir, entry) {
+    const st = activeSetup();
+    if (!st || st.dir !== dir) return false;
+    const [a, b] = band(st);
+    return entry >= a && entry <= b;
+  }
+  // the coach's suggested levels: setup stop + liquidity target when a setup is live, else structure + 2R
+  function autoLevels(dir, entry) {
+    const s = sess, buy = dir === 'buy';
+    const st = activeSetup();
+    const match = st && st.dir === dir;
+    let sl, tp;
+    if (match && (buy ? st.stop < entry - 0.3 : st.stop > entry + 0.3)) {
+      const risk = Math.min(3.5, Math.abs(entry - st.stop));
+      sl = buy ? entry - risk : entry + risk;
+      tp = st.target;
+      if (buy ? tp - entry < 0.3 : entry - tp < 0.3) tp = buy ? entry + 2 * risk : entry - 2 * risk;
+    } else {
+      const cs = s.market.candles.slice(-8);
+      if (buy) sl = Math.min(...cs.map((k) => k.l), s.live.l) - 0.25;
+      else sl = Math.max(...cs.map((k) => k.h), s.live.h) + 0.25;
+      let risk = Math.abs(entry - sl);
+      risk = Math.max(0.6, Math.min(3, risk));
+      sl = buy ? entry - risk : entry + risk;
+      tp = buy ? entry + 2 * risk : entry - 2 * risk;
+    }
+    return { sl, tp };
+  }
+  function limitDefaults(dir) {
+    const s = sess, buy = dir === 'buy', st = activeSetup();
+    let entry;
+    if (st && st.dir === dir && (buy ? st.gapHi < s.price - GAP : st.gapLo > s.price + GAP)) entry = buy ? st.gapHi : st.gapLo;
+    else {
+      const r = Math.abs(s.price - autoLevels(dir, s.price).sl);
+      entry = buy ? s.price - r * 0.5 : s.price + r * 0.5;
+    }
+    return Object.assign({ entry }, autoLevels(dir, entry));
+  }
+  function syncPlan() {
+    const p = sess.plan;
+    if (!p || p.placed || p.type !== 'market') return;
+    const d = sess.price - p.entry;
+    if (d) { p.entry += d; p.sl += d; p.tp += d; }
+  }
+  function planTrade(dir) {
+    const s = sess;
+    if (!s || s.position || s.done) return;
+    if (S.oneTap) return openTrade(dir);
+    const type = s.plan ? s.plan.type : 'market';
+    const base = type === 'limit' ? limitDefaults(dir) : Object.assign({ entry: s.price }, autoLevels(dir, s.price));
+    s.plan = Object.assign({ dir, type, placed: false }, base);
+    Store.sfx.tap();
+    if (s.hints === 2) coach(perfectAt(dir, s.price) ? 'Nice spot. I set your stop beyond the sweep and the target at the liquidity. Drag the lines if you want, then place it.' : 'Plan your trade: drag 🛑 stop loss and 🎯 take profit on the chart, then tap Place.', 'happy');
+    renderControls();
+  }
+  function setPlanType(type) {
+    const s = sess, p = s.plan;
+    if (!p || p.placed || p.type === type) return;
+    const base = type === 'limit' ? limitDefaults(p.dir) : Object.assign({ entry: s.price }, autoLevels(p.dir, s.price));
+    Object.assign(p, base, { type });
+    if (type === 'limit' && s.hints >= 1) coach(p.dir === 'buy' ? 'Limit order: drag the gold Entry line to where you want in. Pros wait for price to come back into the gap.' : 'Limit order: drag the gold Entry line up to where you want to sell. It fills when price gets there.', 'happy');
+    Store.sfx.tap();
+    renderControls();
+  }
+  function quickTarget(r) {
+    const p = sess.plan; if (!p) return;
+    if (r === 'auto') Object.assign(p, autoLevels(p.dir, p.entry));
+    else { const risk = Math.abs(p.entry - p.sl); p.tp = p.dir === 'buy' ? p.entry + r * risk : p.entry - r * risk; }
+    Store.sfx.tap();
+  }
+  function canAfford() {
+    const s = sess;
+    if (s.pro || S.coins >= s.stake) return true;
+    if (!s.loaned) {
+      s.loaned = true;
+      S.coins += 50; Store.save(); UI().refreshCoins();
+      coach('Pip spotted you 50 coins. Trade smart.', 'happy');
+      return S.coins >= s.stake;
+    }
+    UI().toast('Not enough coins for that risk — pick a smaller one.', '🪙');
+    return false;
+  }
+  function placeOrder() {
+    const s = sess, p = s.plan;
+    if (!p || s.position || s.done) return;
+    if (!canAfford()) return;
+    if (p.type === 'market') { syncPlan(); s.plan = null; fill(p.dir, s.price, p.sl, p.tp); return; }
+    const close = Math.abs(p.entry - s.price) < 0.05;
+    if (close) { s.plan = null; fill(p.dir, s.price, p.sl, p.tp); return; }
+    p.placed = true; p.above = p.entry > s.price; p.name = orderName(p, s.price);
+    Store.sfx.good(); Store.buzz(10);
+    coach(`${p.name} placed at ${fmt(p.entry)}. It fills by itself when price gets there. Your stop and target come with it.`, 'happy');
+    renderControls();
+  }
+  function cancelPlan() {
+    const s = sess; if (!s.plan) return;
+    const was = s.plan.placed;
+    s.plan = null; Store.sfx.tap();
+    if (was) coach('Order cancelled.', 'happy');
+    renderControls();
+  }
+  function checkOrder(price) {
+    const s = sess, o = s.plan;
+    if (!o || !o.placed || s.position) return;
+    if (o.above ? price >= o.entry : price <= o.entry) {
+      s.plan = null;
+      fill(o.dir, o.entry, o.sl, o.tp, o.name);
+    }
   }
 
   // ---------------------------------------------------------------- session
@@ -304,7 +463,7 @@
       pro, startBalance: pro ? window.CQPro.account().balance : 0,
       hints: pro ? 0 : m ? m.hints : (S.freeHints != null ? S.freeHints : 2),
       stakes: pro ? [0.5, 1, 2, 5, 10] : m ? (m.stakes || [10]) : [10, 25, 50],
-      stake: pro ? window.CQPro.account().risk : 10, position: null, marks: [], winStreak: 0,
+      stake: pro ? window.CQPro.account().risk : 10, position: null, plan: null, marks: [], winStreak: 0,
       stats: { trades: [], tp: 0, sl: 0, net: 0, perfectWins: 0 },
       candlesLeft: m ? m.candles : Infinity, done: false, loaned: false, goalShown: false,
       acc: 0, tickIdx: 0, lastTs: 0,
@@ -326,6 +485,7 @@
     const s = sess;
     s.live.c = p; s.live.h = Math.max(s.live.h, p); s.live.l = Math.min(s.live.l, p);
     s.price = p;
+    checkOrder(p);
     checkPosition(p);
     checkZones(p);
   }
@@ -348,6 +508,7 @@
       }
     }
     if (!s.alive) return;
+    syncPlan();
     s.ui.chart.draw(s);
     updateBars();
     s.raf = requestAnimationFrame(frame);
@@ -422,46 +583,30 @@
   }
 
   // ---------------------------------------------------------------- positions
+  // one-tap market order with the coach's levels
   function openTrade(dir) {
     const s = sess;
     if (!s || s.position || s.done) return;
-    if (!s.pro && S.coins < s.stake) {
-      if (!s.loaned) {
-        s.loaned = true;
-        S.coins += 50; Store.save();
-        coach('Pip spotted you 50 coins. Trade smart.', 'happy');
-      } else { UI().toast('Not enough coins for that risk — pick a smaller one.', '🪙'); return; }
-    }
-    const entry = s.price;
+    if (!canAfford()) return;
+    s.plan = null;
+    const lv = autoLevels(dir, s.price);
+    fill(dir, s.price, lv.sl, lv.tp);
+  }
+
+  function fill(dir, entry, sl, tp, orderLabel) {
+    const s = sess;
     const buy = dir === 'buy';
     const st = activeSetup();
     const match = st && st.dir === dir;
-    let inBand = false;
-    if (st) { const [a, b] = band(st); inBand = entry >= a && entry <= b; }
-    const perfect = !!(match && inBand);
-    let sl, tp;
-    if (match && (buy ? st.stop < entry - 0.3 : st.stop > entry + 0.3)) {
-      // ICT levels: stop beyond the sweep, target at the liquidity
-      let risk = Math.min(3.5, Math.abs(entry - st.stop));
-      sl = buy ? entry - risk : entry + risk;
-      tp = st.target;
-      if (buy ? tp - entry < 0.3 : entry - tp < 0.3) tp = buy ? entry + 2 * risk : entry - 2 * risk;
-    } else {
-      const cs = s.market.candles.slice(-8);
-      if (buy) sl = Math.min(...cs.map((k) => k.l), s.live.l) - 0.25;
-      else sl = Math.max(...cs.map((k) => k.h), s.live.h) + 0.25;
-      let risk = Math.abs(entry - sl);
-      risk = Math.max(0.6, Math.min(3, risk));
-      sl = buy ? entry - risk : entry + risk;
-      tp = buy ? entry + 2 * risk : entry - 2 * risk;
-    }
-    const stake = s.pro ? Math.max(0.01, Math.round(window.CQPro.account().balance * s.stake) / 100) : s.stake;
+    const perfect = perfectAt(dir, entry);
+    const stake = stakeFor(s);
     s.position = { dir, entry, sl, tp, stake, pro: s.pro, openIdx: s.market.candles.length, perfect, against: !!(st && !match), setup: st ? st.id : null };
+    if (orderLabel) popup(`${orderLabel} filled @ ${fmt(entry)}`, 'win');
     s.marks.push({ i: s.market.candles.length, label: buy ? '▲ BUY' : '▼ SELL', above: !buy, color: buy ? C.up : C.down });
     Store.sfx.good();
     Store.buzz(12);
     if (s.pro) coach(s.stake >= 10 ? `Risking ${s.stake}% of your account on one trade. Two losses like this and you're down almost 20%.` : s.stake >= 5 ? `${s.stake}% risk is aggressive. Pros usually risk 0.5–2%.` : `Risking ${money(stake)} (${s.stake}% of your account). Let it play out.`, s.stake >= 5 ? 'sad' : 'happy');
-    else if (perfect) coach('🌟 PERFECT ICT entry! In the gap, after the sweep and MSS. Win this one for 1.5× coins!', 'wow');
+    else if (perfect) coach('🌟 PERFECT entry! In the gap, after the sweep and MSS. Win this one for 1.5× coins!', 'wow');
     else if (st && !match && s.hints >= 1) coach(`😬 Careful — the setup is pointing ${st.dir === 'buy' ? 'UP' : 'DOWN'}. ${buy ? 'Buying' : 'Selling'} here goes against it.`, 'sad');
     else if (s.hints === 2) coach('Trade open! 🎯 is your Take Profit, 🛑 is your Stop Loss. Drag them on the chart to move them.');
     renderControls();
@@ -626,6 +771,7 @@
       if (kz.active) ui.kz.textContent = `${kz.zone.name} kill zone · 2× coins · ${window.CQMeta.fmtLeft(kz.endsAt - Date.now())} left`;
     }
     if (ui.streak) { ui.streak.hidden = s.winStreak < 2; ui.streak.textContent = `🔥 ${s.winStreak} win streak · +${Math.min(5, s.winStreak) * 10}%`; }
+    if (s.plan) updateTicket();
     if (s.position) {
       const c = coinsFor(s.position, s.price);
       ui.pnl.firstChild.textContent = s.pro ? `${c >= 0 ? '+' : ''}${money(c)}` : `${c >= 0 ? '+' : ''}${c}`;
@@ -633,8 +779,17 @@
     }
   }
 
+  function stakeRow(s) {
+    return `<div class="stake-row"><span>${s.pro ? 'Risk % of account' : 'Risk per trade'}</span>${s.stakes.map((v) => `<button class="stake ${v === s.stake ? 'on' : ''} ${s.pro && v >= 5 ? 'hot' : ''}" data-v="${v}">${s.pro ? v + '%' : coin() + v}</button>`).join('')}</div>`;
+  }
+  function bindStakes(s, box) {
+    box.querySelectorAll('.stake').forEach((b) => b.addEventListener('click', () => { s.stake = +b.dataset.v; if (s.pro) window.CQPro.setRisk(s.stake); Store.sfx.tap(); renderControls(); }));
+  }
+
   function renderControls() {
     const s = sess, box = s.ui.controls;
+    s.ui.tk = null;
+    s.ui.root.classList.toggle('planning', !!(s.plan && !s.plan.placed && !s.position));
     if (s.position) {
       const p = s.position;
       box.innerHTML = `<div class="pos-panel ${p.dir}">
@@ -644,16 +799,74 @@
       </div>`;
       s.ui.pnl = box.querySelector('.pnl');
       box.querySelector('.close-trade').addEventListener('click', () => { Store.sfx.tap(); closeTrade(s.price, 'manual'); });
+    } else if (s.plan && s.plan.placed) {
+      const p = s.plan;
+      box.innerHTML = `<div class="pos-panel pending ${p.dir}">
+        <div class="pos-top"><span class="pos-dir">${ic('target')}${p.name} @ <b class="tk-entry">${fmt(p.entry)}</b></span><span class="pill">Waiting</span></div>
+        <p class="pos-hint">Fills when price reaches your entry. Stop <b class="tk-sl">${fmt(p.sl)}</b> · Target <b class="tk-tp">${fmt(p.tp)}</b> · <b class="tk-rr"></b>. Drag the lines to adjust.</p>
+        <button class="btn btn-ghost tk-cancel">Cancel order</button>
+      </div>`;
+      s.ui.tk = { entry: box.querySelector('.tk-entry'), sl: box.querySelector('.tk-sl'), tp: box.querySelector('.tk-tp'), rr: box.querySelector('.tk-rr') };
+      box.querySelector('.tk-cancel').addEventListener('click', cancelPlan);
+    } else if (s.plan) {
+      const p = s.plan, buy = p.dir === 'buy';
+      box.innerHTML = `<div class="ticket ${p.dir}">
+        <div class="tk-row">
+          <div class="seg tk-dir"><button data-d="buy" class="${buy ? 'on buy' : ''}">${ic('up')}Buy</button><button data-d="sell" class="${!buy ? 'on sell' : ''}">${ic('down')}Sell</button></div>
+          <div class="seg tk-type"><button data-t="market" class="${p.type === 'market' ? 'on' : ''}">Market</button><button data-t="limit" class="${p.type === 'limit' ? 'on' : ''}">Limit</button></div>
+        </div>
+        <div class="tk-stats">
+          <div class="tk-stat down"><small>Stop loss</small><b class="tk-risk"></b><em class="tk-sl"></em></div>
+          <div class="tk-stat up"><small>Take profit</small><b class="tk-reward"></b><em class="tk-tp"></em></div>
+          <div class="tk-stat"><small>Risk : reward</small><b class="tk-rr"></b><em class="tk-entry"></em></div>
+        </div>
+        <div class="tk-quick"><span>Target</span><button data-r="1">1R</button><button data-r="2">2R</button><button data-r="3">3R</button><button data-r="auto">${ic('bolt')}Coach</button></div>
+        <div class="tk-stakes">${stakeRow(s)}</div>
+        <p class="tk-hint"></p>
+        <div class="tk-actions"><button class="btn btn-ghost tk-cancel">Cancel</button><button class="btn tk-place ${p.dir}">Place ${buy ? 'buy' : 'sell'}</button></div>
+      </div>`;
+      s.ui.tk = { risk: box.querySelector('.tk-risk'), reward: box.querySelector('.tk-reward'), rr: box.querySelector('.tk-rr'), sl: box.querySelector('.tk-sl'), tp: box.querySelector('.tk-tp'), entry: box.querySelector('.tk-entry'), hint: box.querySelector('.tk-hint'), place: box.querySelector('.tk-place') };
+      box.querySelectorAll('.tk-dir button').forEach((b) => b.addEventListener('click', () => { if (b.dataset.d !== p.dir) planTrade(b.dataset.d); }));
+      box.querySelectorAll('.tk-type button').forEach((b) => b.addEventListener('click', () => setPlanType(b.dataset.t)));
+      box.querySelectorAll('.tk-quick button').forEach((b) => b.addEventListener('click', () => { quickTarget(b.dataset.r === 'auto' ? 'auto' : +b.dataset.r); updateTicket(true); }));
+      box.querySelector('.tk-cancel').addEventListener('click', cancelPlan);
+      box.querySelector('.tk-place').addEventListener('click', placeOrder);
+      bindStakes(s, box);
+      updateTicket(true);
     } else {
       box.innerHTML = `<div class="trade-btns">
-          <button class="trade-btn trade-buy"><b>${ic('up')}BUY</b><small>price goes up</small></button>
-          <button class="trade-btn trade-sell"><b>${ic('down')}SELL</b><small>price goes down</small></button>
+          <button class="trade-btn trade-buy"><b>${ic('up')}BUY</b><small>${S.oneTap ? 'instant · coach levels' : 'plan entry, stop, target'}</small></button>
+          <button class="trade-btn trade-sell"><b>${ic('down')}SELL</b><small>${S.oneTap ? 'instant · coach levels' : 'plan entry, stop, target'}</small></button>
         </div>
-        <div class="stake-row"><span>${s.pro ? 'Risk % of account' : 'Risk per trade'}</span>${s.stakes.map((v) => `<button class="stake ${v === s.stake ? 'on' : ''} ${s.pro && v >= 5 ? 'hot' : ''}" data-v="${v}">${s.pro ? v + '%' : coin() + v}</button>`).join('')}</div>`;
-      box.querySelector('.trade-buy').addEventListener('click', () => openTrade('buy'));
-      box.querySelector('.trade-sell').addEventListener('click', () => openTrade('sell'));
-      box.querySelectorAll('.stake').forEach((b) => b.addEventListener('click', () => { s.stake = +b.dataset.v; if (s.pro) window.CQPro.setRisk(s.stake); Store.sfx.tap(); renderControls(); }));
+        ${stakeRow(s)}
+        <button class="onetap ${S.oneTap ? 'on' : ''}" aria-pressed="${!!S.oneTap}"><span class="knob"></span>One-tap trading</button>`;
+      box.querySelector('.trade-buy').addEventListener('click', () => planTrade('buy'));
+      box.querySelector('.trade-sell').addEventListener('click', () => planTrade('sell'));
+      box.querySelector('.onetap').addEventListener('click', () => { S.oneTap = !S.oneTap; Store.save(); Store.sfx.tap(); renderControls(); });
+      bindStakes(s, box);
     }
+  }
+
+  function updateTicket(force) {
+    const s = sess, t = s.ui.tk, p = s.plan;
+    if (!t || !p) return;
+    const risk = Math.abs(p.entry - p.sl), reward = Math.abs(p.tp - p.entry);
+    const rr = reward / risk;
+    t.rr.textContent = '1 : ' + rr.toFixed(1);
+    if (t.sl) t.sl.textContent = fmt(p.sl);
+    if (t.tp) t.tp.textContent = fmt(p.tp);
+    if (t.entry) t.entry.textContent = p.placed ? fmt(p.entry) : p.type === 'limit' ? orderName(p, s.price) + ' ' + fmt(p.entry) : 'at market ' + fmt(p.entry);
+    if (!t.risk) return;
+    const pp = planPos(p);
+    const win = coinsFor(pp, p.tp);
+    t.risk.innerHTML = s.pro ? '−' + money(pp.stake) : '−' + pp.stake + coin();
+    t.reward.innerHTML = s.pro ? '+' + money(win) : '+' + win + coin();
+    t.rr.className = 'tk-rr ' + (rr >= 2 ? 'good' : rr >= 1 ? 'ok' : 'bad');
+    const hint = rr < 1 ? 'Your target is closer than your stop. You would need to win most trades just to break even.'
+      : pp.perfect ? '🌟 Perfect entry spot: wins pay 1.5× coins.'
+      : rr >= 2 ? `At 1:${rr.toFixed(1)} you can lose ${Math.floor(rr)} of every ${Math.floor(rr) + 1} trades and still break even.`
+      : 'Most pros aim for at least 1:2.';
+    if (force || t.hint.textContent !== hint) t.hint.textContent = hint;
   }
 
   function liveScreen(mission) {
@@ -722,6 +935,7 @@
     const s = sess;
     if (!s || s.done) return;
     if (s.position) closeTrade(s.price, 'end');
+    s.plan = null;
     s.done = true;
     stop();
     if (s.pro) { UI().go(window.CQPro.hub, { session: s.stats, start: s.startBalance }); return; }

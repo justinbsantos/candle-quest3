@@ -69,3 +69,7 @@ npx cap add ios && npx cap add android
 Before publishing to kids, review Apple's Kids Category and Google Play Families policies and COPPA. See `docs/GAME_DESIGN.md` for the roadmap.
 
 > Candle Quest uses computer-generated practice charts and play money. It is an educational game, not financial advice.
+
+
+## Order ticket
+Tap BUY or SELL to open a ticket: choose Market or Limit, drag the gold entry, red stop loss and green take profit lines on the chart (or tap 1R / 2R / 3R / Coach), see the risk, reward and R:R, then Place. Limit and stop orders wait on the chart and fill by themselves when price reaches the entry. Flip on One-tap trading for instant market orders with the coach's levels.
