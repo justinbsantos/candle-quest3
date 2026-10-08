@@ -1,13 +1,13 @@
 {
-  "name": "Candle Quest",
-  "short_name": "Candle Quest",
-  "description": "Learn to read trading charts with Pip the owl.",
+  "name": "Wickd",
+  "short_name": "Wickd",
+  "description": "Trade a live practice market and build your setup.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#170F30",
-  "theme_color": "#170F30",
+  "background_color": "#0B0920",
+  "theme_color": "#0B0920",
   "icons": [
     { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]

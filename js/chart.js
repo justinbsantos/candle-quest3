@@ -1,4 +1,4 @@
-/* Candle Quest — canvas candlestick chart with kid-friendly annotations. */
+/* Wickd — canvas candlestick chart with kid-friendly annotations. */
 (function (G) {
   'use strict';
 
@@ -128,7 +128,7 @@
         ctx.setLineDash([]);
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = th.text;
-        ctx.font = '700 28px Rubik, system-ui, sans-serif';
+        ctx.font = '700 28px "Plus Jakarta Sans", system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('?', (x0 + w) / 2, h / 2);
@@ -257,7 +257,7 @@
   }
 
   function pill(ctx, text, x, y, col, align, base) {
-    ctx.font = '700 12px Rubik, system-ui, sans-serif';
+    ctx.font = '700 12px "Plus Jakarta Sans", system-ui, sans-serif';
     const tw = ctx.measureText(text).width;
     const pw = tw + 12, ph = 20;
     let px = align === 'right' ? x - pw : align === 'left' ? x : x - pw / 2;

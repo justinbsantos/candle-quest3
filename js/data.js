@@ -1,4 +1,4 @@
-/* Candle Quest — game content: worlds, levels, lessons, shop, badges. */
+/* Wickd — game content: worlds, levels, lessons, shop, badges. */
 (function (G) {
   'use strict';
 
@@ -83,7 +83,7 @@
       lesson: [
         { title: 'The full model', text: '1️⃣ Price sweeps liquidity 🧹  2️⃣ A big candle breaks structure ⚡ and leaves a gap 🕳️  3️⃣ Price comes back into the gap — that is the ENTRY.', demo: 'trade' },
         { title: 'Stop & target', text: 'The STOP 🛑 goes past the sweep. The TARGET 🎯 is the liquidity on the other side. Pros ALWAYS use a stop.', demo: 'trade' },
-        { title: 'Play coins only', text: 'In Candle Quest you trade with play coins. Real trading is for grown-ups and needs lots of practice. You are getting that practice right now! 🧠', demo: null },
+        { title: 'Play coins only', text: 'In Wickd you trade with play coins. Real trading takes years of practice and real risk. This is where you build the skills first.', demo: null },
       ],
       levels: [
         { name: 'Boss Setup I', rounds: ['trade', 'trade', 'trade'] },
@@ -97,7 +97,7 @@
   const WORLD_KEYS = WORLDS.map((w) => Array.from(new Set(w.levels.flatMap((l) => l.rounds))));
 
   const THEMES = [
-    { id: 'classic', name: 'Midnight', price: 0, bg: '#1B1236', grid: '#271B4A', up: '#2EE6A6', down: '#FF5C7A', text: '#E9E2FF', future: '#22173F' },
+    { id: 'classic', name: 'Glass', price: 0, bg: 'rgba(12,9,30,.55)', grid: 'rgba(255,255,255,.06)', up: '#3CFFB1', down: '#FF4D6D', text: '#ECE8FF', future: 'rgba(255,255,255,.035)' },
     { id: 'day', name: 'Daylight', price: 150, bg: '#FFFFFF', grid: '#EEF0F6', up: '#12B886', down: '#F03E5E', text: '#2B2350', future: '#F3F1FA' },
     { id: 'candy', name: 'Candy Land', price: 200, bg: '#2A0F2E', grid: '#3D1B42', up: '#7CFFCB', down: '#FF7AB6', text: '#FFE3F3', future: '#331437' },
     { id: 'ocean', name: 'Deep Ocean', price: 250, bg: '#071E33', grid: '#0E2E4A', up: '#3CE0C0', down: '#FF8A5C', text: '#D6F1FF', future: '#0B2640' },
@@ -106,12 +106,12 @@
   ];
 
   const HATS = [
-    { id: 'none', name: 'No hat', price: 0 },
-    { id: 'cap', name: 'Trader Cap', price: 100 },
-    { id: 'pirate', name: 'Pirate Hat', price: 200 },
-    { id: 'wizard', name: 'Chart Wizard', price: 250 },
-    { id: 'astro', name: 'To the Moon', price: 350 },
-    { id: 'crown', name: 'Market King', price: 500 },
+    { id: 'none', name: 'Ultraviolet', price: 0 },
+    { id: 'mint', name: 'Mint Wave', price: 120 },
+    { id: 'sunset', name: 'Sunset', price: 200 },
+    { id: 'ice', name: 'Ice', price: 300 },
+    { id: 'gold', name: 'Gold', price: 500 },
+    { id: 'holo', name: 'Holo', price: 800 },
   ];
 
   const BADGES = [

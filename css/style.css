@@ -1,41 +1,50 @@
-/* Candle Quest — "night market" design system.
-   Layout: one phone-width column, sticky glass top bar, fixed bottom tab bar;
-   the live chart is the hero. Single deliberate dark theme (it's a game world). */
+/* Wickd — glass design system.
+   Layout: one phone-width column, frosted top bar, floating pill tab bar over an
+   aurora background; the live chart is the hero. Single deliberate dark theme. */
 :root {
-  --night: #170F30;      /* page */
-  --night-2: #21173F;    /* raised surfaces */
-  --night-3: #2D2154;    /* controls, inputs */
-  --edge: #3D2E6E;       /* hairlines */
-  --ink: #F6F0FF;        /* text */
-  --mute: #A797D0;       /* secondary text */
-  --flame-a: #FFB23E;    /* brand gradient start */
-  --flame-b: #FF4F8B;    /* brand gradient end */
-  --mint: #2EE6A6;       /* up / buy / success */
-  --mint-d: #109A6E;
-  --coral: #FF5C7A;      /* down / sell / error */
-  --coral-d: #B92A4A;
-  --gold: #FFC94A;       /* coins, stars */
-  --violet: #B18CFF;     /* liquidity, info */
-  --flame: linear-gradient(135deg, var(--flame-a), var(--flame-b));
-  --display: 'Lilita One', 'Rubik', system-ui, sans-serif;
-  --body: 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --r-lg: 24px;
-  --r-md: 16px;
-  --tabbar: 68px;
+  --night: #0B0920;      /* page */
+  --night-2: rgba(255, 255, 255, .06);   /* glass surface */
+  --night-3: rgba(255, 255, 255, .10);   /* glass control */
+  --edge: rgba(255, 255, 255, .12);      /* glass edge */
+  --ink: #F4F2FF;
+  --mute: #A9A4CC;
+  --flame-a: #B69CFF;    /* accent text */
+  --flame-b: #FF4FD8;
+  --mint: #3CFFB1;
+  --mint-d: #15B57C;
+  --coral: #FF4D6D;
+  --coral-d: #B3243F;
+  --gold: #FFC94A;
+  --violet: #9B85FF;
+  --flame: linear-gradient(135deg, #7C5CFF, #FF4FD8);
+  --display: 'Unbounded', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r-lg: 28px;
+  --r-md: 22px;
+  --tabbar: 92px;
+  --blur: blur(22px) saturate(140%);
   color-scheme: dark;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; }
+body::before {
+  content: ''; position: fixed; inset: -20vmax; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(38vmax 30vmax at 18% 12%, rgba(124, 92, 255, .55), transparent 70%),
+    radial-gradient(34vmax 28vmax at 88% 22%, rgba(255, 79, 216, .38), transparent 70%),
+    radial-gradient(40vmax 30vmax at 60% 92%, rgba(61, 184, 255, .30), transparent 70%),
+    radial-gradient(30vmax 24vmax at 6% 80%, rgba(60, 255, 177, .16), transparent 70%);
+  filter: blur(10px);
+  animation: aurora 28s ease-in-out infinite alternate;
+}
+@keyframes aurora { to { transform: translate3d(3vmax, -2vmax, 0) rotate(8deg) scale(1.06); } }
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(520px 340px at 0% -60px, rgba(255, 79, 139, .22), transparent 70%),
-    radial-gradient(520px 360px at 100% 0%, rgba(124, 77, 255, .28), transparent 70%),
-    var(--night);
-  background-attachment: fixed;
+  background: var(--night);
   color: var(--ink);
-  font: 400 16px/1.45 var(--body);
+  font: 400 16px/1.5 var(--body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
 button:disabled { cursor: default; }
@@ -448,3 +457,89 @@ b { font-weight: 600; }
 .up-lock .ic { width: 16px; height: 16px; }
 .tab-item { font-size: .68rem; }
 .move-card .btn, .bot-card .btn { width: auto; min-height: 44px; font-size: 1.05rem; padding: 6px 14px; }
+
+
+/* ================= Wickd glass layer ================= */
+h1, h2, h3 { font-weight: 600; letter-spacing: -.01em; line-height: 1.1; }
+.hud-title { font-weight: 600; font-size: 1.25rem; }
+.greet-title { font-size: 1.45rem; }
+.section-title { font-size: 1.2rem; display: flex; align-items: baseline; gap: 8px; }
+.hero-card, .tile, .stats-row, .daily, .room-card, .mission, .world, .level-node, .pick-row, .lesson-card,
+.prompt, .coach, .feedback, .earn, .trade-list li, .tabs, .shop-item, .profile-card, .badge, .settings,
+.bot-card, .move-card, .upgrade, .goal-row, .pos-panel, .room-hero, .chart-wrap, .modal, .toast, .hud-coins, .chip, .icon-btn, .stake {
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.hero-card, .tile, .stats-row, .daily, .room-card, .mission, .world, .pick-row, .lesson-card, .prompt, .coach, .feedback, .earn,
+.tabs, .shop-item, .profile-card, .badge, .settings, .bot-card, .move-card, .upgrade, .goal-row, .pos-panel, .room-hero, .chart-wrap, .modal {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 18px 40px rgba(5, 3, 20, .35);
+}
+.hero-card { background: var(--night-2); }
+.hud { background: rgba(11, 9, 32, .55); border-bottom: 1px solid rgba(255, 255, 255, .06); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+.hud-coins { font: 600 1rem var(--display); padding: 5px 14px 5px 6px; }
+.icon-btn { border-radius: 50%; }
+
+/* wordmark */
+.wordmark .mark { display: none; }
+.wm { font: 700 1.5rem var(--display); letter-spacing: -.03em; background: linear-gradient(90deg, #fff, #E6DEFF); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wm-i { position: relative; display: inline-block; }
+.wm-flame { position: absolute; left: 50%; top: -.12em; width: .36em; height: .48em; transform: translateX(-50%); filter: drop-shadow(0 0 6px rgba(255, 79, 216, .7)); }
+
+/* buttons: pills */
+.btn { border-radius: 999px; font: 600 1rem var(--display); letter-spacing: 0; background: var(--night-3); border: 1px solid var(--edge); box-shadow: none; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+.btn:active:not(:disabled) { transform: scale(.97); box-shadow: none; }
+.btn-play, .btn-flame { background: var(--flame); border: 0; text-shadow: none; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(155, 92, 255, .45), inset 0 1px 0 rgba(255, 255, 255, .35); }
+.btn-play:active:not(:disabled), .btn-flame:active:not(:disabled) { box-shadow: 0 4px 14px rgba(155, 92, 255, .45); }
+.btn.buy { background: linear-gradient(135deg, #FFE08A, #FFB23E); color: #3A2200; box-shadow: 0 8px 22px rgba(255, 178, 62, .3); }
+.hc-cta .btn-play small { font: 500 .78rem var(--body); }
+.lesson-nav .next { background: var(--flame); box-shadow: 0 10px 30px rgba(155, 92, 255, .45); }
+.goal-done .btn { box-shadow: none; }
+
+/* floating pill tab bar */
+.tabbar { left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: calc(100% - 24px); max-width: 496px; padding: 8px; border-radius: 999px;
+  background: rgba(22, 18, 52, .6); border: 1px solid var(--edge); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  box-shadow: 0 18px 50px rgba(5, 3, 20, .55), inset 0 1px 0 rgba(255, 255, 255, .12); }
+.tab-item { font-size: .66rem; font-weight: 600; gap: 1px; }
+.tab-item .tab-ic { width: 46px; height: 32px; }
+.tab-item.on .tab-ic { box-shadow: 0 6px 18px rgba(255, 79, 216, .45); }
+
+/* avatar + coach */
+.avatar { width: 100%; height: auto; display: block; }
+.greet-owl { width: 54px; }
+.profile-card > div:first-child { width: 72px; }
+.shop-owl { width: 76px; }
+.mini-owl { width: 42px; }
+.coach .mini-owl { width: 38px; }
+.hero-owl { width: 112px; filter: drop-shadow(0 12px 30px rgba(155, 92, 255, .5)); }
+.prompt p, .coach p { font-weight: 500; }
+
+/* chips, tiles, cards */
+.tile-ic, .daily-ic, .bot-ic, .m-icon, .world-emoji { border-radius: 16px; }
+.daily { background: linear-gradient(135deg, rgba(124, 92, 255, .28), rgba(255, 79, 216, .2)); border-color: rgba(255, 255, 255, .18); }
+.daily b, .tile b, .rc-body b, .m-body b, .bot-card b, .move-card b, .up-main b, .pick-row b, .shop-item b { font-family: var(--display); font-weight: 600; font-size: 1rem; letter-spacing: -.01em; }
+.daily-go { font: 600 .95rem var(--display); color: #fff; }
+.stat b, .earn b { font: 600 1.35rem var(--display); }
+.ticker span { font: 600 1.6rem var(--display); letter-spacing: -.02em; }
+.pnl { font: 600 1.6rem var(--display); }
+.trade-btn { border-radius: 26px; }
+.trade-btn b { font: 700 1.5rem var(--display); }
+.trade-buy { background: linear-gradient(160deg, #6BFFC6, #20D891); color: #03281A; box-shadow: 0 12px 30px rgba(60, 255, 177, .3), inset 0 1px 0 rgba(255, 255, 255, .5); }
+.trade-sell { background: linear-gradient(160deg, #FF7D96, #F03157); box-shadow: 0 12px 30px rgba(255, 77, 109, .3), inset 0 1px 0 rgba(255, 255, 255, .35); }
+.live-pop { font: 700 1.3rem var(--display); border-radius: 999px; }
+.mission.next { border-color: rgba(182, 156, 255, .7); box-shadow: 0 0 0 4px rgba(124, 92, 255, .18), 0 18px 40px rgba(5, 3, 20, .35); }
+.mission.next .m-icon, .mission.done .m-icon { background: var(--flame); }
+.ln-num { color: #fff; }
+.move-card { background: linear-gradient(135deg, rgba(124, 92, 255, .26), rgba(255, 79, 216, .18)); border-color: rgba(255, 255, 255, .18); }
+.up-dots i.on { background: var(--flame); }
+.xp-bar i { background: var(--flame); }
+.welcome { padding-top: 48px; gap: 18px; }
+.welcome-mark .wm { font-size: 3.2rem; }
+.welcome-title { font-size: 1.6rem; max-width: 18ch; }
+.welcome .lead { max-width: 36ch; }
+.name-input { font: 600 1.15rem var(--display); border-radius: 999px; background: var(--night-2); backdrop-filter: var(--blur); }
+.name-input:focus { border-color: #B69CFF; }
+.result h2 { font-size: 1.7rem; }
+.big-stars .on { color: var(--gold); }
+.toast { border-radius: 999px; }
+.wm-i { width: .24em; height: .74em; margin: 0 .05em; vertical-align: baseline; position: relative; }
+.wm-stem { position: absolute; left: 0; right: 0; bottom: 0; height: .54em; border-radius: .12em; background: #F2EEFF; }
+.wm-flame { top: -.06em; }

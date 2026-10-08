@@ -1,4 +1,4 @@
-/* Candle Quest — chart scenario engine.
+/* Wickd — chart scenario engine.
  * Builds procedurally generated candlestick charts that each contain one
  * clearly-designed ICT concept, plus the question, the correct answer and
  * the annotations that explain it. Pure logic: no DOM, so it is unit-tested

@@ -1,5 +1,5 @@
-/* Candle Quest — LIVE trading: a moving market, BUY/SELL, draggable TP/SL,
- * coins for take-profits, bonus coins for clean ICT entries, Pip coaching.
+/* Wickd — LIVE trading: a moving market, BUY/SELL, draggable TP/SL,
+ * coins for take-profits, bonus coins for clean ICT entries, coach Pip.
  */
 (function () {
   'use strict';
@@ -20,7 +20,7 @@
 
   // hints: 2 = training wheels, 1 = pro (markers only), 0 = master (nothing)
   const MISSIONS = [
-    { id: 'm1', name: 'First Take Profit', icon: '🎯', goal: { tp: 1 }, hints: 2, speed: 1400, candles: 80, fail: 0, text: 'Hit your first Take Profit. Pip will show you exactly when to tap.' },
+    { id: 'm1', name: 'First Take Profit', icon: '🎯', goal: { tp: 1 }, hints: 2, speed: 1400, candles: 80, fail: 0, text: 'Hit your first take profit. Pip calls the entry, you take the trade.' },
     { id: 'm2', name: 'Double Up', icon: '✌️', goal: { tp: 2 }, hints: 2, speed: 1250, candles: 110, fail: 0.1, text: 'Hit 2 Take Profits in one session.' },
     { id: 'm3', name: 'Coin Hunter', icon: '🪙', goal: { coins: 40 }, hints: 2, speed: 1200, candles: 110, fail: 0.1, text: 'Finish the session at least +40 coins up.' },
     { id: 'm4', name: 'Gap Sniper', icon: '🌟', goal: { perfect: 1 }, hints: 1, speed: 1150, candles: 110, fail: 0.1, text: 'Win a trade with a PERFECT entry: in the gap, after the sweep and MSS. Fewer hints now!' },
@@ -98,6 +98,7 @@
       else if (!this.drag) this.yr = { lo: this.yr.lo + (t.lo - this.yr.lo) * 0.12, hi: this.yr.hi + (t.hi - this.yr.hi) * 0.12 };
       const { ctx, w, h } = this;
       const th = UI().theme();
+      ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = th.bg; ctx.fillRect(0, 0, w, h);
       ctx.strokeStyle = th.grid; ctx.lineWidth = 1;
       for (let k = 1; k < 6; k++) { const y = Math.round(h * k / 6) + 0.5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(g.right, y); ctx.stroke(); }
@@ -216,7 +217,7 @@
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
   }
   function tag(ctx, text, x, y, col, align, base, size) {
-    ctx.font = `700 ${size || 12}px Rubik, system-ui, sans-serif`;
+    ctx.font = `700 ${size || 12}px "Plus Jakarta Sans", system-ui, sans-serif`;
     const tw = ctx.measureText(text).width, pw = tw + 12, ph = (size || 12) + 8;
     let px = align === 'right' ? x - pw : align === 'center' ? x - pw / 2 : x;
     const py = base === 'bottom' ? y - ph : base === 'middle' ? y - ph / 2 : y;
@@ -225,7 +226,7 @@
     ctx.fillText(text, px + 6, py + ph / 2 + 1);
   }
   function gutterTag(ctx, g, y, text, col, active, isPrice) {
-    ctx.font = '800 12px Rubik, system-ui, sans-serif';
+    ctx.font = '800 12px "Plus Jakarta Sans", system-ui, sans-serif';
     const ph = 22, px = g.right + 3, pw = g.gutter - 6;
     const py = Math.max(1, Math.min(ctx.canvas.clientHeight - ph - 1, y - ph / 2));
     ctx.fillStyle = col;
@@ -423,7 +424,7 @@
       if (!s.loaned) {
         s.loaned = true;
         S.coins += 50; Store.save();
-        coach('🐷 Pip lent you 50 coins from the piggy bank. Trade carefully!', 'happy');
+        coach('Pip spotted you 50 coins. Trade smart.', 'happy');
       } else { UI().toast('Not enough coins for that risk — pick a smaller one.', '🪙'); return; }
     }
     const entry = s.price;
@@ -744,6 +745,7 @@
       const tgt = { lo: lo - (hi - lo) * 0.1, hi: hi + (hi - lo) * 0.1 };
       yr = yr ? { lo: yr.lo + (tgt.lo - yr.lo) * 0.1, hi: yr.hi + (tgt.hi - yr.hi) * 0.1 } : tgt;
       const Y = (p) => 8 + (yr.hi - p) / (yr.hi - yr.lo) * (h - 16);
+      ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = th.bg; ctx.fillRect(0, 0, w, h);
       const slot = (w - 58) / N, bw = slot * 0.62;
       list.forEach((k, i) => {
@@ -756,7 +758,7 @@
       });
       const py = Y(live.c), pc = live.c >= live.o ? th.up : th.down;
       ctx.fillStyle = pc; rr(ctx, w - 52, py - 10, 48, 20, 6); ctx.fill();
-      ctx.fillStyle = '#0B0620'; ctx.font = '800 11px Rubik, system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#0B0620'; ctx.font = '800 11px "Plus Jakarta Sans", system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(fmt(live.c), w - 28, py + 1);
       requestAnimationFrame(draw);
     }

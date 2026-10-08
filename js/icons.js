@@ -1,4 +1,4 @@
-/* Candle Quest — brand marks and UI icon set (inline SVG, currentColor). */
+/* Wickd — brand marks and UI icon set (inline SVG, currentColor). */
 (function (G) {
   'use strict';
   const P = {
@@ -33,6 +33,7 @@
     down: '<path d="M12 19 5 11h4.5V5h5v6H19z" fill="currentColor" stroke="none"/>',
     hand: '<path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5a1.5 1.5 0 0 1 3 0V11m0-4a1.5 1.5 0 0 1 3 0v6.5A6.5 6.5 0 0 1 10.5 20 5.5 5.5 0 0 1 5.6 17L3.8 13.6a1.5 1.5 0 0 1 2.5-1.6L8 14"/>',
     homeUp: '<path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><rect x="8.5" y="12.5" width="7" height="4.5" rx="1"/><path d="M12 17v3"/>',
+    user: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.9-3.9 3.9-6 7.5-6s6.6 2.1 7.5 6"/>',
     owl: '<path d="M6 8 5 4l3.5 2.5h7L19 4l-1 4c1 1.3 1.5 2.9 1.5 4.6 0 4.4-3.4 7.4-7.5 7.4s-7.5-3-7.5-7.4C4.5 10.9 5 9.3 6 8z"/><circle cx="9.3" cy="11.5" r="1.6"/><circle cx="14.7" cy="11.5" r="1.6"/><path d="M11 14.5h2l-1 1.3z"/>',
   };
 
@@ -49,20 +50,26 @@
     </svg>`;
   }
 
-  // The logo mark: a candlestick whose wick turns into a flame.
+  // The logo mark: the "i" of wickd — a candle-wick stem with a flame for a dot.
+  let mk = 0;
   function mark(cls) {
+    const id = 'wkg' + (++mk);
     return `<svg class="mark ${cls || ''}" viewBox="0 0 48 48" aria-hidden="true">
-      <defs><linearGradient id="cqFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF4F8B"/><stop offset="1" stop-color="#FFB23E"/></linearGradient></defs>
-      <rect x="15" y="20" width="18" height="22" rx="5" fill="#2EE6A6"/>
-      <rect x="15" y="20" width="6" height="22" rx="3" fill="#7BF5C9" opacity=".55"/>
-      <path d="M24 42v5" stroke="#2EE6A6" stroke-width="3" stroke-linecap="round"/>
-      <path d="M24 3c5 4.6 6.6 8.6 4.6 12.2-1 1.9-2.6 2.8-4.6 2.8s-3.6-.9-4.6-2.8C17.4 11.6 19 7.6 24 3z" fill="url(#cqFlame)"/>
-      <path d="M24 10.5c1.8 1.7 2.3 3.1 1.6 4.4-.3.6-.9.9-1.6.9s-1.3-.3-1.6-.9c-.7-1.3-.2-2.7 1.6-4.4z" fill="#FFF3D6"/>
+      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF4FD8"/></linearGradient></defs>
+      <rect width="48" height="48" rx="14" fill="url(#${id})"/>
+      <rect x="20" y="22" width="8" height="17" rx="4" fill="#fff"/>
+      <path d="M24 6.5c4.6 4.1 6 7.8 4.2 11.1-.9 1.7-2.4 2.6-4.2 2.6s-3.3-.9-4.2-2.6C18 14.3 19.4 10.6 24 6.5z" fill="#fff"/>
     </svg>`;
   }
 
+  function flameSVG(cls) {
+    const id = 'wkf' + (++mk);
+    return `<svg class="${cls || ''}" viewBox="0 0 12 16" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF4FD8"/><stop offset="1" stop-color="#FFB23E"/></linearGradient></defs><path d="M6 0c4 3.6 5.2 6.8 3.6 9.7C8.8 11.2 7.5 12 6 12s-2.8-.8-3.6-2.3C.8 6.8 2 3.6 6 0z" fill="url(#${id})"/></svg>`;
+  }
+
+  // Wordmark: "wickd" in lowercase with the flame as the dot on the i.
   function wordmark() {
-    return `<span class="wordmark">${mark()}<span class="wm-text"><span>Candle</span><span>Quest</span></span></span>`;
+    return `<span class="wordmark" aria-label="Wickd"><span class="wm">w<span class="wm-i"><i class="wm-stem"></i>${flameSVG('wm-flame')}</span>ckd</span></span>`;
   }
 
   G.CQIcons = { ic, coin, mark, wordmark };

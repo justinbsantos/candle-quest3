@@ -1,4 +1,4 @@
-/* Candle Quest — "My Room" tycoon: spend coins to upgrade your trading room,
+/* Wickd — "My Room" tycoon: spend coins to upgrade your trading room,
  * from a bedroom to a moon base. Screens boost take-profit coins, the trading
  * bot earns coins while you're away, everything else is for style.
  */
@@ -7,7 +7,6 @@
   const Store = window.CQStore;
   const S = Store.state;
   const { ic, coin } = window.CQIcons;
-  const { owlSVG } = window.CQMascot;
   const UI = () => window.CQUI;
 
   const TIERS = [
@@ -61,14 +60,29 @@
     { wall: '#2C3542', wall2: '#27303C', floor: '#3E4857', floor2: '#36404E', trim: '#1E252F' },
   ];
 
-  let owlImg = null, owlHat = null;
-  function getOwl() {
-    if (!owlImg || owlHat !== S.hat) {
-      owlHat = S.hat;
-      owlImg = new Image();
-      owlImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(owlSVG(S.hat, 'happy').replace('<svg class="owl"', '<svg width="120" height="150"'));
-    }
-    return owlImg;
+  // You, from behind, sitting at the desk in a hoodie that matches your avatar ring.
+  function drawPlayer(ctx, chairL) {
+    const [a, b] = window.CQMascot.flair(S.hat);
+    const cx = 185, seat = chairL === 0 ? 250 : chairL === 1 ? 236 : 232;
+    const g = ctx.createLinearGradient(cx - 24, seat - 40, cx + 24, seat);
+    g.addColorStop(0, a); g.addColorStop(1, b);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(cx - 25, seat); ctx.quadraticCurveTo(cx - 27, seat - 34, cx - 11, seat - 39); ctx.lineTo(cx + 11, seat - 39); ctx.quadraticCurveTo(cx + 27, seat - 34, cx + 25, seat); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(cx, seat - 37, 13, 6, 0, 0, Math.PI); ctx.fill();
+    ctx.fillStyle = '#2A1B12'; ctx.beginPath(); ctx.arc(cx, seat - 50, 11, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#0E0B1E'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, seat - 51, 13, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+    ctx.fillStyle = '#0E0B1E'; rr(ctx, cx - 16, seat - 55, 6, 10, 3); ctx.fill(); rr(ctx, cx + 10, seat - 55, 6, 10, 3); ctx.fill();
+  }
+
+  // Pip, the coach orb, floating in the corner.
+  function drawPip(ctx, t) {
+    const x = 350, y = 140 + Math.sin(t / 600) * 4;
+    ctx.save(); ctx.shadowColor = '#FF4FD8'; ctx.shadowBlur = 18;
+    const g = ctx.createRadialGradient(x - 4, y - 5, 1, x, y, 13);
+    g.addColorStop(0, '#fff'); g.addColorStop(.35, '#7C5CFF'); g.addColorStop(1, '#FF4FD8');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.fill(); ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.quadraticCurveTo(x + 5, y - 1, x, y + 2); ctx.quadraticCurveTo(x - 5, y - 1, x, y - 7); ctx.fill();
+    ctx.fillRect(x - 2.5, y + 2, 5, 5);
   }
 
   // deterministic little price walks for the monitors
@@ -123,7 +137,7 @@
       const on = Math.sin(t / 300) > -0.95;
       ctx.save(); ctx.shadowColor = '#FF4F8B'; ctx.shadowBlur = on ? 14 : 0;
       ctx.strokeStyle = on ? '#FF7AA8' : '#7A3A57'; ctx.lineWidth = 3; rr(ctx, 136, 36, 92, 34, 10); ctx.stroke();
-      ctx.fillStyle = on ? '#FFD1E1' : '#7A3A57'; ctx.font = '20px "Lilita One", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('TAKE PROFIT', 182, 54);
+      ctx.fillStyle = on ? '#FFD1E1' : '#7A3A57'; ctx.font = '600 15px Unbounded, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('TAKE PROFIT', 182, 54);
       ctx.restore();
     }
     if (li >= 4) { // spotlights glow on floor
@@ -149,9 +163,8 @@
     drawPlant(ctx, L('plant'), t);
     drawPet(ctx, L('pet'), t);
 
-    // Pip
-    const o = getOwl();
-    if (o.complete && o.naturalWidth) { const bob = Math.sin(t / 500) * 1.5; ctx.drawImage(o, 312, 168 + bob, 44, 55); }
+    drawPlayer(ctx, L('chair'));
+    drawPip(ctx, t);
 
     ctx.restore();
   }

@@ -1,4 +1,4 @@
-/* Candle Quest — live market simulator.
+/* Wickd — live market simulator.
  * Streams an endless chart made of "episodes": random filler moves and full
  * ICT setups (liquidity -> sweep -> MSS + FVG -> retrace -> target), some of
  * which fail. Each setup carries metadata so the game can coach the player

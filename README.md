@@ -1,6 +1,6 @@
-# 🕯️ Candle Quest
+# wickd
 
-**A mobile game where kids trade a LIVE, moving market — and learn ICT trading while they do it — with Pip the chart owl 🦉.**
+**A mobile game for teens: trade a live, moving practice market, learn to read price like a pro, and level up your trading room from a bedroom to a moon base. Coached by Pip, an AI trading coach.**
 
 ## The core loop: Trade Live 📈
 - Candles form **tick by tick** and the chart scrolls in real time.
@@ -30,7 +30,7 @@
 - **Practice Arena:** endless mode with 3 hearts across every unlocked concept — the coin farm
 - **Shop:** hats for Pip and chart themes (play coins only)
 - **Lessons:** each world opens with a 3-page illustrated lesson using live example charts
-- **Kid-safe:** no ads, no purchases, no chat, no accounts; progress saved on the device; nickname instead of real name
+- **Teen-safe:** no ads, no purchases, no chat, no accounts yet; progress saved on the device; handle instead of real name
 - **Works offline** as an installable PWA (add to home screen)
 
 ## Run it

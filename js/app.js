@@ -1,10 +1,10 @@
-/* Candle Quest — screens, game loop and UI. */
+/* Wickd — screens, game loop and UI. */
 (function () {
   'use strict';
   const { WORLDS, WORLD_KEYS, THEMES, HATS, BADGES, PRAISE, OOPS } = window.CQData;
   const Store = window.CQStore;
   const S = Store.state;
-  const { owlSVG } = window.CQMascot;
+  const { owlSVG, avatarSVG } = window.CQMascot;
   const Scen = window.CQScenarios;
   const ChartView = window.CQChart;
   const { ic, coin, wordmark } = window.CQIcons;
@@ -89,7 +89,7 @@
   }
 
   // Bottom tab bar for the five main areas.
-  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['room', 'My room', 'homeUp'], ['school', 'School', 'school'], ['me', 'Me', 'owl']];
+  const TABS = [['home', 'Home', 'home'], ['trade', 'Trade', 'trade'], ['room', 'My room', 'homeUp'], ['school', 'School', 'school'], ['me', 'Me', 'user']];
   function nav(active) {
     const routes = { home: () => go(home), trade: () => go(window.CQLive.missions), room: () => go(window.CQRoom.roomScreen), school: () => go(map), me: () => go(profile) };
     const bar = el(`<nav class="tabbar" aria-label="Main">${TABS.map(([id, label, icon]) => `<button class="tab-item ${id === active ? 'on' : ''}" data-id="${id}" ${id === active ? 'aria-current="page"' : ''}><span class="tab-ic">${ic(icon)}</span>${label}</button>`).join('')}</nav>`);
@@ -103,17 +103,17 @@
     if (!S.name) return go(welcome);
     const li = Store.levelInfo(S.xp);
     const greet = pick([
-      'The market is open. Ready to catch some take profits?',
-      'Pip spotted fresh liquidity on the chart.',
+      'Market\'s open. Go catch some take profits.',
+      'Fresh liquidity on the chart. Stay sharp.',
       'Wait for the sweep, then strike.',
-      'Every candle tells a story. Let\'s read one.',
+      'Patience pays. Literally.',
     ]);
     const MS = window.CQLive.MISSIONS;
     const ms = S.missionStars || {};
     const next = MS.find((m) => !ms[m.id]) || MS[MS.length - 1];
     const nextNo = MS.indexOf(next) + 1;
     const scr = el(`<main class="screen home">
-      <div class="greet"><div class="greet-owl">${owlSVG(S.hat, 'happy')}</div><div><h1 class="greet-title">Hey ${esc(S.name)}!</h1><p class="greet-sub">${esc(greet)}</p></div></div>
+      <div class="greet"><div class="greet-owl">${avatarSVG(S.name, S.hat)}</div><div><h1 class="greet-title">Hey, ${esc(S.name)}</h1><p class="greet-sub">${esc(greet)}</p></div></div>
       <section class="hero-card">
         <div class="hc-head"><span class="live-badge"><span class="live-dot"></span>LIVE</span><b>Practice market</b></div>
         <div class="home-chart"></div>
@@ -165,7 +165,7 @@
     const li = Store.levelInfo(S.xp);
     const scr = el(`<main class="screen profile">
       <section class="profile-card">
-        <div>${owlSVG(S.hat, 'happy')}</div>
+        <div>${avatarSVG(S.name, S.hat)}</div>
         <div><h2>${esc(S.name)}</h2><p class="tiny">Level ${li.lvl} · ${li.toNext} XP to level ${li.lvl + 1}</p><div class="xp-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div></div>
       </section>
       <section class="stats-row">
@@ -192,14 +192,14 @@
 
   function welcome() {
     const scr = el(`<main class="screen welcome">
-      ${wordmark()}
-      <div class="hero-owl big">${owlSVG('none', 'wow')}</div>
-      <p class="lead">I'm Pip, your trading coach. Together we'll trade a live practice market, hit take profits and stack coins.</p>
-      <label class="name-label">What's your trader nickname?
+      <div class="welcome-mark">${wordmark()}</div>
+      <h1 class="welcome-title">Trade the chart. Stack coins. Build your setup.</h1>
+      <p class="lead">A live practice market where you learn to read price like a pro. Pip, your AI coach, has your back until you don't need it.</p>
+      <label class="name-label">Pick a trader name
         <input class="name-input" maxlength="14" placeholder="e.g. ChartChamp" autocomplete="off">
       </label>
-      <p class="tiny">Pick a nickname, not your real name.</p>
-      <button class="btn btn-play go">Start trading</button>
+      <p class="tiny">Use a handle, not your real name.</p>
+      <button class="btn btn-play go">Enter the market</button>
     </main>`);
     app.append(scr);
     const inp = $('.name-input', scr);
@@ -214,7 +214,7 @@
 
   function grownups() {
     const m = modal(`<h2>For grown-ups</h2>
-      <p><b>Candle Quest</b> teaches chart reading using concepts from the ICT ("Inner Circle Trader") method: candles, swing points, liquidity, fair value gaps, order blocks and market structure.</p>
+      <p><b>Wickd</b> teaches chart reading using concepts from the ICT ("Inner Circle Trader") method: candles, swing points, liquidity, fair value gaps, order blocks and market structure.</p>
       <ul>
         <li>All charts — including the live market — are computer-generated practice markets, not real market data.</li>
         <li>Coins are play money only. There are no ads, no purchases and no chat.</li>
@@ -575,7 +575,7 @@
   function shop(tab) {
     tab = tab || 'hats';
     const scr = el(`<main class="screen shop">
-      <div class="tabs"><button class="tab ${tab === 'hats' ? 'on' : ''}" data-t="hats">Hats for Pip</button><button class="tab ${tab === 'themes' ? 'on' : ''}" data-t="themes">Chart themes</button></div>
+      <div class="tabs"><button class="tab ${tab === 'hats' ? 'on' : ''}" data-t="hats">Avatar rings</button><button class="tab ${tab === 'themes' ? 'on' : ''}" data-t="themes">Chart themes</button></div>
       <div class="shop-grid"></div>
     </main>`);
     const grid = $('.shop-grid', scr);
@@ -586,7 +586,7 @@
       const own = ownedList.includes(it.id);
       const eq = equipped === it.id;
       const preview = tab === 'hats'
-        ? `<div class="shop-owl">${owlSVG(it.id, 'happy')}</div>`
+        ? `<div class="shop-owl">${avatarSVG(S.name, it.id)}</div>`
         : `<div class="swatch" style="background:${it.bg}">${[3, 5, 2, 6, 4, 7, 5].map((hgt, i) => `<i style="height:${hgt * 8}px;background:${i % 3 === 2 ? it.down : it.up}"></i>`).join('')}</div>`;
       const card = el(`<div class="shop-item ${eq ? 'equipped' : ''}">${preview}<b>${esc(it.name)}</b>
         <button class="btn small ${own ? (eq ? 'btn-ghost' : '') : 'buy'}" ${eq ? 'disabled' : ''}>${eq ? 'Equipped' : own ? 'Equip' : `${coin()}${it.price}`}</button></div>`);

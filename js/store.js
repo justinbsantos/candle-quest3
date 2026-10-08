@@ -1,4 +1,4 @@
-/* Candle Quest — save game, economy, progression, sounds. */
+/* Wickd — save game, economy, progression, sounds. */
 (function (G) {
   'use strict';
   const KEY = 'candlequest.save.v1';

@@ -1,40 +1,46 @@
-/* Candle Quest — Pip the Chart Owl (original SVG mascot) + hats. */
+/* Wickd — Pip the AI coach (a glowing orb) and player avatars with flair rings. */
 (function (G) {
   'use strict';
 
-  const HAT_SVG = {
-    none: '',
-    cap: '<path d="M30 30 Q60 6 90 30 Z" fill="#2563eb"/><rect x="28" y="28" width="64" height="7" rx="3" fill="#1d4ed8"/><path d="M86 31 L110 36 L88 38 Z" fill="#1d4ed8"/><circle cx="60" cy="16" r="3" fill="#fbbf24"/>',
-    pirate: '<path d="M22 32 Q60 -4 98 32 Q60 22 22 32 Z" fill="#1f2937"/><circle cx="60" cy="20" r="6" fill="#f8fafc"/><path d="M55 27 L65 27" stroke="#f8fafc" stroke-width="2"/>',
-    wizard: '<path d="M34 34 L60 -14 L86 34 Z" fill="#7C4DFF"/><ellipse cx="60" cy="34" rx="32" ry="6" fill="#5B2FD6"/><path d="m58 6 2.2 4.4 4.8.7-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8-3.5-3.4 4.8-.7z" fill="#FFC94A"/>',
-    astro: '<circle cx="60" cy="52" r="46" fill="#bfdbfe" fill-opacity="0.35" stroke="#e2e8f0" stroke-width="5"/><rect x="50" y="2" width="20" height="8" rx="4" fill="#94a3b8"/>',
-    crown: '<path d="M34 34 L38 10 L50 24 L60 6 L70 24 L82 10 L86 34 Z" fill="#fbbf24" stroke="#d97706" stroke-width="2"/><circle cx="60" cy="24" r="3" fill="#ef4444"/><circle cx="45" cy="28" r="2.5" fill="#3b82f6"/><circle cx="75" cy="28" r="2.5" fill="#22c55e"/>',
+  // Flairs are the avatar ring styles players unlock in the shop.
+  const FLAIR_COLORS = {
+    none: ['#7C5CFF', '#FF4FD8'],
+    mint: ['#3CFFB1', '#3DB8FF'],
+    sunset: ['#FFB23E', '#FF4F7B'],
+    ice: ['#B9F3FF', '#6C8CFF'],
+    gold: ['#FFE08A', '#E9A21C'],
+    holo: ['#3CFFB1', '#FF4FD8'],
   };
+  const flair = (id) => FLAIR_COLORS[id] || FLAIR_COLORS.none;
 
-  function owlSVG(hat, mood, cls) {
-    mood = mood || 'happy';
-    const pupils = mood === 'sad'
-      ? '<circle cx="46" cy="58" r="5" fill="#1A1033"/><circle cx="74" cy="58" r="5" fill="#1A1033"/><path d="M36 46 L54 50 M84 46 L66 50" stroke="#8A3A10" stroke-width="3" stroke-linecap="round"/>'
-      : mood === 'wow'
-        ? '<circle cx="46" cy="54" r="7" fill="#1A1033"/><circle cx="74" cy="54" r="7" fill="#1A1033"/><circle cx="48" cy="51" r="2.5" fill="#fff"/><circle cx="76" cy="51" r="2.5" fill="#fff"/>'
-        : '<circle cx="47" cy="55" r="6" fill="#1A1033"/><circle cx="73" cy="55" r="6" fill="#1A1033"/><circle cx="49" cy="53" r="2" fill="#fff"/><circle cx="75" cy="53" r="2" fill="#fff"/>';
-    const mouth = mood === 'sad' ? '' : '<path d="M52 72 Q60 80 68 72" stroke="#B23A62" stroke-width="2" fill="none" stroke-linecap="round"/>';
-    return `<svg class="${cls || 'owl'}" viewBox="0 -16 120 150" xmlns="http://www.w3.org/2000/svg" aria-label="Pip the owl">
-      <path d="M30 34 L26 14 L44 28 Z" fill="#E9772B"/><path d="M90 34 L94 14 L76 28 Z" fill="#E9772B"/>
-      <ellipse cx="60" cy="78" rx="42" ry="48" fill="#FF9F43"/>
-      <ellipse cx="50" cy="62" rx="22" ry="15" fill="#fff" opacity=".14"/>
-      <ellipse cx="60" cy="92" rx="26" ry="28" fill="#FFE8C4"/>
-      <path d="M48 88 l4 4 l4 -4 M60 98 l4 4 l4 -4 M64 86 l4 4 l4 -4" stroke="#F4BE82" stroke-width="2" fill="none"/>
-      <ellipse cx="20" cy="84" rx="10" ry="24" fill="#E9772B" transform="rotate(12 20 84)"/>
-      <ellipse cx="100" cy="84" rx="10" ry="24" fill="#E9772B" transform="rotate(-12 100 84)"/>
-      <circle cx="46" cy="55" r="15" fill="#fff"/><circle cx="74" cy="55" r="15" fill="#fff"/>
-      ${pupils}
-      <path d="M55 64 L65 64 L60 73 Z" fill="#FF4F8B"/>
-      ${mouth}
-      <path d="M44 124 l-4 6 M48 124 v7 M52 124 l4 6 M68 124 l-4 6 M72 124 v7 M76 124 l4 6" stroke="#FF4F8B" stroke-width="3" stroke-linecap="round"/>
-      <g class="hat">${HAT_SVG[hat] || ''}</g>
+  let uid = 0;
+  // Pip: a glossy orb with a flame inside. Mood shifts its colors.
+  function coachSVG(mood, cls) {
+    const id = 'pip' + (++uid);
+    const c = mood === 'wow' ? ['#3CFFB1', '#3DB8FF'] : mood === 'sad' ? ['#6C6A8F', '#3B3760'] : ['#7C5CFF', '#FF4FD8'];
+    return `<svg class="${cls || 'owl'}" viewBox="0 0 64 64" aria-label="Pip, your coach">
+      <defs><radialGradient id="${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".35" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></radialGradient></defs>
+      <circle cx="32" cy="32" r="28" fill="url(#${id})"/>
+      <circle cx="32" cy="32" r="28" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.5"/>
+      <path d="M32 15c6.2 5.6 8.2 10.6 5.7 15.1-1.3 2.4-3.3 3.5-5.7 3.5s-4.4-1.1-5.7-3.5C23.8 25.6 25.8 20.6 32 15z" fill="#fff" fill-opacity=".92"/>
+      <rect x="27" y="36" width="10" height="13" rx="3" fill="#fff" fill-opacity=".92"/>
     </svg>`;
   }
 
-  G.CQMascot = { owlSVG };
+  // Back-compat: older screens call owlSVG(hat, mood, cls) for the coach.
+  function owlSVG(hat, mood, cls) { return coachSVG(mood, cls); }
+
+  function avatarSVG(name, flairId, cls) {
+    const id = 'av' + (++uid);
+    const [a, b] = flair(flairId);
+    const letter = String(name || '?').trim().charAt(0).toUpperCase() || '?';
+    return `<svg class="${cls || 'avatar'}" viewBox="0 0 64 64" aria-label="${letter} avatar">
+      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+      <circle cx="32" cy="32" r="30" fill="url(#${id})"/>
+      <circle cx="32" cy="32" r="25" fill="#16122E"/>
+      <text x="32" y="33" text-anchor="middle" dominant-baseline="middle" font-family="Unbounded, sans-serif" font-weight="700" font-size="24" fill="url(#${id})">${letter}</text>
+    </svg>`;
+  }
+
+  G.CQMascot = { owlSVG, coachSVG, avatarSVG, flair };
 })(window);
